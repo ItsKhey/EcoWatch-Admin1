@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green">#81C784</color>
+    <color name="white">#121212</color>
+    <color name="black">#FFFFFF</color>
+    <color name="light_green">#1B5E20</color>
+    <color name="faint_green_color">#A5D6A7</color>
+    <!-- Half-transparent separator tuned to the night green so dividers stay
+         visible against the dark surface. -->
+    <color name="semi_transparent_green">#8081C784</color>
+    <color name="chip_background">#1B5E20</color>
+    <color name="chip_text_and_icon">#A5D6A7</color>
+    <color name="profile_card_text">#FFFFFFFF</color>
+    <color name="profile_card_muted">#333333</color>
+    <color name="profile_card_label">#A0A0A0</color>
+    <color name="reporter_status_active_background">#1B3B25</color>
+    <color name="reporter_status_active_text">#A5D6A7</color>
+    <color name="reporter_status_disabled_background">#374151</color>
+    <color name="reporter_status_disabled_text">#E5E7EB</color>
+    <color name="reporter_report_badge_background">#3381C784</color>
+    <color name="personnel_online">#A5D6A7</color>
+    <color name="personnel_online_background">#1B3B25</color>
+    <color name="personnel_offline">#D1D5DB</color>
+    <color name="personnel_offline_background">#374151</color>
+    <color name="personnel_cleaning">#FDE68A</color>
+    <color name="personnel_cleaning_background">#4A3720</color>
+    <color name="personnel_disabled">#D1D5DB</color>
+    <color name="personnel_disabled_background">#374151</color>
+    <color name="personnel_divider">#4B5563</color>
+
+    <!-- Vehicle fleet, dark palette. Mirrors the day hues so a truck keeps the
+         same colour it had in the light theme. -->
+    <color name="vehicle_maintenance">#FDE68A</color>
+    <color name="vehicle_available">#A5D6A7</color>
+    <color name="vehicle_assigned">#93C5FD</color>
+
+    <!-- Personnel/Vehicles selector. The day unselected segment is near-white,
+         which would glare against the #121212 surface. -->
+    <color name="selector_segment_unselected">#26302A</color>
+    <color name="selector_segment_text_unselected">#D1D5DB</color>
+    <!-- Possible Duplicate Reports review, dark palette. The day values are a
+         pale panel and a near-black stroke, which are unreadable against the
+         #121212 surface. -->
+    <color name="duplicate_review_panel">#1B2A20</color>
+    <color name="duplicate_review_stroke">#81C784</color>
+    <color name="duplicate_review_deny">#EF9A9A</color>
+    <color name="duplicate_review_marker">#81C784</color>
+</resources>

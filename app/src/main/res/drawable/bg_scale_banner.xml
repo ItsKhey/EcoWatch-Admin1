@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The banner that states how big the reported waste is.
+
+    It sits at the top of the assignment sheet because it is the rule the
+    dispatch follows: one cleaner for a small job, a crew for a medium one, a
+    crew and a truck for a large one.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/semi_transparent_green" />
+
+    <corners android:radius="14dp" />
+
+    <padding
+        android:left="14dp"
+        android:top="10dp"
+        android:right="14dp"
+        android:bottom="10dp" />
+
+</shape>

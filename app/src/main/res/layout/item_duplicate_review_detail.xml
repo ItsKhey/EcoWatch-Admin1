@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One report as a full card inside the Possible Duplicate Reports detail dialog.
+
+  Carries everything the administrator compares on: reference, reporter,
+  category, submitted time, description, location, distance from the first
+  report, the submitted photo and the current report status.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="@color/duplicate_review_panel"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="1dp"
+    app:strokeColor="@color/duplicate_review_stroke"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <!-- Reference + status, side by side -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/detailRowTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Report #—"
+                android:textColor="@color/green"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detailRowStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending"
+                android:textColor="@color/green"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Submitted photo -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/detailRowPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/possible_duplicate_report_photo"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_gallery"
+            app:cornerRadius="12dp" />
+
+        <!-- Field rows -->
+        <TextView
+            android:id="@+id/detailRowResident"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Resident: —"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="12sp"
+            tools:text="Resident: Juan Dela Cruz" />
+
+        <TextView
+            android:id="@+id/detailRowCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Waste type: —"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/detailRowSubmitted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submitted: —"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            tools:text="Submitted: October 02, 2026 • 9:15 AM" />
+
+        <TextView
+            android:id="@+id/detailRowLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location: —"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            tools:text="Location: 8 m from the first report" />
+
+        <TextView
+            android:id="@+id/detailRowDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="No description"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

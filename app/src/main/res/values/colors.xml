@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="green">#06402B</color>
+    <color name="light_green">#A8FFB0</color>
+    <color name="semi_transparent_green">#8006402B</color>
+    <color name="transparent">#00000000</color>
+    <color name="faint_green_color">#5F7F65</color>
+    <color name="chip_background">#E8F5E9</color>
+    <color name="chip_text_and_icon">#06402B</color>
+    <color name="personnel_online">#166534</color>
+    <color name="personnel_online_background">#DCFCE7</color>
+    <color name="personnel_offline">#4B5563</color>
+    <color name="personnel_offline_background">#F3F4F6</color>
+    <color name="personnel_cleaning">#92400E</color>
+    <color name="personnel_cleaning_background">#FEF3C7</color>
+    <color name="personnel_disabled">#4B5563</color>
+    <color name="personnel_disabled_background">#E5E7EB</color>
+    <color name="personnel_divider">#E5E7EB</color>
+
+    <!--
+      Vehicle fleet. Maintenance is its own status rather than a shade of
+      "assigned", so it gets its own colour: amber for a truck being worked on,
+      borrowed from the cleaning hue so the two amber states read as related
+      without being confused.
+    -->
+    <color name="vehicle_maintenance">#92400E</color>
+    <color name="vehicle_available">#166534</color>
+    <color name="vehicle_assigned">#1D4ED8</color>
+
+    <!--
+      Personnel/Vehicles selector. The unselected segment is a neutral surface
+      rather than white so it still reads as a track under the dark theme, which
+      values-night overrides.
+    -->
+    <color name="selector_segment_unselected">#F3F4F6</color>
+    <color name="selector_segment_text_unselected">#4B5563</color>
+    <color name="profile_card_text">#FFFFFFFF</color>
+    <color name="profile_card_muted">#333333</color>
+    <color name="profile_card_label">#A0A0A0</color>
+    <color name="reporter_status_active_background">#DCFCE7</color>
+    <color name="reporter_status_active_text">#166534</color>
+    <color name="reporter_status_disabled_background">#E5E7EB</color>
+    <color name="reporter_status_disabled_text">#4B5563</color>
+    <color name="reporter_report_badge_background">#1A06402B</color>
+
+    <!--
+      Legend swatches for the admin map. These mirror the hue families used by
+      BitmapDescriptorFactory in AdminMapFragment so the legend reads as the same
+      colors the pins actually use.
+    -->
+    <color name="map_marker_green">#34A853</color>
+    <color name="map_marker_yellow">#FBBC05</color>
+    <color name="map_marker_orange">#F29900</color>
+    <color name="map_marker_red">#EA4335</color>
+    <color name="map_marker_cyan">#24C1E0</color>
+    <color name="map_marker_blue">#4285F4</color>
+    <color name="map_marker_violet">#9B72CB</color>
+    <color name="map_legend_scrim">#66000000</color>
+
+    <!--
+      Possible Duplicate Reports review. Split from the app-wide green so the
+      panel can be tinted independently in night mode; values-night carries the
+      dark counterparts. Without this the card's pale panel and hardcoded stroke
+      sat on the light palette and vanished or glared under the dark one.
+    -->
+    <color name="duplicate_review_panel">#F1F8F4</color>
+    <color name="duplicate_review_stroke">#06402B</color>
+    <color name="duplicate_review_deny">#C62828</color>
+    <color name="duplicate_review_marker">#06402B</color>
+</resources>

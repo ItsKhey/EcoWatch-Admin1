@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One Possible Duplicate Reports review card.
+
+  Collapsed by default: the header, the count, the plain-language explanation
+  and the SEE ALL button. Expanded: one row per report so two submissions can
+  be compared side by side before a decision is made.
+
+  Card styling deliberately mirrors item_report.xml (20dp corners, the shared
+  review stroke, raised elevation, ?attr/colorSurface) so this reads as part of
+  the same dashboard rather than a foreign component. The stroke, panel and
+  danger colours come from duplicate_review_* resources rather than literal hex,
+  so the card follows the light and night palettes with the rest of the app.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/duplicateReviewCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="20dp"
+    app:strokeColor="#06402B"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="?attr/colorSurface">
+
+        <!-- ============================ Header ============================ -->
+
+        <!--
+          Header row: title, count and SEE ALL. This whole row is the tap target
+          that expands the per-report comparison, so the buttons below are never
+          in the way of it.
+        -->
+        <LinearLayout
+            android:id="@+id/duplicateReviewHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Attention marker, so a pending review is visible while scrolling. -->
+            <View
+                android:layout_width="4dp"
+                android:layout_height="34dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/duplicate_review_marker" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/duplicateReviewTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/possible_duplicate_title"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/duplicateReviewSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/possible_duplicate_count_hint"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/duplicateReviewSeeAll"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="0dp"
+                android:text="@string/possible_duplicate_see_all"
+                android:textAllCaps="false"
+                android:textSize="11sp"
+                app:backgroundTint="@color/green"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/duplicateReviewContext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/possible_duplicate_explain"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp" />
+
+        <!-- Collapsed summary: one chip per report reference. -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/duplicateReviewChipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="4dp" />
+
+        <!--
+          Expanded detail. Filled at bind time with one row per report so the
+          administrator can compare reporter, category, time, description,
+          location and distance without opening each report separately.
+        -->
+        <LinearLayout
+            android:id="@+id/duplicateReviewDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <!-- =========================== Decisions ========================== -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/duplicateReviewDeny"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/possible_duplicate_deny"
+                android:textAllCaps="false"
+                android:textColor="@color/duplicate_review_deny"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/duplicate_review_deny" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/duplicateReviewAccept"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@string/possible_duplicate_accept"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/green"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+        <!--
+          Spells out what each button decides. DENY means this report IS a
+          duplicate; ACCEPT means these are NOT duplicates. Neither one accepts
+          or rejects the waste report itself.
+        -->
+        <TextView
+            android:id="@+id/duplicateReviewHints"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="@string/possible_duplicate_hints"
+            android:textColor="@color/green"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

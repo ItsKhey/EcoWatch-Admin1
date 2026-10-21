@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One Admin History card.
+
+    Icon, title, a secondary line and a timestamp, with the additions an audit
+    trail needs: a per-category tag, a "View Details" action that opens the full
+    record, and an optional report reference line.
+
+    The row checkbox is declared but starts hidden. It is the entry point for
+    bulk selection, and selection mode is off until a card is long pressed, so
+    nothing that acts on a selection is visible while the screen is being read.
+-->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:background="@color/white">
+
+        <!--
+            Bulk selection. Gone entirely until selection mode is on, which a long
+            press on the card turns on. Left hidden rather than disabled so a
+            read-only screen carries no visible control it cannot act on.
+        -->
+        <CheckBox
+            android:id="@+id/adminHistorySelectBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Select this record"
+            android:focusable="false"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/adminHistoryIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circular_green_background"
+            android:gravity="center"
+            android:text="•"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- The single most useful secondary line; hidden when the row has none. -->
+            <TextView
+                android:id="@+id/adminHistoryReportRef"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Report #EW-0000"
+                android:textColor="@color/green"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:alpha="0.75"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/adminHistoryTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Action Title"
+                android:textColor="@color/green"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/adminHistorySubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Secondary line"
+                android:textColor="@color/green"
+                android:textSize="13sp"
+                android:alpha="0.8"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/adminHistoryTimestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Time"
+                android:textColor="@color/green"
+                android:textSize="11sp"
+                android:alpha="0.6" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginStart="4dp">
+
+            <ImageButton
+                android:id="@+id/adminHistoryDetailsBtn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="View history details"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_info_details"
+                app:tint="@color/green" />
+
+            <!--
+                Row-scoped removal. The trash view swaps these two for restore and
+                permanent delete; the icon is set from code so one layout serves both
+                views rather than two near-identical cards drifting apart.
+            -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/adminHistorySoftDeleteBtn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Move this record to trash"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_delete_trash" />
+
+                <ImageButton
+                    android:id="@+id/adminHistoryHardDeleteBtn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Delete this record permanently"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_delete_forever" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/adminHistoryCategoryTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Reports"
+                android:textColor="@color/green"
+                android:textSize="9sp"
+                android:alpha="0.6" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

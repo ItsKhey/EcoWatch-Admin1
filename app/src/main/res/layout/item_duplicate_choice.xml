@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One selectable report in the duplicate picker.
+
+  Carries the same comparison details as the expanded card row so the
+  administrator can decide without leaving the dialog.
+-->
+
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/duplicateReviewCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="4dp"
+    app:strokeColor="@color/duplicate_review_stroke"
+    app:strokeWidth="2dp">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@color/duplicate_review_panel"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <CheckBox
+            android:id="@+id/duplicateChoiceCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:buttonTint="@color/green"
+            android:contentDescription="@string/possible_duplicate_choose_check"
+            android:minWidth="40dp"
+            android:minHeight="40dp" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/duplicateChoiceThumb"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/possible_duplicate_report_photo"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_gallery"
+            app:cornerRadius="8dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/duplicateChoiceTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Report #—"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/duplicateChoiceResident"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Resident: —"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="11sp"
+                tools:text="Resident: Juan Dela Cruz" />
+
+            <TextView
+                android:id="@+id/duplicateChoiceMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Waste type • submitted"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp"
+                tools:text="Organic • Submitted Oct 02, 2026 • 9:15 AM" />
+
+            <TextView
+                android:id="@+id/duplicateChoiceDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="No description"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/duplicateChoiceDistance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp"
+                tools:text="8 m from the first report" />
+        </LinearLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

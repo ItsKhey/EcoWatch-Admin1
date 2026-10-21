@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/adminMapRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Search bar -->
+    <fragment
+        android:id="@+id/adminMap"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.home.AdminMapFragment" />
+
+    <LinearLayout
+        android:id="@+id/mapSearchBar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="top"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="62dp"
+        android:background="@drawable/search_bar_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="Search"
+            android:src="@android:drawable/ic_menu_search"
+            app:tint="@color/faint_green_color" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/mapSearchInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Search report, resident, barangay…"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColor="@color/green"
+            android:textColorHint="@color/faint_green_color"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- Bottom-right floating controls -->
+    <LinearLayout
+        android:id="@+id/mapFloatingControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <!-- Legend above -->
+        <include
+            android:id="@+id/mapLegend"
+            layout="@layout/map_legend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Filter button below -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMapFilter"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/filter"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/green"
+            app:icon="@drawable/funnel"/>
+
+    </LinearLayout>
+
+</FrameLayout>
