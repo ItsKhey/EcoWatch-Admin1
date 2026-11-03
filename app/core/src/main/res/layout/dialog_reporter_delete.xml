@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Type-to-confirm for the one action in the admin app that cannot be undone.
+
+    Mirrors the resident app's dialog_type_to_confirm: the Confirm and Cancel
+    buttons live INSIDE this view rather than on the AlertDialog. That is
+    deliberate and is the whole point of the layout. An AlertDialog positive
+    button always dismisses the dialog and cannot be held in a disabled state,
+    so there would be no way to keep Confirm locked until the text matches.
+
+    The rounded background here pairs with a transparent dialog window, set in
+    ReporterDetailsFragment.confirmDelete, so the shape below is what is seen.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_rounded"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/reporterDeleteTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reporter_delete_title"
+        android:textColor="#D32F2F"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/reporterDeleteMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:lineSpacingExtra="2dp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="14sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/reporterDeleteInputLayout"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:hintTextColor="?attr/colorPrimary">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/reporterDeleteInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--
+        Red rather than the app's usual primary: this is the only button in the
+        admin app that destroys something, and it should not read as an ordinary
+        confirmation.
+    -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reporterDeleteBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/reporter_delete_button"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:backgroundTint="#D32F2F"
+        app:cornerRadius="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reporterDeleteCancelBtn"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@android:string/cancel"
+        android:textAllCaps="false"
+        android:textColor="?attr/colorPrimary"
+        app:cornerRadius="12dp"
+        app:strokeColor="?attr/colorPrimary"
+        app:strokeWidth="1dp" />
+</LinearLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Label colour for the selector, inverted on the checked segment. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/green" android:state_checked="true" />
+    <item android:color="@color/selector_segment_text_unselected" />
+</selector>

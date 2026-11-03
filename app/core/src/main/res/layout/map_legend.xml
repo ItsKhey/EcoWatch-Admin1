@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Map legend. Lists every marker color the admin map can draw, so the pins do
+  not have to be guessed at. Bind the row ids from code with
+  AdminMapFragment.bindLegendRow(...) to keep the colors and the marker hues
+  defined in one place.
+-->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mapLegendCard"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Header row: title doubles as the collapse toggle -->
+        <LinearLayout
+            android:id="@+id/legendHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Map Legend"
+                android:textColor="@color/green"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/legendToggleHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Hide"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/legendDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="?attr/colorOutline"
+            android:alpha="0.4" />
+
+        <LinearLayout
+            android:id="@+id/legendContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Status colours, only used by report pins -->
+            <TextView
+                android:id="@+id/legendReportHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:letterSpacing="0.1"
+                android:text="REPORTS"
+                android:textColor="@color/green"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <include
+                android:id="@+id/legendReportPending"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendReportInProgress"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendReportCompleted"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendReportDenied"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendReportOther"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Waste scale legend -->
+            <TextView
+                android:id="@+id/legendScaleHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:letterSpacing="0.1"
+                android:text="WASTE SCALE"
+                android:textColor="@color/green"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <include
+                android:id="@+id/legendScaleSmall"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendScaleMedium"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendScaleLarge"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Pins that belong to neither group -->
+            <TextView
+                android:id="@+id/legendOtherHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:letterSpacing="0.1"
+                android:text="OTHER"
+                android:textColor="@color/green"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <include
+                android:id="@+id/legendYourLocation"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendAssignedReport"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

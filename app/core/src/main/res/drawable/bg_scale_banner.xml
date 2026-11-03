@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The banner that states how big the reported waste is.
+
+    It sits at the top of the assignment sheet because it is the rule the
+    dispatch follows: one cleaner for a small job, a crew for a medium one, a
+    crew and a truck for a large one. A light green field with the app's green
+    hairline (the same outline the cards carry) so the scale reads as the
+    highlighted fact on the sheet, and the sheet's text spans the scale name
+    itself in bold green on top of it.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="#E7F2EA" />
+
+    <stroke
+        android:width="1dp"
+        android:color="@color/green" />
+
+    <corners android:radius="14dp" />
+
+</shape>

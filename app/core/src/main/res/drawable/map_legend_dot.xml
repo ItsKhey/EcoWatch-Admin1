@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Legend swatch. Kept white so each use can supply its own tint via app:tint,
+  which lets one drawable back every color in the map legend.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="@color/white" />
+
+    <stroke
+        android:width="1.5dp"
+        android:color="@color/map_legend_scrim" />
+
+</shape>

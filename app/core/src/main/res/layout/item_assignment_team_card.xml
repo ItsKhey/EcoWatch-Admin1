@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One cleaning team in the horizontal team picker.
+
+    A named crew, not a person: the team logo on top with its availability dot
+    on the corner, the team name under it, then the crew size and leader.
+    Tapping the card ticks the whole team in or out of the dispatch.
+
+    It reuses the card language of the rest of the app (14dp radius, hairline
+    #06402B outline, surface background) so the sheet reads as one screen.
+    The sheet repaints the stroke when the card is selected.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/teamCard"
+    android:layout_width="152dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#06402B"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/teamCardIcon"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:contentDescription="@string/team_icon_description"
+                android:scaleType="centerCrop"
+                android:src="@drawable/team"
+                app:shapeAppearanceOverlay="@style/CircleImage" />
+
+            <!-- Green = the whole crew is free to send, grey = already on
+                 another job. The sheet repaints it against the crew rules. -->
+            <View
+                android:id="@+id/teamCardDot"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/bg_dot_available" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/teamCardName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Northside Crew" />
+
+        <TextView
+            android:id="@+id/teamCardMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="11sp"
+            tools:text="3 members" />
+
+        <TextView
+            android:id="@+id/teamCardLeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="11sp"
+            tools:text="Leader: Juan Dela Cruz" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
