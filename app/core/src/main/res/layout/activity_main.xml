@@ -190,7 +190,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground"
-                android:padding="8dp"/>
+                android:padding="8dp"
+                tools:visibility="visible"
+                android:visibility="gone" />
             <!--
                 Opens the server address editor.
 
@@ -232,7 +234,8 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground"
-                android:padding="8dp"/>
+                android:padding="8dp"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <!-- Forgot Password / Register Fragment Container -->
