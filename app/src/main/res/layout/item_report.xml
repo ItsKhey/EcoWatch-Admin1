@@ -114,7 +114,27 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/reportScale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Small-Scale Waste"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="11sp"
+                android:alpha="0.8" />
+
+            <TextView
                 android:id="@+id/reportAssignedPersonnel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/reportAssignedTeam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"

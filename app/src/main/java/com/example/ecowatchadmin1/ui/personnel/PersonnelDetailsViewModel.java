@@ -13,6 +13,7 @@ import com.example.ecowatchadmin1.data.models.Report;
 import com.example.ecowatchadmin1.data.models.ReportPage;
 import com.example.ecowatchadmin1.data.remote.PersonnelJsonParser;
 import com.example.ecowatchadmin1.data.repository.PersonnelRepository;
+import com.example.ecowatchadmin1.utils.ReportRevision;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -193,7 +194,7 @@ public class PersonnelDetailsViewModel extends AndroidViewModel {
                         if (reportVersion != reportRequestVersion.get()
                                 || detailsVersion != requestVersion.get()) return;
                         ReportPage safeResult = result == null ? new ReportPage() : result;
-                        List<Report> next = safeResult.getReports();
+                        List<Report> next = historicalWorkOnly(safeResult.getReports());
                         if (append) {
                             List<Report> merged = new ArrayList<>(
                                     reports.getValue() == null
@@ -220,6 +221,19 @@ public class PersonnelDetailsViewModel extends AndroidViewModel {
                         if (complete != null) complete.run();
                     }
                 });
+    }
+
+    /** Keep completed work and work currently returned to personnel for revision. */
+    private List<Report> historicalWorkOnly(List<Report> source) {
+        List<Report> result = new ArrayList<>();
+        if (source == null) return result;
+        for (Report report : source) {
+            if (report == null) continue;
+            String status = report.getStatus() == null ? "" : report.getStatus().trim();
+            boolean completed = "completed".equalsIgnoreCase(status);
+            if (completed || ReportRevision.isRevision(report)) result.add(report);
+        }
+        return result;
     }
 
     public void refresh() {

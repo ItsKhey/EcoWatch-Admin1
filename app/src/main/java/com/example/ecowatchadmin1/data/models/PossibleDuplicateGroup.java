@@ -13,6 +13,13 @@ public class PossibleDuplicateGroup {
     private List<Report> reports = new ArrayList<>();
     private Double centerLatitude;
     private Double centerLongitude;
+    /**
+     * The canonical waste scale every report in this group was filed under.
+     * A group never mixes scales: the review is about one pile at one spot,
+     * and a small pile and a large one are separate incidents even when they
+     * are metres apart.
+     */
+    private String wasteScale;
 
     public String getGroupId() { return groupId; }
     public void setGroupId(String groupId) { this.groupId = groupId; }
@@ -25,6 +32,21 @@ public class PossibleDuplicateGroup {
 
     public Double getCenterLongitude() { return centerLongitude; }
     public void setCenterLongitude(Double centerLongitude) { this.centerLongitude = centerLongitude; }
+
+    /** The canonical scale, falling back to the first report when absent. */
+    public String getWasteScale() {
+        if (wasteScale != null && !wasteScale.trim().isEmpty()) {
+            return wasteScale.trim();
+        }
+        if (reports != null) {
+            for (Report report : reports) {
+                if (report != null) return report.getWasteScale();
+            }
+        }
+        return Report.SCALE_SMALL;
+    }
+
+    public void setWasteScale(String wasteScale) { this.wasteScale = wasteScale; }
 
     /** Reports whose status is Pending right now. */
     public List<Report> getPendingReports() {

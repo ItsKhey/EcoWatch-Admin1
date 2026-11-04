@@ -5,7 +5,7 @@ import androidx.annotation.StringRes;
 import com.example.ecowatchadmin1.R;
 
 /**
- * What changes when the Personnel/Vehicles selector flips.
+ * What changes when the Personnel/Vehicles/Teams selector flips.
  *
  * <p>Collected here rather than scattered through the fragment because every
  * piece of chrome under the selector has to agree: the card labels, the search
@@ -13,15 +13,16 @@ import com.example.ecowatchadmin1.R;
  * what stops a card from still saying "Online" while the list below it is showing
  * vehicles.
  *
- * <p>The filter values are the strings the two domains actually filter on, which
+ * <p>The filter values are the strings the three domains actually filter on, which
  * are not interchangeable: personnel filters on Online/Offline/Cleaning, the
- * fleet on Available/Assigned/Maintenance.
+ * fleet on Available/Assigned/Maintenance, and teams on whether the crew is
+ * dispatch-ready.
  */
 public final class ManagementMode {
 
     /** The selected side of the selector. */
     public enum Kind {
-        PERSONNEL, VEHICLES
+        PERSONNEL, VEHICLES, TEAMS
     }
 
     @StringRes final int title;
@@ -39,7 +40,7 @@ public final class ManagementMode {
     @StringRes final int filterThirdLabel;
     @StringRes final int filterFourthLabel;
 
-    /** Values the chips filter on, matching the two domains' own vocabularies. */
+    /** Values the chips filter on, matching the three domains' own vocabularies. */
     public final String filterAllValue;
     public final String filterSecondValue;
     public final String filterThirdValue;
@@ -108,8 +109,34 @@ public final class ManagementMode {
             R.string.vehicle_filter_maintenance,
             "All", "Available", "Assigned", "Maintenance");
 
+    /**
+     * The team side.
+     *
+     * <p>A crew is the unit the office actually dispatches, so the cards answer
+     * the questions an administrator has before sending one out: how many teams
+     * exist, how many are ready to go, and how many are currently working.
+     * "Ready" means a leader plus at least two people on the crew, which is the
+     * same rule the server enforces.
+     */
+    public static final ManagementMode TEAMS = new ManagementMode(
+            R.string.team_title,
+            R.string.team_subtitle,
+            R.string.team_total,
+            R.string.team_ready,
+            R.string.team_cleaning,
+            R.string.team_search_hint,
+            R.string.team_empty,
+            R.string.team_result_count,
+            R.string.team_filter_all,
+            R.string.team_filter_ready,
+            R.string.team_filter_no_leader,
+            R.string.team_filter_understaffed,
+            "All", "Ready", "No leader", "Understaffed");
+
     public static ManagementMode of(Kind kind) {
-        return kind == Kind.VEHICLES ? VEHICLES : PERSONNEL;
+        if (kind == Kind.VEHICLES) return VEHICLES;
+        if (kind == Kind.TEAMS) return TEAMS;
+        return PERSONNEL;
     }
 
     /**

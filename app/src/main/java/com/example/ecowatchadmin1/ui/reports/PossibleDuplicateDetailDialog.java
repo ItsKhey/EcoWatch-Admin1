@@ -17,6 +17,7 @@ import com.example.ecowatchadmin1.data.models.PossibleDuplicateGroup;
 import com.example.ecowatchadmin1.data.models.Report;
 import com.example.ecowatchadmin1.data.remote.ServerConfig;
 import com.example.ecowatchadmin1.utils.ReportSubmittedAtFormatter;
+import com.example.ecowatchadmin1.utils.WasteScaleDisplay;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -55,7 +56,8 @@ final class PossibleDuplicateDetailDialog {
         ((TextView) content.findViewById(R.id.duplicateDetailSubtitle))
                 .setText(context.getString(R.string.possible_duplicate_count, reports.size()));
         ((TextView) content.findViewById(R.id.duplicateDetailContext))
-                .setText(context.getString(R.string.possible_duplicate_detail_context));
+                .setText(context.getString(R.string.possible_duplicate_detail_context,
+                        WasteScaleDisplay.labelFor(context, group.getWasteScale())));
 
         LinearLayout list = content.findViewById(R.id.duplicateDetailList);
         if (reports.isEmpty()) {
@@ -101,8 +103,9 @@ final class PossibleDuplicateDetailDialog {
                 .setText(context.getString(R.string.possible_duplicate_resident_label,
                         report.getResidentLabel()));
         ((TextView) card.findViewById(R.id.detailRowCategory)).setText(
-                context.getString(R.string.review_row_category,
-                        DuplicateReviewFormatter.wasteTypeOf(report)));
+                context.getString(R.string.review_row_category_scale,
+                        DuplicateReviewFormatter.wasteTypeOf(report),
+                        DuplicateReviewFormatter.scaleLabelOf(context, report)));
         ((TextView) card.findViewById(R.id.detailRowSubmitted)).setText(
                 context.getString(R.string.review_row_submitted_label,
                         DuplicateReviewFormatter.submittedAt(report.getCreatedAt())));

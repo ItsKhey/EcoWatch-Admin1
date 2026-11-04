@@ -54,6 +54,8 @@ public class PersonnelDetailsFragment extends Fragment {
     private TextView name;
     private TextView personnelId;
     private TextView status;
+    private TextView occupationText;
+    private TextView descriptionRole;
     private TextView username;
     private TextView email;
     private TextView address;
@@ -183,6 +185,8 @@ public class PersonnelDetailsFragment extends Fragment {
         name = view.findViewById(R.id.reporterDetailsName);
         personnelId = view.findViewById(R.id.reporterDetailsResidentId);
         status = view.findViewById(R.id.reporterDetailsStatus);
+        occupationText = view.findViewById(R.id.personnelOccupation);
+        descriptionRole = view.findViewById(R.id.personnelDesciptionRole);
         username = view.findViewById(R.id.reporterDetailsUsername);
         email = view.findViewById(R.id.reporterDetailsEmail);
         address = view.findViewById(R.id.reporterDetailsAddress);
@@ -221,6 +225,9 @@ public class PersonnelDetailsFragment extends Fragment {
 
     private void setupTasks() {
         taskAdapter = new ReporterReportAdapter();
+        // This screen is the one history that expands each task into its
+        // cleaning events; the shared adapter's compact mode stays the default.
+        taskAdapter.setShowTimeline(true);
         taskRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         taskRecyclerView.setAdapter(taskAdapter);
         taskAdapter.setListener(report -> ReportDetailDialog.showReadOnly(this, report));
@@ -250,6 +257,13 @@ public class PersonnelDetailsFragment extends Fragment {
         viewModel.getReports().observe(getViewLifecycleOwner(), reports -> {
             java.util.List<Report> values = reports == null
                     ? new java.util.ArrayList<>() : reports;
+            if (current != null && !isBlank(current.getTeamName())) {
+                for (Report report : values) {
+                    if (report != null && report.requiresTeam() && isBlank(report.getAssignedTeamLabel())) {
+                        report.setAssignedTeamName(current.getTeamName());
+                    }
+                }
+            }
             taskAdapter.setReports(values);
             taskEmpty.setVisibility(values.isEmpty() ? View.VISIBLE : View.GONE);
         });
@@ -288,6 +302,16 @@ public class PersonnelDetailsFragment extends Fragment {
         name.setText(person.getFullName());
         personnelId.setText(PersonnelUi.valueOrDash(person.getPersonnelId()));
         PersonnelUi.bindStatus(status, person);
+        if (occupationText != null) {
+            if (person.isDriver()) {
+                occupationText.setText(R.string.personnel_role_driver);
+            } else if (person.getOccupation() != null && !person.getOccupation().trim().isEmpty()) {
+                occupationText.setText(person.getOccupation());
+            } else {
+                occupationText.setText(R.string.personnel_role_regular);
+            }
+        }
+        bindDescriptionRole(person);
         PersonnelUi.loadAvatar(avatar, person.getProfileImageUrl());
         username.setText(PersonnelUi.valueOrDash(person.getUsername()));
         email.setText(PersonnelUi.valueOrDash(person.getGmail()));
@@ -314,6 +338,41 @@ public class PersonnelDetailsFragment extends Fragment {
         disableButton.setEnabled(enabled);
 
         bindAssignedVehicle(person);
+
+        if (taskAdapter != null && !isBlank(person.getTeamName())) {
+            java.util.List<Report> currentReports = viewModel.getReports().getValue();
+            if (currentReports != null && !currentReports.isEmpty()) {
+                boolean changed = false;
+                for (Report report : currentReports) {
+                    if (report != null && report.requiresTeam() && isBlank(report.getAssignedTeamLabel())) {
+                        report.setAssignedTeamName(person.getTeamName());
+                        changed = true;
+                    }
+                }
+                if (changed) taskAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    /** Shows "Leader/Member/Driver of Team X", hiding the line when unassigned. */
+    private void bindDescriptionRole(Personnel person) {
+        if (descriptionRole == null) return;
+        String teamName = person.getTeamName();
+        if (teamName == null || teamName.trim().isEmpty()) {
+            descriptionRole.setVisibility(View.GONE);
+            return;
+        }
+
+        String role;
+        if (person.isDriver()) {
+            role = getString(R.string.personnel_role_driver);
+        } else if ("Leader".equalsIgnoreCase(person.getTeamRole())) {
+            role = getString(R.string.personnel_role_leader);
+        } else {
+            role = getString(R.string.personnel_role_member);
+        }
+        descriptionRole.setText(getString(R.string.personnel_role_of_team, role, teamName.trim()));
+        descriptionRole.setVisibility(View.VISIBLE);
     }
 
     /**

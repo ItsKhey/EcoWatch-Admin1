@@ -108,6 +108,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <!-- Waste scale legend -->
+            <TextView
+                android:id="@+id/legendScaleHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:letterSpacing="0.1"
+                android:text="WASTE SCALE"
+                android:textColor="@color/green"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <include
+                android:id="@+id/legendScaleSmall"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendScaleMedium"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/legendScaleLarge"
+                layout="@layout/item_map_legend_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
             <!-- Pins that belong to neither group -->
             <TextView
                 android:id="@+id/legendOtherHeader"

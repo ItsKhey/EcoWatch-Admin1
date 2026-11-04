@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
@@ -81,14 +82,24 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
                 if (person == null || !person.isEnabled()) continue;
                 if (!person.isDriver() || !person.hasAssignedVehicle()) continue;
                 String vehicleId = person.getAssignedVehicleId();
-                // First match wins: the database allows only one working driver per
-                // truck, so a second would be a stale row rather than a real pair.
-                if (!driversByVehicleId.containsKey(vehicleId)) {
-                    driversByVehicleId.put(vehicleId, person);
+                if (vehicleId != null && !vehicleId.trim().isEmpty()) {
+                    String key = vehicleId.trim().toUpperCase(Locale.ROOT);
+                    // First match wins: the database allows only one working driver per
+                    // truck, so a second would be a stale row rather than a real pair.
+                    if (!driversByVehicleId.containsKey(key)) {
+                        driversByVehicleId.put(key, person);
+                    }
                 }
             }
         }
         notifyDataSetChanged();
+    }
+
+    @Nullable
+    private Personnel getDriver(Vehicle vehicle) {
+        if (vehicle == null || vehicle.getVehicleId() == null) return null;
+        String key = vehicle.getVehicleId().trim().toUpperCase(Locale.ROOT);
+        return driversByVehicleId.get(key);
     }
 
     @NonNull
@@ -143,14 +154,22 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
                 : R.color.personnel_online;
         holder.maintenanceStatus.setTextColor(holder.itemView.getContext().getColor(statusColor));
 
-        holder.availability.setText(vehicle.isAvailable()
-                ? R.string.vehicle_available
-                : vehicle.isInMaintenance()
-                ? R.string.vehicle_out_of_service
-                : R.string.vehicle_on_collection);
-        holder.availability.setTextColor(holder.itemView.getContext().getColor(statusColor));
+        Personnel driver = getDriver(vehicle);
+        boolean hasDriver = driver != null;
 
-        bindAssignedDriver(vehicle, holder);
+        if (!hasDriver) {
+            holder.availability.setText(R.string.vehicle_lacks_driver);
+            holder.availability.setTextColor(holder.itemView.getContext().getColor(R.color.vehicle_lacks_driver));
+        } else {
+            holder.availability.setText(vehicle.isAvailable()
+                    ? R.string.vehicle_available
+                    : vehicle.isInMaintenance()
+                    ? R.string.vehicle_out_of_service
+                    : R.string.vehicle_on_collection);
+            holder.availability.setTextColor(holder.itemView.getContext().getColor(statusColor));
+        }
+
+        bindAssignedDriver(driver, holder);
 
         // Locate only works while the truck is actually out on a collection.
         boolean canLocate = vehicle.isAssigned() && hasCoordinates(vehicle);
@@ -181,11 +200,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
      * Personnel / —" panel on every one of those rows would bury the trucks that
      * actually have a driver.
      */
-    private void bindAssignedDriver(Vehicle vehicle, VehicleViewHolder holder) {
-        Personnel driver = vehicle.getVehicleId() == null
-                ? null
-                : driversByVehicleId.get(vehicle.getVehicleId());
-
+    private void bindAssignedDriver(@Nullable Personnel driver, VehicleViewHolder holder) {
         if (driver == null) {
             holder.personnelCard.setVisibility(View.GONE);
             return;

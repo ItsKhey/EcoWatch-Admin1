@@ -140,6 +140,8 @@ public final class PersonnelJsonParser {
         person.setFirstName(readString(source, "firstName", "first_name"));
         person.setLastName(readString(source, "lastName", "last_name"));
         person.setFullName(readString(source, "fullName", "full_name", "name"));
+        person.setTeamName(readString(source, "teamName", "team_name"));
+        person.setTeamRole(readString(source, "teamRole", "team_role"));
         person.setGmail(readString(source, "gmail", "email"));
         person.setUsername(readString(source, "username", "userName", "user_name"));
         person.setAddress(readString(source, "address"));

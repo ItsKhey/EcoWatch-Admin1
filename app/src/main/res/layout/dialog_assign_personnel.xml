@@ -2,12 +2,12 @@
 <!--
     Scrollable so the confirm button is always reachable.
 
-    The sheet holds two multi-line fields, a search box and a bounded personnel
-    list. Together those are taller than a phone screen, and a bottom sheet
-    anchors its content to the bottom edge, so without a scroll container the
-    button at the end of the layout is simply cut off and never rendered. The
-    personnel list keeps its own height and scrolls internally; this wrapper only
-    exists so the form above and the button below it can move.
+    The sheet holds two multi-line fields, a search box and one horizontal
+    card row (the team/personnel picker). Together those are taller than a phone
+    screen, and a bottom sheet anchors its content to the bottom edge, so
+    without a scroll container the button at the end of the layout is simply
+    cut off and never rendered. The card row scrolls sideways; this wrapper
+    only exists so the form above and the button below it can move.
 -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -55,77 +55,26 @@
         How big the reported waste is, and therefore what has to go out.
 
         The resident picked the scale when the report was filed, so it is stated
-        rather than chosen here: the sheet adapts to it.
+        rather than chosen here: the sheet adapts to it. The Java side bolds the
+        first line and picks the scale name out of it in the app green at a
+        larger size, so the fact the dispatch must obey lands first.
+
+        Padding lives on the view: the banner shape carries none.
     -->
     <TextView
         android:id="@+id/assignmentScaleBanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:background="@drawable/bg_scale_banner"
-        android:textColor="@color/light_green"
+        android:background="@drawable/bg_dialog_rounded"
+        android:lineSpacingExtra="2dp"
+        android:paddingStart="14dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="10dp"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="13sp"
-        tools:text="Medium-Scale Waste — dispatch a cleaning team." />
-
-    <!-- The crew. Only shown for the scales that need one. -->
-    <TextView
-        android:id="@+id/assignmentTeamLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/assignment_team_label"
-        android:textAllCaps="true"
-        android:textColor="@color/faint_green_color"
-        android:textSize="11sp"
-        android:letterSpacing="0.08"
-        android:textStyle="bold"
-        android:visibility="gone" />
-
-    <Spinner
-        android:id="@+id/assignmentTeamSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:visibility="gone" />
-
-    <!-- The truck. Only shown for the scale that needs one. -->
-    <TextView
-        android:id="@+id/assignmentVehicleLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="@string/assignment_vehicle_label"
-        android:textAllCaps="true"
-        android:textColor="@color/faint_green_color"
-        android:textSize="11sp"
-        android:letterSpacing="0.08"
-        android:textStyle="bold"
-        android:visibility="gone" />
-
-    <Spinner
-        android:id="@+id/assignmentVehicleSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:visibility="gone" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/assignmentSearchLayout"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/assignment_search_hint"
-        app:endIconMode="clear_text">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/assignmentSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:maxLines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
+        tools:text="Waste scale: Medium-Scale Waste\nDispatch a cleaning team." />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/assignmentResponseLayout"
@@ -166,38 +115,141 @@
             android:minLines="2" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <FrameLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="360dp"
-        android:layout_marginTop="12dp">
+        android:layout_height="1dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginBottom="16dp"
+        android:background="?attr/colorOutlineVariant" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/assignmentPersonnelList"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/assignmentSearchLayout"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:hint="@string/assignment_search_hint"
+        app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/assignmentSearch"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="8dp"
-            android:scrollbars="vertical" />
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <ProgressBar
-            android:id="@+id/assignmentLoading"
+    <!--
+        What goes out on site. For a medium or large report this row holds the
+        named cleaning teams; the administrator taps one available team and the
+        whole crew goes out with that dispatch. For a small report the same row
+        holds individual personnel, and only people who are not on any team are
+        offered so a crew is never pulled apart.
+    -->
+    <TextView
+        android:id="@+id/assignmentTeamLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/assignment_team_label"
+        android:textAllCaps="true"
+        android:textColor="@color/faint_green_color"
+        android:textSize="11sp"
+        android:letterSpacing="0.08"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/assignmentCrewHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp"
+        tools:text="@string/assignment_crew_hint" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/assignmentCrewCards"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
 
-        <TextView
-            android:id="@+id/assignmentEmpty"
-            android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/assignmentCrewEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/assignment_no_personnel"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/assignmentVehicleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/assignment_vehicle_label"
+        android:textAllCaps="true"
+        android:textColor="@color/faint_green_color"
+        android:textSize="11sp"
+        android:letterSpacing="0.08"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/assignmentVehicleHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:text="@string/assignment_vehicle_placeholder"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <HorizontalScrollView
+        android:id="@+id/assignmentVehicleScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/assignmentVehicleCards"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="24dp"
-            android:text="@string/assignment_no_personnel"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"
-            android:visibility="gone" />
-    </FrameLayout>
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/assignmentVehicleEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/assignment_no_vehicles"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/assignmentLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:visibility="gone" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/assignmentConfirm"

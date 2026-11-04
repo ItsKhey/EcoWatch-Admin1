@@ -3,7 +3,6 @@ package com.example.ecowatchadmin1.utils;
 import android.content.Context;
 
 import com.example.ecowatchadmin1.R;
-import com.example.ecowatchadmin1.data.models.Report;
 
 /**
  * Turns a waste scale into the label shown on screen.
@@ -22,18 +21,25 @@ public final class WasteScaleDisplay {
     /**
      * The translated label for a canonical scale.
      *
-     * <p>Anything unrecognised falls back to the small scale, which is the only
-     * size a report could have carried before the field existed.
+     * <p>The backend normally returns the canonical label, but history payloads
+     * can also contain the short or snake-case spelling. Treat those as the same
+     * scale instead of letting them fall through to the legacy small default.
+     * Unknown and missing values still use small for reports from before the
+     * scale field existed.
      */
     public static String labelFor(Context context, String canonicalScale) {
         if (context == null) {
             return canonicalScale;
         }
-        if (Report.SCALE_MEDIUM.equals(canonicalScale)) {
-            return context.getString(R.string.waste_scale_medium);
-        }
-        if (Report.SCALE_LARGE.equals(canonicalScale)) {
+        String normalized = canonicalScale == null
+                ? "" : canonicalScale.trim().toLowerCase(java.util.Locale.ROOT)
+                .replace('_', '-')
+                .replace(' ', '-');
+        if (normalized.startsWith("large")) {
             return context.getString(R.string.waste_scale_large);
+        }
+        if (normalized.startsWith("medium")) {
+            return context.getString(R.string.waste_scale_medium);
         }
         return context.getString(R.string.waste_scale_small);
     }

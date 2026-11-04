@@ -107,6 +107,7 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
     private String currentStatusFilter = "";
     private String currentTimeFilter = "";
     private String currentSearchQuery = "";
+    private String currentScaleFilter = ""; // "", or Small/Medium/Large-Scale Waste
 
     /**
      * Bottom margin the floating controls started with, so repeated inset
@@ -249,6 +250,7 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
         if (!currentStatusFilter.isEmpty()) count++;
         if (!currentTimeFilter.isEmpty()) count++;
         if (!currentSearchQuery.isEmpty()) count++;
+        if (!currentScaleFilter.isEmpty()) count++;
         return count;
     }
 
@@ -271,11 +273,30 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
         Chip chipToday = sheetView.findViewById(R.id.chipFilterToday);
         Chip chipThisWeek = sheetView.findViewById(R.id.chipFilterThisWeek);
 
+        ChipGroup scaleGroup = sheetView.findViewById(R.id.filterWasteScaleGroup);
+        Chip chipSmall = sheetView.findViewById(R.id.chipSmallScaleWaste);
+        Chip chipMedium = sheetView.findViewById(R.id.chipMediumScaleWaste);
+        Chip chipLarge = sheetView.findViewById(R.id.chipLargeScaleWaste);
+
         MaterialButton applyBtn = sheetView.findViewById(R.id.btnApplyFilter);
         MaterialButton resetBtn = sheetView.findViewById(R.id.btnResetFilter);
 
         boolean reportsLayer = LAYER_REPORTS.equals(currentLayer);
-        chipLayerReports.setChecked(reportsLayer);
+        if (chipLayerReports != null) chipLayerReports.setChecked(reportsLayer);
+
+        if (scaleGroup != null && scaleGroup.getChildCount() == 0 && chipSmall != null) {
+            // in case layout inflated differently
+        }
+
+        if (Report.SCALE_SMALL.equalsIgnoreCase(currentScaleFilter)) {
+            if (chipSmall != null) chipSmall.setChecked(true);
+        } else if (Report.SCALE_MEDIUM.equalsIgnoreCase(currentScaleFilter)) {
+            if (chipMedium != null) chipMedium.setChecked(true);
+        } else if (Report.SCALE_LARGE.equalsIgnoreCase(currentScaleFilter)) {
+            if (chipLarge != null) chipLarge.setChecked(true);
+        } else {
+            if (scaleGroup != null) scaleGroup.clearCheck();
+        }
 
         // Report pins support every status, including Denied.
         chipDenied.setEnabled(reportsLayer);
@@ -323,17 +344,32 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         applyBtn.setOnClickListener(v -> {
-            if (chipPending.isChecked()) currentStatusFilter = "Pending";
-            else if (chipInProgress.isChecked()) currentStatusFilter = "In Progress";
-            else if (chipCompleted.isChecked()) currentStatusFilter = "Completed";
-            else if (chipDenied.isChecked()) currentStatusFilter = "Denied";
+            if (chipPending != null && chipPending.isChecked()) currentStatusFilter = "Pending";
+            else if (chipInProgress != null && chipInProgress.isChecked()) currentStatusFilter = "In Progress";
+            else if (chipCompleted != null && chipCompleted.isChecked()) currentStatusFilter = "Completed";
+            else if (chipDenied != null && chipDenied.isChecked()) currentStatusFilter = "Denied";
             else currentStatusFilter = "";
 
-            if (chipToday.isChecked()) currentTimeFilter = TIME_TODAY;
-            else if (chipThisWeek.isChecked()) currentTimeFilter = TIME_THIS_WEEK;
+            if (chipToday != null && chipToday.isChecked()) currentTimeFilter = TIME_TODAY;
+            else if (chipThisWeek != null && chipThisWeek.isChecked()) currentTimeFilter = TIME_THIS_WEEK;
             else currentTimeFilter = "";
 
-            currentLayer = chipLayerReports.isChecked() ? LAYER_REPORTS : LAYER_REPORTS;
+            if (chipLayerReports != null) {
+                currentLayer = chipLayerReports.isChecked() ? LAYER_REPORTS : LAYER_REPORTS;
+            } else {
+                currentLayer = LAYER_REPORTS;
+            }
+
+            ChipGroup scaleGroupLocal = sheetView.findViewById(R.id.filterWasteScaleGroup);
+            if (scaleGroupLocal != null && scaleGroupLocal.getCheckedChipId() != View.NO_ID) {
+                int sid = scaleGroupLocal.getCheckedChipId();
+                if (sid == R.id.chipSmallScaleWaste) currentScaleFilter = Report.SCALE_SMALL;
+                else if (sid == R.id.chipMediumScaleWaste) currentScaleFilter = Report.SCALE_MEDIUM;
+                else if (sid == R.id.chipLargeScaleWaste) currentScaleFilter = Report.SCALE_LARGE;
+                else currentScaleFilter = "";
+            } else {
+                currentScaleFilter = "";
+            }
 
             applyFilters();
             dialog.dismiss();
@@ -342,6 +378,9 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
         resetBtn.setOnClickListener(v -> {
             currentStatusFilter = "";
             currentTimeFilter = "";
+            currentScaleFilter = "";
+            ChipGroup scaleGroupLocal = sheetView.findViewById(R.id.filterWasteScaleGroup);
+            if (scaleGroupLocal != null) scaleGroupLocal.clearCheck();
             clearSearch();
             applyFilters();
             dialog.dismiss();
@@ -384,6 +423,11 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
         bindLegendRow(legend, R.id.legendReportCompleted, R.color.map_marker_green, "Completed");
         bindLegendRow(legend, R.id.legendReportDenied, R.color.map_marker_red, "Denied");
         bindLegendRow(legend, R.id.legendReportOther, R.color.map_marker_cyan, "Other status");
+
+        // Waste scale legend
+        bindLegendRow(legend, R.id.legendScaleSmall, R.color.map_marker_green, "Small-Scale Waste");
+        bindLegendRow(legend, R.id.legendScaleMedium, R.color.map_marker_orange, "Medium-Scale Waste");
+        bindLegendRow(legend, R.id.legendScaleLarge, R.color.map_marker_red, "Large-Scale Waste");
 
         bindLegendRow(legend, R.id.legendYourLocation, R.color.map_marker_blue, "Your location");
         bindLegendRow(legend, R.id.legendAssignedReport, R.color.map_marker_violet, "Assigned report");
@@ -568,6 +612,13 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
             if (report == null || report.isDeleted()) continue;
             if (!isValidCoordinate(report.getLatitude(), report.getLongitude())) continue;
             if (statusFilteredOut(report.getStatus())) continue;
+            // Waste scale filter
+            if (!currentScaleFilter.isEmpty()) {
+                String s = report.getWasteScale();
+                if (s == null || !s.equalsIgnoreCase(currentScaleFilter)) {
+                    continue;
+                }
+            }
             // "Today" and "This Week" mean when the report came in.
             if (timeFilteredOut(firstNonBlank(report.getCreatedAt(), report.getUpdatedAt()))) continue;
             if (!query.isEmpty() && !reportMatchesQuery(report, query)) continue;

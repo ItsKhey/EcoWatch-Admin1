@@ -3,6 +3,7 @@ package com.example.ecowatchadmin1.data.models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * Server-owned personnel account returned by the admin personnel endpoints.
@@ -28,6 +29,12 @@ public class Personnel implements Serializable {
 
     @SerializedName(value = "occupation", alternate = {"occupationType", "occupation_type"})
     private String occupation;
+
+    @SerializedName(value = "teamName", alternate = {"team_name"})
+    private String teamName;
+
+    @SerializedName(value = "teamRole", alternate = {"team_role"})
+    private String teamRole;
 
     /** The truck this person drives. Server-owned; set during registration. */
     @SerializedName(value = "assignedVehicleId", alternate = {
@@ -104,6 +111,11 @@ public class Personnel implements Serializable {
         this.occupation = occupation;
     }
 
+    public String getTeamName() { return teamName; }
+    public void setTeamName(String teamName) { this.teamName = teamName; }
+    public String getTeamRole() { return teamRole; }
+    public void setTeamRole(String teamRole) { this.teamRole = teamRole; }
+
     /**
      * True when this person drives one of the trucks.
      *
@@ -112,7 +124,7 @@ public class Personnel implements Serializable {
      * driver rather than silently demoted to a regular cleaner.
      */
     public boolean isDriver() {
-        return occupation != null && occupation.trim().toLowerCase().contains("driver");
+        return occupation != null && occupation.trim().toLowerCase(Locale.ROOT).contains("driver");
     }
 
     /** The occupation in the screen's own vocabulary, never null. */

@@ -268,9 +268,9 @@ final class VehicleDialogs {
         dialog.show();
     }
 
-    private static void confirmRemoval(Context context, Vehicle vehicle,
-                                       VehicleViewModel viewModel,
-                                       VehicleRepository.VehicleResultCallback callback) {
+    static void confirmRemoval(Context context, Vehicle vehicle,
+                               VehicleViewModel viewModel,
+                               VehicleRepository.VehicleResultCallback callback) {
         String plate = vehicle.getPlateNumber() != null
                 ? vehicle.getPlateNumber() : vehicle.getVehicleId();
 

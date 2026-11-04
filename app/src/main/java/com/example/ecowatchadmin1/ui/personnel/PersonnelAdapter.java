@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecowatchadmin1.R;
+import com.example.ecowatchadmin1.data.models.CleaningTeam;
 import com.example.ecowatchadmin1.data.models.Personnel;
 import com.example.ecowatchadmin1.data.models.Vehicle;
 import com.google.android.material.button.MaterialButton;
@@ -43,6 +44,7 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
      * shows a real plate rather than a dash in that case.
      */
     private final List<Vehicle> fleet = new ArrayList<>();
+    private List<CleaningTeam> teams = new ArrayList<>();
     private Listener listener;
 
     public void setPersonnel(List<Personnel> people) {
@@ -60,6 +62,12 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
     public void setFleet(List<Vehicle> vehicles) {
         fleet.clear();
         if (vehicles != null) fleet.addAll(vehicles);
+        if (!personnel.isEmpty()) notifyDataSetChanged();
+    }
+
+    public void setTeams(List<CleaningTeam> teamsList) {
+        teams.clear();
+        if (teamsList != null) teams.addAll(teamsList);
         if (!personnel.isEmpty()) notifyDataSetChanged();
     }
 
@@ -91,6 +99,47 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
                 ? context.getString(R.string.personnel_online)
                 : context.getString(R.string.personnel_filter_offline);
         holder.subtitle.setText(context.getString(R.string.personnel_subtitle_format, formattedId, status));
+        if (holder.occupation != null) {
+            if (person.isDriver()) {
+                holder.occupation.setText("Driver");
+            } else if (person.getOccupation() != null && !person.getOccupation().trim().isEmpty()) {
+                holder.occupation.setText(person.getOccupation());
+            } else {
+                holder.occupation.setText("Regular");
+            }
+        }
+        if (holder.descriptionRole != null) {
+            String teamName = person.getTeamName();
+            if (teamName == null || teamName.trim().isEmpty()) {
+                teamName = findTeamName(person);
+            }
+            boolean isLeader = false;
+            if (person.getPersonnelId() != null) {
+                for (CleaningTeam team : teams) {
+                    if (team != null && team.isLeader(person.getPersonnelId())) {
+                        isLeader = true;
+                        break;
+                    }
+                }
+            }
+            if (person.isDriver()) {
+                holder.descriptionRole.setVisibility(View.VISIBLE);
+                String driverRole = teamName == null || teamName.trim().isEmpty()
+                        ? holder.itemView.getContext().getString(R.string.personnel_role_driver)
+                        : "Driver of Team " + teamName.trim();
+                holder.descriptionRole.setText(driverRole);
+            } else if (teamName == null || teamName.trim().isEmpty()) {
+                holder.descriptionRole.setVisibility(View.GONE);
+            } else {
+                holder.descriptionRole.setVisibility(View.VISIBLE);
+                if (isLeader) {
+                    holder.descriptionRole.setText("Leader of Team " + teamName.trim());
+                } else {
+                    holder.descriptionRole.setText("Member of Team " + teamName.trim());
+                }
+            }
+        }
+
 
         String task = person.getCurrentTask();
         if (task == null || task.trim().isEmpty()) {
@@ -150,6 +199,32 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onViewDetails(person);
         });
+    }
+
+    /** Resolves a driver's crew by roster membership or its assigned truck link. */
+    private String findTeamName(Personnel person) {
+        if (person == null || teams == null) return null;
+        String personnelId = person.getPersonnelId();
+        String vehicleId = person.getAssignedVehicleId();
+        for (CleaningTeam team : teams) {
+            if (team == null) continue;
+            String teamName = team.getTeamName();
+            if (teamName == null || teamName.trim().isEmpty()) teamName = team.getTeamId();
+            if (personnelId != null && team.getLeaderId() != null
+                    && personnelId.trim().equalsIgnoreCase(team.getLeaderId().trim())) {
+                return teamName;
+            }
+            for (CleaningTeam.Member member : team.getMembers()) {
+                if (member == null) continue;
+                boolean samePersonnel = personnelId != null && member.getPersonnelId() != null
+                        && personnelId.trim().equalsIgnoreCase(member.getPersonnelId().trim());
+                boolean sameVehicle = person.isDriver() && vehicleId != null
+                        && member.getAssignedVehicleId() != null
+                        && vehicleId.trim().equalsIgnoreCase(member.getAssignedVehicleId().trim());
+                if (samePersonnel || sameVehicle) return teamName;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -277,6 +352,8 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
         final TextView currentTask;
         final TextView cleaningStatus;
         final TextView availability;
+        final TextView occupation;
+        final TextView descriptionRole;
         final View vehicleCard;
         final TextView vehiclePlate;
         final TextView vehicleId;
@@ -292,6 +369,8 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
             currentTask = itemView.findViewById(R.id.personnelCurrentTask);
             cleaningStatus = itemView.findViewById(R.id.personnelCleaningStatus);
             availability = itemView.findViewById(R.id.personnelAvailability);
+            occupation = itemView.findViewById(R.id.personnelOccupation);
+            descriptionRole = itemView.findViewById(R.id.personnelDesciptionRole);
             vehicleCard = itemView.findViewById(R.id.personnelVehicleCard);
             vehiclePlate = itemView.findViewById(R.id.personnelVehiclePlate);
             vehicleId = itemView.findViewById(R.id.personnelVehicleId);

@@ -179,6 +179,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Reports And Analytics Menu -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -205,6 +206,7 @@
                     <include
                         android:id="@+id/itemReportsandAnalytics"
                         layout="@layout/item_settings_row" />
+
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

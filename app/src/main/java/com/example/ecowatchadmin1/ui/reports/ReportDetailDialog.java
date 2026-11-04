@@ -28,6 +28,7 @@ import com.example.ecowatchadmin1.utils.WasteScaleDisplay;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -154,6 +155,17 @@ public final class ReportDetailDialog {
         bindDetailPhotos(fragment, detailView, report, photoCard);
         bindCleaningEvidence(fragment, detailView, report);
 
+        if (readOnly) {
+            // Reporter, personnel, vehicle, and team history share this compact
+            // four-section read-only layout. Completion evidence remains in the
+            // photo section; internal notes and dispatch controls are omitted.
+            detailView.findViewById(R.id.adminResponseCard).setVisibility(View.GONE);
+            detailView.findViewById(R.id.personnelNoteCard).setVisibility(View.GONE);
+            detailView.findViewById(R.id.fromPersonnelNoteCard).setVisibility(View.GONE);
+            detailView.findViewById(R.id.assignmentCard).setVisibility(View.GONE);
+            detailView.findViewById(R.id.detailActionsCard).setVisibility(View.GONE);
+        }
+
         AlertDialog dialog = new AlertDialog.Builder(fragment.requireContext())
                 .setView(detailView)
                 .create();
@@ -191,13 +203,10 @@ public final class ReportDetailDialog {
 
         label.setVisibility(View.VISIBLE);
 
-        // Attribution: the cleaner's name, plus when they submitted the work.
-        // A cleaner with no profile name still gets their ID rather than an
-        // unnamed author line.
-        String cleanerName = report.getCompletedByPersonnelName() == null
-                || report.getCompletedByPersonnelName().trim().isEmpty()
-                ? report.getCompletedByPersonnelId()
-                : report.getCompletedByPersonnelName().trim();
+        // Team completions are credited to the assigned crew's leader. Any
+        // teammate can submit the completion note, but that submitter can vary
+        // between refreshes and is not the team's accountable contact.
+        String cleanerName = getCompletionAttributionName(report);
         String completedAt = report.getWorkCompletedAt() == null
                 || report.getWorkCompletedAt().trim().isEmpty()
                 ? null
@@ -257,13 +266,33 @@ public final class ReportDetailDialog {
         value.setVisibility(show ? View.VISIBLE : View.GONE);
         if (!show) return;
 
-        String cleanerName = report.getCompletedByPersonnelName();
-        if (cleanerName == null || cleanerName.trim().isEmpty()) {
-            // A deleted or incomplete account still has an ID, and the ID is
-            // more honest than an unnamed row.
-            cleanerName = report.getCompletedByPersonnelId();
+        value.setText(ReporterAccountUi.valueOrDash(getCompletionAttributionName(report)));
+    }
+
+    /**
+     * Resolves completion credit consistently for both the note and the
+     * completed-by row. Team reports use the leader from the dispatched roster;
+     * small reports use the individual recorded on the completed assignment.
+     */
+    private static String getCompletionAttributionName(Report report) {
+        if (report.requiresTeam()) {
+            for (Report.AssignedCrewMember member : report.getAssignedCrew()) {
+                if (member == null || !member.leader) continue;
+                String leaderName = member.fullName;
+                if (leaderName == null || leaderName.trim().isEmpty()) {
+                    leaderName = member.personnelId;
+                }
+                if (leaderName != null && !leaderName.trim().isEmpty()) {
+                    return leaderName.trim();
+                }
+            }
         }
-        value.setText(ReporterAccountUi.valueOrDash(cleanerName));
+
+        String personnelName = report.getCompletedByPersonnelName();
+        if (personnelName != null && !personnelName.trim().isEmpty()) {
+            return personnelName.trim();
+        }
+        return report.getCompletedByPersonnelId();
     }
 
     /**
@@ -274,21 +303,38 @@ public final class ReportDetailDialog {
      * empty rows for them would only be noise.
      */
     private static void bindDispatchDetails(Fragment fragment, Report report, View detailView) {
+        String scaleText = WasteScaleDisplay.labelFor(fragment.requireContext(),
+                report.getWasteScale());
+
+        // Two rows state the scale: the summary card at the top and the
+        // assignment card next to the dispatch controls. They used to share one
+        // id, so only the first was ever found and the other stayed blank --
+        // both are bound explicitly now.
         TextView scale = detailView.findViewById(R.id.detailWasteScale);
         if (scale != null) {
-            scale.setText(WasteScaleDisplay.labelFor(fragment.requireContext(),
-                    report.getWasteScale()));
+            scale.setText(scaleText);
+        }
+        TextView assignmentScale = detailView.findViewById(R.id.detailAssignmentWasteScale);
+        if (assignmentScale != null) {
+            assignmentScale.setText(scaleText);
         }
 
         TextView teamLabel = detailView.findViewById(R.id.detailAssignedTeamLabel);
         TextView teamValue = detailView.findViewById(R.id.detailAssignedTeam);
-        String team = report.getAssignedTeamLabel();
+        TextView teamRoster = detailView.findViewById(R.id.detailAssignedTeamRoster);
+        boolean teamTask = report.requiresTeam();
+        String team = teamTask ? report.getAssignedTeamLabel() : null;
         if (teamLabel != null) {
             teamLabel.setVisibility(team == null ? View.GONE : View.VISIBLE);
         }
         if (teamValue != null) {
             teamValue.setVisibility(team == null ? View.GONE : View.VISIBLE);
             if (team != null) teamValue.setText(team);
+        }
+        if (teamRoster != null) {
+            String rosterText = teamTask ? formatTeamRoster(fragment, report) : null;
+            teamRoster.setVisibility(rosterText == null ? View.GONE : View.VISIBLE);
+            if (rosterText != null) teamRoster.setText(rosterText);
         }
 
         TextView vehicleLabel = detailView.findViewById(R.id.detailAssignedVehicleLabel);
@@ -301,6 +347,28 @@ public final class ReportDetailDialog {
             vehicleValue.setVisibility(vehicle == null ? View.GONE : View.VISIBLE);
             if (vehicle != null) vehicleValue.setText(vehicle);
         }
+    }
+
+    private static String formatTeamRoster(Fragment fragment, Report report) {
+        List<String> members = new ArrayList<>();
+        String leader = null;
+        for (Report.AssignedCrewMember member : report.getAssignedCrew()) {
+            if (member == null) continue;
+            String name = member.fullName == null || member.fullName.trim().isEmpty()
+                    ? member.personnelId : member.fullName.trim();
+            if (name == null || name.trim().isEmpty()) continue;
+            if (member.leader) leader = name.trim();
+            members.add(name.trim());
+        }
+        Collections.sort(members, String.CASE_INSENSITIVE_ORDER);
+        if (leader == null && members.isEmpty()) return null;
+
+        String leaderLine = fragment.getString(R.string.team_leader_label) + ": "
+                + (leader == null ? fragment.getString(R.string.none) : leader);
+        String membersLine = fragment.getString(R.string.team_members_label) + ": "
+                + (members.isEmpty() ? fragment.getString(R.string.none)
+                : TextUtils.join(", ", members));
+        return leaderLine + "\n" + membersLine;
     }
 
     private static void bindAdministrativeFields(
@@ -322,30 +390,35 @@ public final class ReportDetailDialog {
             View actionsCard,
             @Nullable Runnable onChanged,
             AlertDialog[] dialogHolder) {
-        if (readOnly) {
-            priorityLabel.setVisibility(View.GONE);
-            prioritySpinner.setVisibility(View.GONE);
+        View reviewActionsDivider = detailView.findViewById(R.id.reviewActionsDivider);
+
+        if (priorityLabel != null) {
+            priorityLabel.setVisibility(readOnly ? View.GONE : View.VISIBLE);
+        }
+        if (prioritySpinner != null) {
+            prioritySpinner.setVisibility(readOnly ? View.GONE : View.VISIBLE);
+            String priority = report.getPriority() == null || report.getPriority().trim().isEmpty()
+                    ? "Normal" : report.getPriority();
+            ArrayAdapter<String> priorityAdapter = new ArrayAdapter<>(
+                    fragment.requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    new String[]{priority});
+            priorityAdapter.setDropDownViewResource(
+                    android.R.layout.simple_spinner_dropdown_item);
+            prioritySpinner.setAdapter(priorityAdapter);
+            prioritySpinner.setEnabled(false);
         }
 
-        String priority = report.getPriority() == null || report.getPriority().trim().isEmpty()
-                ? "Normal" : report.getPriority();
-        ArrayAdapter<String> priorityAdapter = new ArrayAdapter<>(
-                fragment.requireContext(),
-                android.R.layout.simple_spinner_item,
-                new String[]{priority}
-        );
-        priorityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        prioritySpinner.setAdapter(priorityAdapter);
-        prioritySpinner.setEnabled(false);
-
         List<String> personnel = report.getAssignedPersonnelIds();
-        String assignedName = report.getAssignedPersonnelName();
-        if (assignedName == null || assignedName.trim().isEmpty()) {
+        String assignedName = report.requiresTeam() ? null : report.getAssignedPersonnelName();
+        if (!report.requiresTeam() && (assignedName == null || assignedName.trim().isEmpty())) {
             assignedName = personnel == null || personnel.isEmpty()
                     ? report.getAssignedPersonnelId() : TextUtils.join(", ", personnel);
         }
         boolean hasLiveAssignmentName =
                 assignedName != null && !assignedName.trim().isEmpty();
+        assignedLabel.setVisibility(report.requiresTeam() ? View.GONE : View.VISIBLE);
+        assignedText.setVisibility(report.requiresTeam() ? View.GONE : View.VISIBLE);
         assignedText.setText(hasLiveAssignmentName
                 ? assignedName.trim() : fragment.getString(R.string.none));
 
@@ -370,6 +443,9 @@ public final class ReportDetailDialog {
         boolean lifecycleAllowsAssignment = !report.isArchived() && !report.isDeleted()
                 && !"Completed".equalsIgnoreCase(report.getStatus())
                 && !"Denied".equalsIgnoreCase(report.getStatus());
+        boolean underReview = report.getStatus() != null
+                && "Under Review".equalsIgnoreCase(report.getStatus().trim());
+        reviewActionsDivider.setVisibility(underReview ? View.VISIBLE : View.GONE);
 
         // A report that is still Pending has nobody assigned to it yet, so there
         // is no one for a status or a response to be written to. That action
@@ -390,7 +466,7 @@ public final class ReportDetailDialog {
             if (!readOnly) showStatusResponseDialog(fragment, report, dismissAndRefresh);
         });
 
-        assignButton.setVisibility(!readOnly && lifecycleAllowsAssignment
+        assignButton.setVisibility(!readOnly && lifecycleAllowsAssignment && !underReview
                 ? View.VISIBLE : View.GONE);
         if (assignButton instanceof TextView) {
             ((TextView) assignButton).setText(hasAssignment
@@ -405,7 +481,6 @@ public final class ReportDetailDialog {
             if (!readOnly) confirmUnassign(fragment, report, dismissAndRefresh);
         });
 
-        boolean underReview = "Under Review".equalsIgnoreCase(report.getStatus());
         // Approval means "the cleaner says this is done and I agree". That only
         // becomes true once the cleaner has submitted the work and the report has
         // moved to Under Review. Offering it while the report is merely In

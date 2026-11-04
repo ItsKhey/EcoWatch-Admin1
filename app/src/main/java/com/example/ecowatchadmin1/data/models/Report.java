@@ -3,6 +3,7 @@ package com.example.ecowatchadmin1.data.models;
 import android.text.TextUtils;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -69,6 +70,19 @@ public class Report implements Serializable {
      */
     @SerializedName(value = "personnelNote", alternate = {"personnel_note"})
     private String personnelNote;
+
+    /**
+     * True while the current assignment has been sent back for revision.
+     *
+     * <p>Derived by the server from its audit trail rather than from
+     * {@link #personnelNote}, because that column also carries ordinary
+     * assignment instructions. An older server omits the field, which reads as
+     * false: a report is only labelled "Revised" when the server says an
+     * administrator actually requested it.
+     */
+    @Ignore
+    @SerializedName(value = "revisionRequested", alternate = {"revision_requested"})
+    private boolean revisionRequested;
 
     /**
      * The note the assigned personnel wrote when they finished the cleanup.
@@ -201,6 +215,19 @@ public class Report implements Serializable {
     @SerializedName(value = "assignedTeamName", alternate = {"assigned_team_name"})
     private String assignedTeamName;
 
+    @SerializedName(value = "assignedCrew", alternate = {"assigned_crew"})
+    @Ignore
+    private List<AssignedCrewMember> assignedCrew = new ArrayList<>();
+
+    public static class AssignedCrewMember implements Serializable {
+        @SerializedName(value = "personnelId", alternate = {"personnel_id"})
+        public String personnelId;
+        @SerializedName(value = "fullName", alternate = {"full_name"})
+        public String fullName;
+        @SerializedName(value = "leader", alternate = {"isLeader", "is_leader"})
+        public boolean leader;
+    }
+
     /** The collection truck that was dispatched for this report, if any. */
     @SerializedName(value = "assignedVehicleId", alternate = {"assigned_vehicle_id"})
     private String assignedVehicleId;
@@ -296,6 +323,15 @@ public class Report implements Serializable {
     @SerializedName(value = "afterPhotoUrls", alternate = {"after_photo_urls"})
     private List<String> afterPhotoUrls = new ArrayList<>();
 
+    /**
+     * The ordered cleaning events for this task, when the endpoint supplies
+     * them. Only the personnel history asks for them; every other list parses
+     * the field as absent and keeps its compact card.
+     */
+    @Ignore
+    @SerializedName(value = "timeline", alternate = {"taskTimeline", "task_timeline"})
+    private List<ReportTimelineEvent> timeline = new ArrayList<>();
+
     public Report(String title, String description, String wasteType, double latitude, double longitude) {
         this.title = title;
         this.description = description;
@@ -387,6 +423,10 @@ public class Report implements Serializable {
 
     public String getPersonnelNote() { return personnelNote; }
     public void setPersonnelNote(String personnelNote) { this.personnelNote = personnelNote; }
+
+    /** True only when the server recorded an administrator revision request. */
+    public boolean isRevisionRequested() { return revisionRequested; }
+    public void setRevisionRequested(boolean revisionRequested) { this.revisionRequested = revisionRequested; }
 
     public String getPersonnelResponse() { return personnelResponse; }
     public void setPersonnelResponse(String personnelResponse) { this.personnelResponse = personnelResponse; }
@@ -491,6 +531,13 @@ public class Report implements Serializable {
     public String getAssignedTeamName() { return assignedTeamName; }
     public void setAssignedTeamName(String assignedTeamName) { this.assignedTeamName = assignedTeamName; }
 
+    public List<AssignedCrewMember> getAssignedCrew() {
+        return assignedCrew == null ? new ArrayList<>() : assignedCrew;
+    }
+    public void setAssignedCrew(List<AssignedCrewMember> assignedCrew) {
+        this.assignedCrew = assignedCrew == null ? new ArrayList<>() : assignedCrew;
+    }
+
     public String getAssignedVehicleId() { return assignedVehicleId; }
     public void setAssignedVehicleId(String assignedVehicleId) { this.assignedVehicleId = assignedVehicleId; }
 
@@ -555,6 +602,15 @@ public class Report implements Serializable {
 
     public void setAfterPhotoUrls(List<String> urls) {
         this.afterPhotoUrls = cleanPhotoUrls(urls);
+    }
+
+    /** The task's ordered cleaning events, never null. */
+    public List<ReportTimelineEvent> getTimeline() {
+        return timeline == null ? new ArrayList<>() : timeline;
+    }
+
+    public void setTimeline(List<ReportTimelineEvent> timeline) {
+        this.timeline = timeline == null ? new ArrayList<>() : timeline;
     }
 
     /** Drops nulls, blanks and repeats so a sloppy payload cannot break the UI. */

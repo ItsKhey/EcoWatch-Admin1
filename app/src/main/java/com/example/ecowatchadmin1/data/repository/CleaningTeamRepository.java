@@ -5,9 +5,12 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 
 import com.example.ecowatchadmin1.data.models.CleaningTeam;
+import com.example.ecowatchadmin1.data.models.ReportPage;
 import com.example.ecowatchadmin1.data.remote.AdminApiService;
 import com.example.ecowatchadmin1.data.remote.ApiClient;
 import com.example.ecowatchadmin1.data.remote.CleaningTeamJsonParser;
+import com.example.ecowatchadmin1.data.remote.CleaningTeamRequest;
+import com.example.ecowatchadmin1.data.remote.ResidentJsonParser;
 import com.example.ecowatchadmin1.utils.SessionManager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,7 +18,9 @@ import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -90,6 +95,152 @@ public class CleaningTeamRepository {
                 callback.onError(networkMessage(throwable));
             }
         });
+    }
+
+    /** Reads paginated completed and revision-requested work for one team. */
+    public void getTeamTaskHistory(String teamId, int page, int limit,
+                                   TeamTaskHistoryCallback callback) {
+        if (!requireAdmin(callback)) return;
+        if (isBlank(teamId)) {
+            callback.onError("A cleaning team id is required.");
+            return;
+        }
+        apiService.getCleaningTeamTaskHistory(teamId.trim(), Math.max(1, page),
+                Math.max(1, Math.min(100, limit))).enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (!isSuccessful(response, callback, "cleaning team task history")) return;
+                try {
+                    callback.onSuccess(ResidentJsonParser.parseReportPage(response.body()));
+                } catch (RuntimeException error) {
+                    callback.onError(userFacing(error));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable throwable) {
+                callback.onError(networkMessage(throwable));
+            }
+        });
+    }
+
+    /**
+     * Creates a crew.
+     *
+     * <p>The leader is sent with the membership, not separately: a team is
+     * created complete or not at all, which is the only shape the dispatch
+     * rules can rely on.
+     */
+    public void createTeam(String teamName, String description, String label, String leaderId,
+                           List<String> memberIds, TeamCallback callback) {
+        if (!requireAdmin(callback)) return;
+        CleaningTeamRequest request = new CleaningTeamRequest(teamName, description, label,
+                leaderId, memberIds);
+        apiService.createCleaningTeam(request).enqueue(teamMutation(callback, "cleaning team"));
+    }
+
+    /**
+     * Updates a crew.
+     *
+     * <p>The description is sent as an empty string when the administrator
+     * clears it, so the server can tell "remove the note" from "leave it alone".
+     */
+    public void updateTeam(String teamId, String teamName, String description, String label,
+                           String leaderId, List<String> memberIds, TeamCallback callback) {
+        if (!requireAdmin(callback)) return;
+        if (isBlank(teamId)) {
+            callback.onError("A cleaning team id is required.");
+            return;
+        }
+        CleaningTeamRequest request = new CleaningTeamRequest(teamName,
+                description == null ? "" : description, label == null ? "" : label,
+                leaderId, memberIds);
+        apiService.updateCleaningTeam(teamId.trim(), request)
+                .enqueue(teamMutation(callback, "cleaning team"));
+    }
+
+    /** Soft-deletes a crew. */
+    public void deleteTeam(String teamId, TeamCallback callback) {
+        if (!requireAdmin(callback)) return;
+        if (isBlank(teamId)) {
+            callback.onError("A cleaning team id is required.");
+            return;
+        }
+        apiService.deleteCleaningTeam(teamId.trim())
+                .enqueue(teamMutation(callback, "cleaning team"));
+    }
+
+    /**
+     * Adds one person to a crew.
+     *
+     * <p>The add route answers with the member list rather than the team, so the
+     * team is read back afterwards: the dialog needs the leader and the count,
+     * not just the rows it already had.
+     */
+    public void addMember(String teamId, String personnelId, TeamCallback callback) {
+        if (!requireAdmin(callback)) return;
+        if (isBlank(teamId) || isBlank(personnelId)) {
+            callback.onError("Choose a team and a personnel member.");
+            return;
+        }
+        Map<String, String> body = new HashMap<>();
+        body.put("personnelId", personnelId.trim());
+        apiService.addCleaningTeamMember(teamId.trim(), body).enqueue(
+                new Callback<JsonElement>() {
+                    @Override
+                    public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                        if (!isSuccessful(response, callback, "cleaning team member")) return;
+                        getTeam(teamId, callback);
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonElement> call, Throwable throwable) {
+                        callback.onError(networkMessage(throwable));
+                    }
+                });
+    }
+
+    /** Removes one person from a crew. */
+    public void removeMember(String teamId, String personnelId, TeamCallback callback) {
+        if (!requireAdmin(callback)) return;
+        if (isBlank(teamId) || isBlank(personnelId)) {
+            callback.onError("Choose a team and a personnel member.");
+            return;
+        }
+        apiService.removeCleaningTeamMember(teamId.trim(), personnelId.trim()).enqueue(
+                new Callback<JsonElement>() {
+                    @Override
+                    public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                        if (!isSuccessful(response, callback, "cleaning team member")) return;
+                        getTeam(teamId, callback);
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonElement> call, Throwable throwable) {
+                        callback.onError(networkMessage(throwable));
+                    }
+                });
+    }
+
+    /** Reads the {@code { success, team }} body both write routes answer with. */
+    private Callback<JsonElement> teamMutation(TeamCallback callback, String operation) {
+        return new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (!isSuccessful(response, callback, operation)) return;
+                CleaningTeam team = CleaningTeamJsonParser.parseTeam(response.body());
+                if (team == null) {
+                    callback.onError("The server returned an invalid cleaning team.");
+                    return;
+                }
+                callback.onSuccess(team);
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable throwable) {
+                callback.onError(networkMessage(throwable));
+            }
+        };
     }
 
     private boolean isSuccessful(Response<JsonElement> response, ErrorCallback callback,
@@ -190,5 +341,9 @@ public class CleaningTeamRepository {
 
     public interface TeamCallback extends ErrorCallback {
         void onSuccess(CleaningTeam team);
+    }
+
+    public interface TeamTaskHistoryCallback extends ErrorCallback {
+        void onSuccess(ReportPage page);
     }
 }

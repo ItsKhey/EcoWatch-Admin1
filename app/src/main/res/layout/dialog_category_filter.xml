@@ -113,7 +113,40 @@
             android:textColor="@color/green"
             android:buttonTint="@color/green"
             android:padding="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="?attr/colorOutlineVariant" />
+
+        <RadioButton
+            android:id="@+id/radioSmallScaleWaste"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Small-Scale Waste"
+            android:textColor="@color/green"
+            android:buttonTint="@color/green"
+            android:padding="8dp"/>
+        <RadioButton
+            android:id="@+id/radioMediumScaleWaste"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Medium-Scale Waste"
+            android:textColor="@color/green"
+            android:buttonTint="@color/green"
+            android:padding="8dp"/>
+        <RadioButton
+            android:id="@+id/radioLargeScaleWaste"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Large-Scale Waste"
+            android:textColor="@color/green"
+            android:buttonTint="@color/green"
+            android:padding="8dp"/>
     </RadioGroup>
+
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnApplyCategoryFilter"

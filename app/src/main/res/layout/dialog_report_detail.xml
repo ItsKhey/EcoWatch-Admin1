@@ -20,6 +20,7 @@
 
         <!-- ============================ Summary ============================ -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/summaryCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="?attr/colorSurface"
@@ -61,10 +62,21 @@
                     android:background="@color/semi_transparent_green" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Report Title"
+                    android:textAllCaps="true"
+                    android:textColor="@color/faint_green_color"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.08"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/detailTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="3dp"
                     android:textColor="@color/green"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -90,6 +102,28 @@
                     android:textSize="15sp"
                     android:textStyle="bold"
                     tools:text="Plastic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Waste Scale"
+                    android:textAllCaps="true"
+                    android:textColor="@color/faint_green_color"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.08"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/detailWasteScale"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="@color/green"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Small-Scale Waste" />
+
 
                 <View
                     android:layout_width="match_parent"
@@ -309,6 +343,7 @@
 
         <!-- ========================= Report details ========================= -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/reportDetailsCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -612,6 +647,7 @@
 
         <!-- ============================ Assignment ========================== -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/assignmentCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -637,6 +673,7 @@
                     android:letterSpacing="0.08"
                     android:textStyle="bold" />
 
+
                 <TextView
                     android:id="@+id/detailPriorityLabel"
                     android:layout_width="wrap_content"
@@ -657,7 +694,10 @@
 
                 <!-- How big the waste is. It is what the dispatch is bound by:
                      one cleaner for a small job, a crew for a medium one, a crew
-                     and a truck for a large one. -->
+                     and a truck for a large one. Its own id, because the summary
+                     card above carries a detailWasteScale too and only the first
+                     view with an id is ever found by findViewById (this row
+                     used to stay permanently blank). -->
                 <TextView
                     android:id="@+id/detailWasteScaleLabel"
                     android:layout_width="wrap_content"
@@ -671,12 +711,52 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/detailWasteScale"
+                    android:id="@+id/detailAssignmentWasteScale"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
                     android:textColor="@color/green"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Small-Scale Waste" />
+
+                <!-- The crew that was sent. A medium or large report is handled
+     by a team, and the team is what the crew and the resident
+     actually recognise. -->
+                <TextView
+                    android:id="@+id/detailAssignedTeamLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/assigned_team_label"
+                    android:textAllCaps="true"
+                    android:textColor="@color/faint_green_color"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.08"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:id="@+id/detailAssignedTeam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:visibility="gone"
+                    android:textColor="@color/green"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="North Crew" />
+
+                <TextView
+                    android:id="@+id/detailAssignedTeamRoster"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"
+                    android:textColor="@color/green"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Leader: Alex Smith\nMembers: Alex Smith, Jamie Lee, Morgan Reyes" />
 
                 <TextView
                     android:id="@+id/detailAssignedPersonnelLabel"
@@ -703,31 +783,7 @@
                     android:textColor="@color/green"
                     android:textSize="15sp" />
 
-                <!-- The crew that was sent. A medium or large report is handled
-                     by a team, and the team is what the crew and the resident
-                     actually recognise. -->
-                <TextView
-                    android:id="@+id/detailAssignedTeamLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/assigned_team_label"
-                    android:textAllCaps="true"
-                    android:textColor="@color/faint_green_color"
-                    android:textSize="11sp"
-                    android:letterSpacing="0.08"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/detailAssignedTeam"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:textColor="@color/green"
-                    android:textSize="15sp"
-                    android:visibility="gone"
-                    tools:text="North Crew" />
 
                 <!-- The truck that went out with the crew. -->
                 <TextView
@@ -809,7 +865,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:visibility="gone"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="18dp"
             app:cardElevation="2dp"
@@ -841,7 +896,6 @@
                     android:text="@string/update_status_response"
                     android:textAllCaps="false"
                     android:textColor="@color/green"
-                    android:visibility="gone"
                     app:strokeColor="@color/green"
                     app:strokeWidth="1dp" />
 
@@ -857,6 +911,9 @@
                     app:strokeColor="@color/green"
                     app:strokeWidth="1dp" />
 
+
+
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/unassignPersonnelBtn"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -866,20 +923,27 @@
                     android:text="@string/unassign_personnel"
                     android:textAllCaps="false"
                     android:textColor="@color/green"
-                    android:visibility="gone"
                     app:strokeColor="@color/green"
                     app:strokeWidth="1dp" />
+
+                <!-- Divider -->
+
+                <View
+                    android:id="@+id/reviewActionsDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@color/semi_transparent_green" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/approveReportBtn"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:text="@string/approve_completion"
                     android:textAllCaps="false"
                     android:textColor="@color/green"
-                    android:visibility="gone"
                     app:strokeColor="@color/green"
                     app:strokeWidth="1dp" />
 
@@ -892,7 +956,6 @@
                     android:text="@string/revise_completion"
                     android:textAllCaps="false"
                     android:textColor="#D32F2F"
-                    android:visibility="gone"
                     app:strokeColor="#D32F2F"
                     app:strokeWidth="1dp" />
             </LinearLayout>

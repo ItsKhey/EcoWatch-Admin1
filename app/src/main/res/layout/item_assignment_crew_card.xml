@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One personnel member in the horizontal crew picker.
+
+    A small box, vertical inside: the profile picture on top with the
+    availability dot on its corner, the name under it. Used only for a small
+    report, where tapping the card picks the one person who goes out.
+
+    It reuses the card language of the rest of the app (14dp radius, hairline
+    #06402B outline, surface background) so the sheet reads as one screen.
+    The sheet repaints the stroke when the card is selected.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/crewCard"
+    android:layout_width="96dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#06402B"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/crewCardAvatar"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:contentDescription="@string/personnel_name_label"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person_default"
+                app:shapeAppearanceOverlay="@style/CircleImage" />
+
+            <!-- Green = free to send, grey = already on another job. The
+                 sheet repaints it against the availability rules. -->
+            <View
+                android:id="@+id/crewCardDot"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/bg_dot_available" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/crewCardName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Juan Dela Cruz" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

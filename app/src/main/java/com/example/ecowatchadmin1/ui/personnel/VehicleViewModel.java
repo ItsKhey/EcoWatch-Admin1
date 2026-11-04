@@ -56,6 +56,16 @@ public class VehicleViewModel extends AndroidViewModel {
 
     public void refreshFleet() { request(true); }
 
+    public void loadVehicleTaskCounts(String vehicleId,
+            VehicleRepository.VehicleTaskCountsCallback callback) {
+        repository.getVehicleTaskCounts(vehicleId, callback);
+    }
+
+    public void loadVehicleTaskHistory(String vehicleId, int page, int limit,
+            VehicleRepository.VehicleTaskHistoryCallback callback) {
+        repository.getVehicleTaskHistory(vehicleId, page, limit, callback);
+    }
+
     private void request(boolean force) {
         // A second request only replaces the first when it is a deliberate
         // refresh; otherwise the in-flight one is left to finish on its own.

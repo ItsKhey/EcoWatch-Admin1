@@ -108,6 +108,16 @@
                 android:textSize="11sp" />
 
             <TextView
+                android:id="@+id/reporterReportAssignedTeam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp" />
+
+            <TextView
                 android:id="@+id/reporterReportAdminResponse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,6 +146,33 @@
                 android:textColor="?attr/colorPrimary"
                 android:textSize="10sp"
                 android:textStyle="bold"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/reporterReportTimelineDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/colorOutlineVariant"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/reporterReportTimelineTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/personnel_task_timeline"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/reporterReportTimeline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical"
                 android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>

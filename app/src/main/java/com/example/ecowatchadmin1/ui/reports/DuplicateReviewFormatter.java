@@ -6,6 +6,7 @@ import com.example.ecowatchadmin1.R;
 import com.example.ecowatchadmin1.data.models.Report;
 import com.example.ecowatchadmin1.data.remote.ServerConfig;
 import com.example.ecowatchadmin1.utils.ReportSubmittedAtFormatter;
+import com.example.ecowatchadmin1.utils.WasteScaleDisplay;
 
 import java.io.File;
 
@@ -109,9 +110,22 @@ final class DuplicateReviewFormatter {
         return date + " • " + time;
     }
 
-    /** "Category • Submitted <time>", shared by the row and the picker. */
-    static String submittedLine(Report report) {
-        return wasteTypeOf(report) + " • Submitted "
+    /** The translated waste scale for a report. */
+    static String scaleLabelOf(Context context, Report report) {
+        return WasteScaleDisplay.labelFor(context,
+                report == null ? null : report.getWasteScale());
+    }
+
+    /**
+     * "Scale • Category • Submitted <time>", shared by every review surface.
+     *
+     * <p>The scale is part of the line because it is part of why these reports
+     * were grouped at all. Submission time stays visible for context, but it no
+     * longer decides whether two reports are compared.
+     */
+    static String submittedLine(Context context, Report report) {
+        return scaleLabelOf(context, report) + " • " + wasteTypeOf(report)
+                + " • Submitted "
                 + submittedAt(report == null ? null : report.getCreatedAt());
     }
 

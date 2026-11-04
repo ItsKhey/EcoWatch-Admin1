@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import com.example.ecowatchadmin1.data.models.Vehicle;
 import com.example.ecowatchadmin1.data.remote.AdminApiService;
 import com.example.ecowatchadmin1.data.remote.ApiClient;
+import com.example.ecowatchadmin1.data.remote.PersonnelJsonParser;
+import com.example.ecowatchadmin1.data.remote.ResidentJsonParser;
 import com.example.ecowatchadmin1.data.remote.VehicleCreateRequest;
 import com.example.ecowatchadmin1.data.remote.VehicleJsonParser;
 import com.example.ecowatchadmin1.data.remote.VehicleServiceRequest;
@@ -71,6 +73,63 @@ public class VehicleRepository {
                     List<Vehicle> vehicles = VehicleJsonParser.parseList(body);
                     VehicleJsonParser.VehicleCounts counts = VehicleJsonParser.parseCounts(body);
                     callback.onSuccess(new FleetSnapshot(vehicles, counts));
+                } catch (RuntimeException error) {
+                    callback.onError(userFacing(error));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable throwable) {
+                callback.onError(networkMessage(throwable));
+            }
+        });
+    }
+
+    /**
+     * Reads assignment-derived work counts for one vehicle.
+     *
+     * <p>Separate from the fleet list because the counts belong to a single
+     * vehicle's history page, not to the summary cards above the list.
+     */
+    public void getVehicleTaskCounts(String vehicleId, VehicleTaskCountsCallback callback) {
+        if (!requireAdmin(callback)) return;
+        if (isBlank(vehicleId)) {
+            callback.onError("Vehicle ID is required.");
+            return;
+        }
+        apiService.getVehicleTaskCounts(vehicleId.trim()).enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (!isSuccessful(response, callback, "vehicle task counts")) return;
+                try {
+                    callback.onSuccess(PersonnelJsonParser.parseTaskCounts(response.body()));
+                } catch (RuntimeException error) {
+                    callback.onError(userFacing(error));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable throwable) {
+                callback.onError(networkMessage(throwable));
+            }
+        });
+    }
+
+    /** Reads paginated completed and revision-requested reports for a vehicle. */
+    public void getVehicleTaskHistory(String vehicleId, int page, int limit,
+                                      VehicleTaskHistoryCallback callback) {
+        if (!requireAdmin(callback)) return;
+        if (isBlank(vehicleId)) {
+            callback.onError("Vehicle ID is required.");
+            return;
+        }
+        apiService.getVehicleTaskHistory(vehicleId.trim(), Math.max(1, page),
+                Math.max(1, Math.min(100, limit))).enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (!isSuccessful(response, callback, "vehicle task history")) return;
+                try {
+                    callback.onSuccess(ResidentJsonParser.parseReportPage(response.body()));
                 } catch (RuntimeException error) {
                     callback.onError(userFacing(error));
                 }
@@ -312,5 +371,15 @@ public class VehicleRepository {
     @FunctionalInterface
     public interface VehicleResultCallback {
         void onResult(Vehicle vehicle, String error);
+    }
+
+    /** Assignment-derived counts shown on one vehicle's details page. */
+    public interface VehicleTaskCountsCallback extends ErrorCallback {
+        void onSuccess(com.example.ecowatchadmin1.data.models.PersonnelTaskCounts counts);
+    }
+
+    /** A page of completed and revision-requested reports for one vehicle. */
+    public interface VehicleTaskHistoryCallback extends ErrorCallback {
+        void onSuccess(com.example.ecowatchadmin1.data.models.ReportPage page);
     }
 }

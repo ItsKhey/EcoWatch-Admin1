@@ -128,6 +128,46 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:letterSpacing="0.1"
+            android:text="WASTE SCALE"
+            android:textColor="@color/green"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filterWasteScaleGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSmallScaleWaste"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Small-Scale Waste" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMediumScaleWaste"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Medium-Scale Waste" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipLargeScaleWaste"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Large-Scale Waste" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:letterSpacing="0.1"
             android:text="TIME RANGE"
             android:textColor="@color/green"
             android:textSize="12sp"

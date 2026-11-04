@@ -28,6 +28,7 @@
     <color name="vehicle_maintenance">#92400E</color>
     <color name="vehicle_available">#166534</color>
     <color name="vehicle_assigned">#1D4ED8</color>
+    <color name="vehicle_lacks_driver">#DC2626</color>
 
     <!--
       Personnel/Vehicles selector. The unselected segment is a neutral surface

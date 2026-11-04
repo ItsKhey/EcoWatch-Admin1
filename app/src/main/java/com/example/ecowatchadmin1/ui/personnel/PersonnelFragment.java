@@ -13,8 +13,10 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -36,8 +38,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.ecowatchadmin1.R;
+import com.example.ecowatchadmin1.data.models.CleaningTeam;
 import com.example.ecowatchadmin1.data.models.Personnel;
 import com.example.ecowatchadmin1.data.models.Vehicle;
+import com.example.ecowatchadmin1.data.repository.CleaningTeamRepository;
 import com.example.ecowatchadmin1.ui.home.DashboardActivity;
 import com.example.ecowatchadmin1.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
@@ -75,13 +79,21 @@ public class PersonnelFragment extends Fragment {
 
     private PersonnelViewModel viewModel;
     private VehicleViewModel vehicleViewModel;
+    private TeamViewModel teamViewModel;
+    private int teamDetailsLoadVersion;
     private PersonnelAdapter adapter;
     private VehicleAdapter vehicleAdapter;
+    private TeamAdapter teamAdapter;
     private SwipeRefreshLayout swipeRefresh;
     private RecyclerView recyclerView;
     private TextView totalCount;
     private TextView onlineCount;
     private TextView cleaningCount;
+    private TextView vehicleMaintenanceCount;
+    private TextView vehicleFunctionalCount;
+    private View vehicleMaintenanceCard;
+    private View vehicleFunctionalCard;
+    private View managementCardsScroll;
     private TextView totalLabel;
     private TextView secondLabel;
     private TextView thirdLabel;
@@ -93,6 +105,7 @@ public class PersonnelFragment extends Fragment {
     private MaterialButtonToggleGroup selector;
     private MaterialButton addVehicleButton;
     private MaterialButton registerPersonnelButton;
+    private MaterialButton createTeamButton;
     private Chip filterAll;
     private Chip filterSecond;
     private Chip filterThird;
@@ -100,6 +113,7 @@ public class PersonnelFragment extends Fragment {
 
     private final List<Personnel> allPersonnel = new ArrayList<>();
     private final List<Vehicle> allVehicles = new ArrayList<>();
+    private final List<CleaningTeam> allTeams = new ArrayList<>();
 
     /**
      * Which half of the selector is showing. Everything below the cards — the
@@ -145,6 +159,10 @@ public class PersonnelFragment extends Fragment {
         public void run() {
             if (viewModel != null && isAdded()) {
                 if (mode == ManagementMode.Kind.VEHICLES) vehicleViewModel.refreshFleet();
+                else if (mode == ManagementMode.Kind.TEAMS) {
+                    teamViewModel.refreshTeams();
+                    viewModel.refreshPersonnel();
+                }
                 else viewModel.refreshPersonnel();
             }
             statusRefreshHandler.postDelayed(this, 30_000L);
@@ -214,6 +232,7 @@ public class PersonnelFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindViews(view);
+        setupManagementCardsScroll();
 
         SessionManager sessionManager = new SessionManager(requireContext());
         if (!sessionManager.isAdmin() || !sessionManager.isLoggedIn()) {
@@ -230,6 +249,7 @@ public class PersonnelFragment extends Fragment {
         // to Vehicles shows real rows instead of a spinner the administrator has
         // to wait out. One request on entry, not one per tab tap.
         vehicleViewModel.loadFleet();
+        teamViewModel.loadTeams();
         if (restoredRegistrationFormState != null) {
             Bundle formState = restoredRegistrationFormState;
             restoredRegistrationFormState = null;
@@ -269,6 +289,10 @@ public class PersonnelFragment extends Fragment {
             // Only the showing side is polled. Backgrounding the screen should
             // not keep hitting the fleet API for rows nobody can see.
             if (mode == ManagementMode.Kind.VEHICLES) vehicleViewModel.refreshFleet();
+            else if (mode == ManagementMode.Kind.TEAMS) {
+                teamViewModel.refreshTeams();
+                viewModel.refreshPersonnel();
+            }
             else viewModel.refreshPersonnel();
             statusRefreshHandler.postDelayed(statusRefreshRunnable, 30_000L);
         }
@@ -286,6 +310,11 @@ public class PersonnelFragment extends Fragment {
         totalCount = view.findViewById(R.id.personnelTotalCount);
         onlineCount = view.findViewById(R.id.personnelOnlineCount);
         cleaningCount = view.findViewById(R.id.personnelCleaningCount);
+        vehicleMaintenanceCount = view.findViewById(R.id.vehicleMaintenanceCount);
+        vehicleFunctionalCount = view.findViewById(R.id.vehicleFunctionalCount);
+        vehicleMaintenanceCard = view.findViewById(R.id.vehicleMaintenanceCard);
+        vehicleFunctionalCard = view.findViewById(R.id.vehicleFunctionalCard);
+        managementCardsScroll = view.findViewById(R.id.managementCardsScroll);
         totalLabel = view.findViewById(R.id.managementTotalLabel);
         secondLabel = view.findViewById(R.id.managementSecondLabel);
         thirdLabel = view.findViewById(R.id.managementThirdLabel);
@@ -297,6 +326,7 @@ public class PersonnelFragment extends Fragment {
         selector = view.findViewById(R.id.managementSelector);
         addVehicleButton = view.findViewById(R.id.btnAddVehicle);
         registerPersonnelButton = view.findViewById(R.id.btnRegisterPersonnel);
+        createTeamButton = view.findViewById(R.id.btnCreateTeam);
         filterAll = view.findViewById(R.id.personnelFilterAll);
         filterSecond = view.findViewById(R.id.managementFilterSecond);
         filterThird = view.findViewById(R.id.managementFilterThird);
@@ -311,9 +341,41 @@ public class PersonnelFragment extends Fragment {
         if (swipeRefresh != null) swipeRefresh.setEnabled(false);
     }
 
+    /** Keep horizontal card drags from being mistaken for pull-to-refresh. */
+    private void setupManagementCardsScroll() {
+        if (managementCardsScroll == null) return;
+        final float[] down = new float[2];
+        final int touchSlop = android.view.ViewConfiguration.get(requireContext())
+                .getScaledTouchSlop();
+        managementCardsScroll.setOnTouchListener((view, event) -> {
+            ViewParent parent = view.getParent();
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    down[0] = event.getX();
+                    down[1] = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    float dx = Math.abs(event.getX() - down[0]);
+                    float dy = Math.abs(event.getY() - down[1]);
+                    if (dx > touchSlop && dx > dy) {
+                        if (parent != null) parent.requestDisallowInterceptTouchEvent(true);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    if (parent != null) parent.requestDisallowInterceptTouchEvent(false);
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        });
+    }
+
     private void setupDashboard() {
         adapter = new PersonnelAdapter();
         vehicleAdapter = new VehicleAdapter();
+        teamAdapter = new TeamAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
         adapter.setListener(new PersonnelAdapter.Listener() {
@@ -335,16 +397,20 @@ public class PersonnelFragment extends Fragment {
 
             @Override
             public void onViewDetails(Vehicle vehicle) {
-                VehicleDialogs.showDetails(requireContext(), vehicle, vehicleViewModel,
-                        (changed, error) -> vehicleViewModel.refreshFleet());
+                openVehicleDetails(vehicle);
             }
         });
+        teamAdapter.setListener(team -> openTeamDetails(team));
 
         swipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.green));
         // Pull-to-refresh refreshes whichever side is showing, not both: doing
         // both would issue two requests for one gesture.
         swipeRefresh.setOnRefreshListener(() -> {
             if (mode == ManagementMode.Kind.VEHICLES) vehicleViewModel.refreshFleet();
+            else if (mode == ManagementMode.Kind.TEAMS) {
+                teamViewModel.refreshTeams();
+                viewModel.refreshPersonnel();
+            }
             else viewModel.refreshPersonnel();
         });
     }
@@ -356,11 +422,18 @@ public class PersonnelFragment extends Fragment {
      * there is one row of chips rather than two that could fall out of step.
      */
     private void setupSelector() {
+        if (selector.getCheckedButtonId() == View.NO_ID) {
+            selector.check(R.id.managementSelectorPersonnel);
+        }
         selector.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) return;
-            mode = checkedId == R.id.managementSelectorVehicles
-                    ? ManagementMode.Kind.VEHICLES
-                    : ManagementMode.Kind.PERSONNEL;
+            if (checkedId == R.id.managementSelectorVehicles) {
+                mode = ManagementMode.Kind.VEHICLES;
+            } else if (checkedId == R.id.managementSelectorTeams) {
+                mode = ManagementMode.Kind.TEAMS;
+            } else {
+                mode = ManagementMode.Kind.PERSONNEL;
+            }
             applyMode();
         });
 
@@ -377,6 +450,9 @@ public class PersonnelFragment extends Fragment {
         // previously lived only on the dashboard and in Settings. Same form, same
         // dialog: the fragment already owns the photo crop and the fleet behind it.
         registerPersonnelButton.setOnClickListener(v -> showRegistrationDialog(null));
+
+        createTeamButton.setOnClickListener(v -> TeamDialogs.showEditor(requireContext(), null,
+                teamViewModel, new ArrayList<>(allPersonnel), this::refreshTeams));
 
         applyMode();
     }
@@ -408,8 +484,13 @@ public class PersonnelFragment extends Fragment {
         // Two buttons that swapped labels would leave the administrator unsure
         // which form the plus was about to open.
         boolean showingVehicles = mode == ManagementMode.Kind.VEHICLES;
+        boolean showingTeams = mode == ManagementMode.Kind.TEAMS;
+        boolean showingPersonnel = !showingVehicles && !showingTeams;
         addVehicleButton.setVisibility(showingVehicles ? View.VISIBLE : View.GONE);
-        registerPersonnelButton.setVisibility(showingVehicles ? View.GONE : View.VISIBLE);
+        registerPersonnelButton.setVisibility(showingPersonnel ? View.VISIBLE : View.GONE);
+        createTeamButton.setVisibility(showingTeams ? View.VISIBLE : View.GONE);
+        vehicleMaintenanceCard.setVisibility(showingVehicles ? View.VISIBLE : View.GONE);
+        vehicleFunctionalCard.setVisibility(showingVehicles ? View.VISIBLE : View.GONE);
 
         // A filter means nothing on the other side: "Cleaning" has no vehicle
         // equivalent, and leaving it selected would show an empty list with no
@@ -425,7 +506,13 @@ public class PersonnelFragment extends Fragment {
             searchEditText.setText("");
         }
 
-        recyclerView.setAdapter(mode == ManagementMode.Kind.VEHICLES ? vehicleAdapter : adapter);
+        if (showingVehicles) {
+            recyclerView.setAdapter(vehicleAdapter);
+        } else if (showingTeams) {
+            recyclerView.setAdapter(teamAdapter);
+        } else {
+            recyclerView.setAdapter(adapter);
+        }
         render();
     }
 
@@ -462,6 +549,7 @@ public class PersonnelFragment extends Fragment {
     private void observeViewModel() {
         viewModel = new ViewModelProvider(this).get(PersonnelViewModel.class);
         vehicleViewModel = new ViewModelProvider(this).get(VehicleViewModel.class);
+        teamViewModel = new ViewModelProvider(this).get(TeamViewModel.class);
 
         viewModel.getPersonnel().observe(getViewLifecycleOwner(), people -> {
             allPersonnel.clear();
@@ -481,7 +569,9 @@ public class PersonnelFragment extends Fragment {
                     && Boolean.TRUE.equals(loading);
             boolean vehicleLoading = mode == ManagementMode.Kind.VEHICLES
                     && Boolean.TRUE.equals(vehicleViewModel.getLoading().getValue());
-            swipeRefresh.setRefreshing(personnelLoading || vehicleLoading);
+            boolean teamLoading = mode == ManagementMode.Kind.TEAMS
+                    && Boolean.TRUE.equals(teamViewModel.getLoading().getValue());
+            swipeRefresh.setRefreshing(personnelLoading || vehicleLoading || teamLoading);
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), message -> {
@@ -527,6 +617,64 @@ public class PersonnelFragment extends Fragment {
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
             vehicleViewModel.clearError();
         });
+
+        teamViewModel.getTeams().observe(getViewLifecycleOwner(), teams -> {
+            allTeams.clear();
+            if (teams != null) allTeams.addAll(teams);
+            render();
+            loadTeamMembersForPersonnel(teams);
+        });
+
+        teamViewModel.getLoading().observe(getViewLifecycleOwner(), loading -> {
+            if (swipeRefresh == null || mode != ManagementMode.Kind.TEAMS) return;
+            swipeRefresh.setRefreshing(Boolean.TRUE.equals(loading));
+        });
+
+        // The dialogs report mutation failures themselves, so these two are only
+        // drained to stop a rotation from replaying an old toast.
+        teamViewModel.getError().observe(getViewLifecycleOwner(), message -> {
+            if (message != null) teamViewModel.clearError();
+        });
+
+        teamViewModel.getMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message != null) teamViewModel.clearMessage();
+        });
+    }
+
+    /** Loads membership details so driver cards can name the crew they belong to. */
+    private void loadTeamMembersForPersonnel(List<CleaningTeam> listedTeams) {
+        if (teamViewModel == null || listedTeams == null || listedTeams.isEmpty()) return;
+        final int version = ++teamDetailsLoadVersion;
+        final List<CleaningTeam> detailed =
+                new ArrayList<>(java.util.Collections.nCopies(listedTeams.size(), null));
+        final int[] remaining = {listedTeams.size()};
+        for (int i = 0; i < listedTeams.size(); i++) {
+            final int index = i;
+            CleaningTeam listed = listedTeams.get(i);
+            if (listed == null || isBlank(listed.getTeamId())) {
+                if (--remaining[0] == 0) applyDetailedTeams(version, detailed);
+                continue;
+            }
+            teamViewModel.loadTeam(listed.getTeamId(), new CleaningTeamRepository.TeamCallback() {
+                @Override public void onSuccess(CleaningTeam team) {
+                    detailed.set(index, team == null ? listed : team);
+                    if (--remaining[0] == 0) applyDetailedTeams(version, detailed);
+                }
+                @Override public void onError(String message) {
+                    detailed.set(index, listed);
+                    if (--remaining[0] == 0) applyDetailedTeams(version, detailed);
+                }
+            });
+        }
+    }
+
+    private void applyDetailedTeams(int version, List<CleaningTeam> detailed) {
+        if (version != teamDetailsLoadVersion || !isAdded()) return;
+        allTeams.clear();
+        for (CleaningTeam team : detailed) {
+            if (team != null) allTeams.add(team);
+        }
+        render();
     }
 
     /**
@@ -564,10 +712,14 @@ public class PersonnelFragment extends Fragment {
     private void render() {
         if (adapter == null || vehicleAdapter == null) return;
         if (mode == ManagementMode.Kind.VEHICLES) renderVehicles();
+        else if (mode == ManagementMode.Kind.TEAMS) renderTeams();
         else renderPersonnel();
     }
 
     private void renderPersonnel() {
+        if (adapter != null) {
+            adapter.setTeams(allTeams);
+        }
         List<Personnel> active = new ArrayList<>();
         for (Personnel person : allPersonnel) {
             if (person != null && person.isEnabled()) active.add(person);
@@ -605,14 +757,20 @@ public class PersonnelFragment extends Fragment {
         // snapshot even if one arrived from an older refresh.
         int available = 0;
         int assigned = 0;
+        int underMaintenance = 0;
+        int functional = 0;
         for (Vehicle vehicle : allVehicles) {
             if (vehicle == null) continue;
             if (vehicle.isAssigned()) assigned++;
             else if (vehicle.isAvailable()) available++;
+            if (vehicle.isInMaintenance()) underMaintenance++;
+            else functional++;
         }
         totalCount.setText(String.valueOf(allVehicles.size()));
         onlineCount.setText(String.valueOf(available));
         cleaningCount.setText(String.valueOf(assigned));
+        vehicleMaintenanceCount.setText(String.valueOf(underMaintenance));
+        vehicleFunctionalCount.setText(String.valueOf(functional));
 
         String query = searchEditText == null ? "" : searchEditText.getText().toString().trim();
         List<Vehicle> filtered = new ArrayList<>();
@@ -628,6 +786,107 @@ public class PersonnelFragment extends Fragment {
         resultCount.setText(getString(activeMode.resultCount,
                 filtered.size(), allVehicles.size()));
         emptyText.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private void renderTeams() {
+        int ready = 0;
+        java.util.Set<String> workingTeamNames = new java.util.HashSet<>();
+        for (Personnel person : allPersonnel) {
+            if (person == null || !person.isEnabled() || !person.isCleaning()
+                    || isBlank(person.getTeamName())) continue;
+            workingTeamNames.add(person.getTeamName().trim().toLowerCase(Locale.ROOT));
+        }
+        int working = 0;
+        for (CleaningTeam team : allTeams) {
+            if (team == null) continue;
+            if (team.isDispatchReady()) ready++;
+
+            boolean isWorking = false;
+            if (!isBlank(team.getTeamName()) && workingTeamNames.contains(
+                    team.getTeamName().trim().toLowerCase(Locale.ROOT))) {
+                isWorking = true;
+            } else {
+                for (CleaningTeam.Member member : team.getMembers()) {
+                    if (member == null) continue;
+                    if (member.getStatus() != null && (
+                            member.getStatus().equalsIgnoreCase("cleaning")
+                            || member.getStatus().equalsIgnoreCase("busy")
+                            || member.getStatus().equalsIgnoreCase("in_progress")
+                            || member.getStatus().equalsIgnoreCase("active"))) {
+                        isWorking = true;
+                        break;
+                    }
+                }
+            }
+            if (isWorking) working++;
+        }
+        totalCount.setText(String.valueOf(allTeams.size()));
+        onlineCount.setText(String.valueOf(ready));
+        cleaningCount.setText(String.valueOf(working));
+
+        if (teamAdapter != null) {
+            teamAdapter.setPersonnel(allPersonnel);
+        }
+
+        String query = searchEditText == null ? "" : searchEditText.getText().toString().trim();
+        String normalizedQuery = query.toLowerCase(Locale.getDefault());
+        List<CleaningTeam> filtered = new ArrayList<>();
+        for (CleaningTeam team : allTeams) {
+            if (team == null) continue;
+            if (!matchesTeamFilter(team)) continue;
+            if (normalizedQuery.isEmpty() || team.matchesQuery(normalizedQuery)) {
+                filtered.add(team);
+            }
+        }
+
+        teamAdapter.setTeams(filtered);
+        resultCount.setText(getString(activeMode.resultCount, filtered.size(), allTeams.size()));
+        emptyText.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * The crews filter, against whether a team can actually be dispatched.
+     *
+     * <p>Needs attention is split into the two reasons it happens — no leader
+     * at all, or a leader with fewer than two members — because those are fixed
+     * in different places.
+     */
+    private boolean matchesTeamFilter(CleaningTeam team) {
+        if (ManagementMode.TEAMS.filterAllValue.equalsIgnoreCase(currentFilter)) return true;
+        if (ManagementMode.TEAMS.filterSecondValue.equalsIgnoreCase(currentFilter)) {
+            return team.isDispatchReady();
+        }
+        if (ManagementMode.TEAMS.filterThirdValue.equalsIgnoreCase(currentFilter)) {
+            return !team.hasLeader();
+        }
+        if (ManagementMode.TEAMS.filterFourthValue.equalsIgnoreCase(currentFilter)) {
+            return team.hasLeader() && team.getCrewSize() < CleaningTeam.MINIMUM_MEMBERS;
+        }
+        return true;
+    }
+
+    /** Re-reads the crew list after a dialog changed something. */
+    private void refreshTeams() {
+        if (teamViewModel != null) teamViewModel.refreshTeams();
+    }
+
+    /** Opens the full-screen team details destination. */
+    private void openTeamDetails(CleaningTeam team) {
+        if (team == null || team.getTeamId() == null) return;
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, TeamDetailsFragment.newInstance(team.getTeamId()))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    /** Opens the full-screen vehicle details destination. */
+    private void openVehicleDetails(Vehicle vehicle) {
+        if (vehicle == null || vehicle.getVehicleId() == null) return;
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer,
+                        VehicleDetailsFragment.newInstance(vehicle.getVehicleId()))
+                .addToBackStack(null)
+                .commit();
     }
 
     private boolean matchesFilter(Personnel person) {
@@ -1003,9 +1262,25 @@ public class PersonnelFragment extends Fragment {
 
     /** The trucks a driver could be given right now. */
     private List<Vehicle> availableVehicles() {
+        java.util.Set<String> takenVehicleIds = new java.util.HashSet<>();
+        if (allPersonnel != null) {
+            for (Personnel person : allPersonnel) {
+                if (person == null) continue;
+                if (!person.isEnabled()) continue;
+                if (!person.isDriver()) continue;
+                String assignedVehicleId = person.getAssignedVehicleId();
+                if (isBlank(assignedVehicleId)) continue;
+                takenVehicleIds.add(assignedVehicleId.trim());
+            }
+        }
+
         List<Vehicle> available = new ArrayList<>();
         for (Vehicle vehicle : allVehicles) {
-            if (vehicle != null && vehicle.isAvailable()) available.add(vehicle);
+            if (vehicle == null) continue;
+            if (!vehicle.isAvailable()) continue;
+            if (isBlank(vehicle.getVehicleId())) continue;
+            if (takenVehicleIds.contains(vehicle.getVehicleId().trim())) continue;
+            available.add(vehicle);
         }
         return available;
     }

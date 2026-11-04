@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The busy half of the availability dot: the same white-ringed circle in
+    grey, for a personnel member who is already out on another job.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#9E9E9E" />
+    <stroke
+        android:width="2dp"
+        android:color="#FFFFFF" />
+</shape>

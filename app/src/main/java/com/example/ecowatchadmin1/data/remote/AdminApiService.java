@@ -252,6 +252,16 @@ public interface AdminApiService {
     @GET("vehicles/{vehicleId}")
     Call<JsonElement> getVehicleDetails(@Path("vehicleId") String vehicleId);
 
+    /** Assignment-derived work counts for one vehicle's details page. */
+    @GET("vehicles/{vehicleId}/task-counts")
+    Call<JsonElement> getVehicleTaskCounts(@Path("vehicleId") String vehicleId);
+
+    /** Paginated completed and revision-requested work for one vehicle. */
+    @GET("vehicles/{vehicleId}/task-history")
+    Call<JsonElement> getVehicleTaskHistory(@Path("vehicleId") String vehicleId,
+                                            @Query("page") int page,
+                                            @Query("limit") int limit);
+
     @POST("vehicles")
     Call<JsonElement> createVehicle(@Body VehicleCreateRequest request);
 
@@ -282,6 +292,40 @@ public interface AdminApiService {
     /** One crew together with the people on it. */
     @GET("admin/cleaning-teams/{teamId}")
     Call<JsonElement> getCleaningTeam(@Path("teamId") String teamId);
+
+    @GET("admin/cleaning-teams/{teamId}/task-history")
+    Call<JsonElement> getCleaningTeamTaskHistory(@Path("teamId") String teamId,
+                                                 @Query("page") int page,
+                                                 @Query("limit") int limit);
+
+    /**
+     * Creates a team with its leader and its first crew.
+     *
+     * <p>Membership travels with the name rather than as a second request: a
+     * team with nobody on it cannot be dispatched and would only be a name in a
+     * list until somebody remembered to finish it.
+     */
+    @POST("admin/cleaning-teams")
+    Call<JsonElement> createCleaningTeam(@Body CleaningTeamRequest request);
+
+    /** Renames a team, changes its leader, or replaces its crew wholesale. */
+    @PUT("admin/cleaning-teams/{teamId}")
+    Call<JsonElement> updateCleaningTeam(@Path("teamId") String teamId,
+                                         @Body CleaningTeamRequest request);
+
+    /** Soft-deletes a team. The id stays readable on reports it was sent to. */
+    @DELETE("admin/cleaning-teams/{teamId}")
+    Call<JsonElement> deleteCleaningTeam(@Path("teamId") String teamId);
+
+    /** Adds one person to a crew without touching the rest of it. */
+    @POST("admin/cleaning-teams/{teamId}/members")
+    Call<JsonElement> addCleaningTeamMember(@Path("teamId") String teamId,
+                                            @Body java.util.Map<String, String> body);
+
+    /** Removes one person from a crew, leaving the rest of it intact. */
+    @DELETE("admin/cleaning-teams/{teamId}/members/{personnelId}")
+    Call<JsonElement> removeCleaningTeamMember(@Path("teamId") String teamId,
+                                               @Path("personnelId") String personnelId);
 
     /* Possible Duplicate Reports review (admin-only). */
 

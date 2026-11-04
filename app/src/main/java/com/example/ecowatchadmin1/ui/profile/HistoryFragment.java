@@ -2,6 +2,7 @@ package com.example.ecowatchadmin1.ui.profile;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +34,8 @@ import com.example.ecowatchadmin1.utils.AdminHistoryClassifier;
 import com.example.ecowatchadmin1.utils.AdminHistoryDateFormatter;
 import com.example.ecowatchadmin1.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,6 +72,8 @@ public class HistoryFragment extends Fragment
     private TextView tabAll, tabReports, tabAssignments, tabCleaning, tabAnnouncements,
             tabAccount, tabTrash;
     private TextView historyTitle, btnSelectAll, emptyText, filterSummaryText;
+    private HorizontalScrollView chipScrollView;
+    private ChipGroup activeChipGroup;
     private EditText etSearch;
     private ImageButton btnSort, btnClearSearch, btnDateFilter;
     private View tabContainer, searchSortLayout, selectAllLayout, bulkActionsLayout;
@@ -131,6 +138,8 @@ public class HistoryFragment extends Fragment
         historyTitle = view.findViewById(R.id.historyTitle);
         emptyText = view.findViewById(R.id.historyEmptyText);
         filterSummaryText = view.findViewById(R.id.filterSummaryText);
+        chipScrollView = view.findViewById(R.id.chipScrollView);
+        activeChipGroup = view.findViewById(R.id.activeChipGroup);
         tabContainer = view.findViewById(R.id.tabContainer);
         searchSortLayout = view.findViewById(R.id.searchSortLayout);
         etSearch = view.findViewById(R.id.etSearch);
@@ -154,6 +163,7 @@ public class HistoryFragment extends Fragment
         setupDateFilter();
         setupSelectionMode();
         updateHeaderTitle();
+        updateActiveFilterLabel();
 
         btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
@@ -507,6 +517,7 @@ public class HistoryFragment extends Fragment
         dateFromInclusive = start.getTimeInMillis();
         dateToInclusive = end.getTimeInMillis();
         dateFilterLabel = label;
+        updateActiveFilterLabel();
         render();
     }
 
@@ -514,7 +525,12 @@ public class HistoryFragment extends Fragment
         dateFromInclusive = null;
         dateToInclusive = null;
         dateFilterLabel = null;
+        updateActiveFilterLabel();
         render();
+    }
+
+    private void updateActiveFilterLabel() {
+        // Active date range is now displayed as a filter chip in chipScrollView
     }
 
     private void hideViewIfPresent(View parent, int id) {
@@ -579,7 +595,7 @@ public class HistoryFragment extends Fragment
         updateTabCounts();
         updateEmptyState(visible);
         updateHeaderTitle();
-        updateFilterSummary(searchQuery, source.size(), visible.size());
+        updateActiveFilterChipsAndCounter(searchQuery, source.size(), visible.size());
 
         // The adapter only reports a selection change when something is ticked or
         // cleared, so without this the header's enabled state would never be set
@@ -589,21 +605,104 @@ public class HistoryFragment extends Fragment
         updateSelectionUi();
     }
 
-    private void updateFilterSummary(String query, int totalCount, int filteredCount) {
-        if (filterSummaryText == null) return;
+    private void updateActiveFilterChipsAndCounter(String query, int totalCount, int filteredCount) {
+        if (activeChipGroup == null || chipScrollView == null) return;
 
-        boolean hasActiveFilter = (query != null && !query.trim().isEmpty())
-                || isTrashView
-                || currentTab != AdminHistoryCategory.ALL
-                || dateFilterLabel != null
-                || !isSortNewest;
+        activeChipGroup.removeAllViews();
+        int activeFilterCount = 0;
 
-        if (hasActiveFilter) {
-            filterSummaryText.setText("Showing " + filteredCount + " of " + totalCount + " records");
-            filterSummaryText.setVisibility(View.VISIBLE);
-        } else {
-            filterSummaryText.setVisibility(View.GONE);
+        // 1. Search Chip
+        if (query != null && !query.trim().isEmpty()) {
+            activeFilterCount++;
+            Chip searchChip = createChip("Search: \"" + query.trim() + "\"", v -> etSearch.setText(""));
+            activeChipGroup.addView(searchChip);
         }
+
+        // 2. Category / Trash Chip
+        if (isTrashView) {
+            activeFilterCount++;
+            Chip trashChip = createChip("View: Trash", v -> selectTab(AdminHistoryCategory.ALL, false));
+            activeChipGroup.addView(trashChip);
+        } else if (currentTab != AdminHistoryCategory.ALL) {
+            activeFilterCount++;
+            Chip categoryChip = createChip("Category: " + currentTab.getLabel(), v -> selectTab(AdminHistoryCategory.ALL, false));
+            activeChipGroup.addView(categoryChip);
+        }
+
+        // 3. Date Chip
+        if (dateFilterLabel != null) {
+            activeFilterCount++;
+            Chip dateChip = createChip("Date: " + dateFilterLabel, v -> clearDateFilter());
+            activeChipGroup.addView(dateChip);
+        }
+
+        // 4. Sort Chip
+        if (!isSortNewest) {
+            activeFilterCount++;
+            Chip sortChip = createChip("Sort: Oldest First", v -> {
+                isSortNewest = true;
+                render();
+            });
+            activeChipGroup.addView(sortChip);
+        }
+
+        // 5. Clear All Chip
+        if (activeFilterCount > 0) {
+            Chip clearAllChip = createChip("Clear All ✕", null);
+            clearAllChip.setOnClickListener(v -> resetAllFiltersAndSearch());
+            activeChipGroup.addView(clearAllChip);
+
+            chipScrollView.setVisibility(View.VISIBLE);
+        } else {
+            chipScrollView.setVisibility(View.GONE);
+        }
+
+        // Results Metrics
+        if (filterSummaryText != null) {
+            if (activeFilterCount > 0) {
+                filterSummaryText.setText("Showing " + filteredCount + " of " + totalCount + " records");
+                filterSummaryText.setVisibility(View.VISIBLE);
+            } else {
+                filterSummaryText.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void resetAllFiltersAndSearch() {
+        searchQuery = "";
+        if (etSearch != null) etSearch.setText("");
+        dateFromInclusive = null;
+        dateToInclusive = null;
+        dateFilterLabel = null;
+        isSortNewest = true;
+        isTrashView = false;
+        currentTab = AdminHistoryCategory.ALL;
+        updatePill(tabAll, true);
+        updatePill(tabReports, false);
+        updatePill(tabAssignments, false);
+        updatePill(tabCleaning, false);
+        updatePill(tabAnnouncements, false);
+        updatePill(tabAccount, false);
+        updatePill(tabTrash, false);
+        adapter.setTrashMode(false);
+        render();
+    }
+
+    private Chip createChip(String text, @Nullable View.OnClickListener onCloseClickListener) {
+        Chip chip = new Chip(requireContext());
+        chip.setText(text);
+        if (onCloseClickListener != null) {
+            chip.setCloseIconVisible(true);
+            chip.setOnCloseIconClickListener(onCloseClickListener);
+        } else {
+            chip.setCloseIconVisible(false);
+        }
+        chip.setChipBackgroundColorResource(R.color.chip_background);
+        ColorStateList textAndIconColor = ContextCompat.getColorStateList(requireContext(), R.color.chip_text_and_icon);
+        chip.setTextColor(textAndIconColor);
+        chip.setCloseIconTint(textAndIconColor);
+        chip.setClickable(true);
+        return chip;
     }
 
     /**

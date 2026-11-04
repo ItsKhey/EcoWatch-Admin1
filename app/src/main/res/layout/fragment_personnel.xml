@@ -50,6 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
+                app:checkedButton="@+id/managementSelectorPersonnel"
                 app:selectionRequired="true"
                 app:singleSelection="true">
 
@@ -79,20 +80,39 @@
                     app:iconPadding="4dp"
                     app:strokeColor="#06402B"
                     app:strokeWidth="1dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/managementSelectorTeams"
+                    style="@style/Widget.MyEcoWatch1.SelectorSegment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/selector_teams"
+                    app:icon="@drawable/team"
+                    app:iconGravity="top"
+                    app:iconPadding="4dp"
+                    app:strokeColor="#06402B"
+                    app:strokeWidth="1dp"/>
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <LinearLayout
+            <HorizontalScrollView
+                android:id="@+id/managementCardsScroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:orientation="horizontal">
+                android:fillViewport="false"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/personnelTotalCard"
-                    android:layout_width="0dp"
+                    android:layout_width="108dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:cardCornerRadius="16dp"
                     app:strokeColor="#06402B"
@@ -128,10 +148,9 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/personnelOnlineCard"
-                    android:layout_width="0dp"
+                    android:layout_width="108dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="5dp"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="6dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:cardCornerRadius="16dp"
                     app:strokeColor="#06402B"
@@ -167,10 +186,9 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/personnelCleaningCard"
-                    android:layout_width="0dp"
+                    android:layout_width="108dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="6dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:cardCornerRadius="16dp"
                     app:strokeColor="#06402B"
@@ -203,7 +221,87 @@
                             android:textStyle="bold" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/vehicleFunctionalCard"
+                        android:layout_width="108dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="6dp"
+                        android:visibility="gone"
+                        app:cardBackgroundColor="?attr/colorSurface"
+                        app:cardCornerRadius="16dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/vehicle_functional"
+                                android:textColor="?attr/colorPrimary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/vehicleFunctionalCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:text="0"
+                                android:textColor="?attr/colorPrimary"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/vehicleMaintenanceCard"
+                    android:layout_width="108dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="#06402B"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/vehicle_under_repair"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/vehicleMaintenanceCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="0"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <!--
               Search and the two add actions share a row so each button sits
@@ -258,6 +356,17 @@
                     android:layout_height="48dp"
                     android:layout_marginStart="10dp"
                     android:contentDescription="@string/vehicle_add"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_plus"
+                    app:iconTint="?attr/colorOnPrimary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCreateTeam"
+                    style="@style/Widget.Material3.Button.IconButton.Filled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="10dp"
+                    android:contentDescription="@string/team_create"
                     android:visibility="gone"
                     app:icon="@drawable/ic_plus"
                     app:iconTint="?attr/colorOnPrimary" />

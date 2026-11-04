@@ -10,6 +10,16 @@
     <string name="reassign_personnel">Reassign Personnel</string>
     <string name="unassign_personnel">Unassign Personnel</string>
     <string name="assignment_sheet_subtitle">Choose an active account. The report will move to In Progress.</string>
+    <string name="assignment_personnel_label">Personnel</string>
+    <string name="assignment_team_hint">Choose an available cleaning team. Green dot means the whole crew is free to send.</string>
+    <string name="assignment_single_hint">Choose one available personnel member who is not part of a cleaning team. Green dot means free to send.</string>
+    <string name="assignment_no_teams">No cleaning teams are available right now.</string>
+    <string name="assignment_no_vehicles">No collection vehicle is available right now.</string>
+    <string name="assignment_select_team">Select a cleaning team.</string>
+    <string name="assignment_team_busy">That cleaning team is already on another job.</string>
+    <string name="assignment_team_leader">Leader: %1$s</string>
+    <string name="assignment_team_no_leader">No leader assigned</string>
+    <string name="assignment_personnel_busy">That personnel member is already on another job.</string>
     <!--
         How big the reported waste is. The resident picks it when the report is
         filed and the dispatch follows it, so the admin app shows it and
@@ -20,6 +30,7 @@
     <string name="waste_scale_medium">Medium-Scale Waste</string>
     <string name="waste_scale_large">Large-Scale Waste</string>
     <string name="assigned_team_label">Assigned Team</string>
+    <string name="personnel_task_timeline">Task timeline</string>
     <string name="assigned_vehicle_label">Assigned Vehicle</string>
     <string name="assignment_team_label">Cleaning Team</string>
     <string name="assignment_vehicle_label">Collection Vehicle</string>
@@ -34,6 +45,7 @@
     <string name="assignment_minimum_crew">A cleaning team needs at least 2 members.</string>
     <string name="assignment_search_hint">Search name or PERS-XXXX</string>
     <string name="assignment_no_personnel">No active personnel match your search.</string>
+    <string name="assignment_crew_hint">Tap 2 or more available personnel - together they form the cleaning team. Green dot means free to send.</string>
     <string name="admin_response_label">Admin response</string>
     <!-- Personnel-only channel. The resident never sees this; only the assigned cleaner does. -->
     <string name="personnel_note_label">Notes for the Personnel</string>
@@ -113,7 +125,9 @@
     <!-- Preview text only; the real count is set at bind time. -->
     <string name="possible_duplicate_count_hint" translatable="false">2 reports may be duplicates</string>
     <string name="possible_duplicate_explain">These reports may refer to the same waste incident. Review them before taking action.</string>
-    <string name="possible_duplicate_explain_nearby">These reports may refer to the same waste incident, all within %1$d m of each other. Review them before taking action.</string>
+    <string name="possible_duplicate_explain_scale">These reports share a location and waste scale (%1$s). The time they were submitted does not affect matching.</string>
+    <string name="possible_duplicate_explain_nearby">These reports share a location and waste scale (%1$s), all within %2$d m of each other. The time they were submitted does not affect matching.</string>
+    <string name="possible_duplicate_no_actionable">This group has no report whose status can still be changed. Use ACCEPT to confirm they are separate incidents.</string>
     <string name="possible_duplicate_see_all">SEE ALL</string>
     <string name="possible_duplicate_report_photo">Report photo</string>
     <string name="possible_duplicate_deny">DENY</string>
@@ -135,7 +149,7 @@
     <string name="possible_duplicate_denied_done">Report marked as a duplicate.</string>
     <string name="possible_duplicate_accepted_done">Reports confirmed as separate incidents.</string>
     <string name="possible_duplicate_close">Close</string>
-    <string name="possible_duplicate_detail_context">These reports may refer to the same waste incident. Compare them, then mark only the ones that repeat an existing report.</string>
+    <string name="possible_duplicate_detail_context">These reports share a location and waste scale (%1$s). Compare them, then mark only the ones that repeat an existing report. Submission time does not affect matching.</string>
     <string name="possible_duplicate_report_reference">Report #%1$s</string>
     <string name="possible_duplicate_choose_label">%1$s — %2$s — %3$s</string>
     <string name="possible_duplicate_first_report">First report in this group</string>
@@ -143,6 +157,7 @@
     <string name="possible_duplicate_distance_closest">Closest to the first report</string>
     <string name="review_row_submitted">%1$s • Submitted %2$s</string>
     <string name="review_row_category">Waste type: %1$s</string>
+    <string name="review_row_category_scale">Waste type: %1$s • %2$s</string>
     <string name="review_row_submitted_label">Submitted: %1$s</string>
 
     <!-- Create announcement -->
@@ -272,6 +287,8 @@
     <string name="vehicle_available">Available</string>
     <string name="vehicle_assigned">Assigned</string>
     <string name="vehicle_maintenance">Maintenance</string>
+    <string name="vehicle_functional">Functional</string>
+    <string name="vehicle_under_repair">Under repair</string>
     <string name="vehicle_search_hint">Search vehicle ID or plate number</string>
     <string name="vehicle_filter_all">All</string>
     <string name="vehicle_filter_available">Available</string>
@@ -315,6 +332,18 @@
     <string name="vehicle_saved">Vehicle saved.</string>
     <string name="vehicle_removed">Vehicle removed from the fleet.</string>
     <string name="vehicle_service_recorded">Service recorded.</string>
+
+    <!-- Full-screen vehicle details, opened from the fleet list. -->
+    <string name="vehicle_details_title">Vehicle details</string>
+    <string name="vehicle_not_found">Vehicle details are unavailable.</string>
+    <string name="vehicle_assignee_loading">Loading assigned personnel.</string>
+    <string name="vehicle_assignee_unavailable">Assigned personnel unavailable</string>
+    <string name="vehicle_lacks_driver">Lacks A Driver</string>
+    <string name="vehicle_marked_under_repair">Vehicle marked under repair.</string>
+    <string name="vehicle_marked_functional">Vehicle marked functional.</string>
+    <string name="vehicle_history_title">Vehicle Waste Collection History</string>
+    <string name="vehicle_history_empty">No completed or revised work recorded for this vehicle yet.</string>
+    <string name="vehicle_history_load_more">Load more work</string>
     <string name="account_details_title">Account Details</string>
     <string name="admin_id_label">Admin ID</string>
     <string name="role_label">Role</string>
@@ -465,4 +494,69 @@
     <string name="personnel_details_error_messenger_link">Enter an absolute link starting with http:// or https://</string>
     <string name="personnel_details_error_phone">Use digits, spaces, and + ( ) - only</string>
     <string name="personnel_disable_confirmation">%1$s will no longer be able to sign in or be assigned tasks.</string>
+
+    <string name="personnel_role_driver">Driver</string>
+    <string name="personnel_role_regular">Regular</string>
+    <string name="personnel_role_leader">Leader</string>
+    <string name="personnel_role_member">Member</string>
+    <string name="personnel_role_of_team">%1$s of Team %2$s</string>
+
+    <!-- Cleaning teams, the third side of the Personnel/Vehicles/Teams selector. -->
+    <string name="selector_teams">Teams</string>
+    <string name="team_title">Cleaning Teams</string>
+    <string name="team_subtitle">Manage cleaning crews, their leaders and members.</string>
+    <string name="team_total">Total teams</string>
+    <string name="team_ready">Ready</string>
+    <string name="team_cleaning">Cleaning</string>
+    <string name="team_needs_attention">Needs attention</string>
+    <string name="team_status_idle">Idle</string>
+    <string name="team_search_hint">Search team name, leader, or member</string>
+    <string name="team_empty">No teams found</string>
+    <string name="team_result_count">Showing %1$d of %2$d teams</string>
+    <string name="team_filter_all">All</string>
+    <string name="team_filter_ready">Ready</string>
+    <string name="team_filter_no_leader">No leader</string>
+    <string name="team_filter_understaffed">Understaffed</string>
+    <string name="team_create">Create Team</string>
+    <string name="team_create_title">Create a cleaning team</string>
+    <string name="team_create_subtitle">Form a crew with one leader and at least two people in total.</string>
+    <string name="team_edit_title">Edit cleaning team</string>
+    <string name="team_edit_subtitle">Update the crew, change the leader or membership.</string>
+    <string name="team_name_label">Team name</string>
+    <string name="team_name_required">Enter a team name.</string>
+    <string name="team_description_label">Description</string>
+    <string name="team_add_label">Label</string>
+    <string name="team_leader_label">Team leader</string>
+    <string name="team_leader_required">Select a team leader.</string>
+    <string name="team_members_label">Members</string>
+    <string name="team_members_required">Select at least 2 crew members (leader included).</string>
+    <string name="team_members_hint">A team needs 1 leader and at least 2 crew members total.</string>
+    <string name="team_save">Save team</string>
+    <string name="team_select_members">Select members</string>
+    <string name="team_leader">Leader</string>
+    <string name="team_crew_count">%1$d members</string>
+    <string name="team_crew_id">Team ID: %1$s</string>
+    <string name="team_status_ready">Ready</string>
+    <string name="team_status_needs_attention">Needs attention</string>
+    <string name="team_details_title">Team details</string>
+    <string name="team_details_members">Team members</string>
+    <string name="team_details_add_member">Add member</string>
+    <string name="team_details_remove_member">Remove</string>
+    <string name="team_details_remove_member_confirm">Remove %1$s from this team?</string>
+    <string name="team_edit">Edit</string>
+    <string name="team_delete">Delete team</string>
+    <string name="team_delete_confirm_title">Delete this team?</string>
+    <string name="team_delete_confirm_message">%1$s will be removed. This action cannot be undone.</string>
+    <string name="team_deleted">Team deleted</string>
+    <string name="team_created">Team created</string>
+    <string name="team_updated">Team updated</string>
+    <string name="team_member_added">Member added to the team</string>
+    <string name="team_member_removed">Member removed from the team</string>
+    <string name="team_no_members">No members</string>
+    <string name="team_no_available_members">Every active personnel member is already on this team</string>
+    <string name="team_no_leader">No leader assigned</string>
+    <string name="team_icon_description">Cleaning team</string>
+    <string name="team_history_title">Team Waste Collection History</string>
+    <string name="team_history_empty">No completed or revised work recorded for this team yet.</string>
+    <string name="team_history_load_more">Load more work</string>
 </resources>

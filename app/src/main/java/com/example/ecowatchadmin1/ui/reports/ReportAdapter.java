@@ -17,9 +17,11 @@ import com.example.ecowatchadmin1.R;
 import com.example.ecowatchadmin1.data.models.PossibleDuplicateGroup;
 import com.example.ecowatchadmin1.data.models.Report;
 import com.example.ecowatchadmin1.data.remote.ServerConfig;
+import com.example.ecowatchadmin1.data.repository.PossibleDuplicateGrouper;
 import com.example.ecowatchadmin1.ui.residents.ReporterAccountUi;
 import com.example.ecowatchadmin1.utils.PhotoCountBadge;
 import com.example.ecowatchadmin1.utils.ReportSubmittedAtFormatter;
+import com.example.ecowatchadmin1.utils.WasteScaleDisplay;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -150,10 +152,11 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 groupReports.size()));
 
         Double maxPairwise = groupReports.size() >= 2 ? maxSpreadMeters(groupReports) : null;
+        String scaleLabel = WasteScaleDisplay.labelFor(context, group.getWasteScale());
         holder.context.setText(maxPairwise == null
-                ? context.getString(R.string.possible_duplicate_explain)
+                ? context.getString(R.string.possible_duplicate_explain_scale, scaleLabel)
                 : context.getString(R.string.possible_duplicate_explain_nearby,
-                        Math.round(maxPairwise)));
+                        scaleLabel, Math.round(maxPairwise)));
 
         holder.chipGroup.removeAllViews();
         for (Report report : groupReports) {
@@ -187,8 +190,20 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.seeAllBtn.setOnClickListener(v -> {
             if (groupActionListener != null) groupActionListener.onPossibleDuplicatesSeeAll(group);
         });
+        boolean anyDeniable = false;
+        for (Report report : groupReports) {
+            if (PossibleDuplicateGrouper.canBeDenied(report)) {
+                anyDeniable = true;
+                break;
+            }
+        }
+        final boolean canDeny = anyDeniable;
+        holder.denyBtn.setEnabled(canDeny);
+        holder.denyBtn.setAlpha(canDeny ? 1f : 0.5f);
         holder.denyBtn.setOnClickListener(v -> {
-            if (groupActionListener != null) groupActionListener.onPossibleDuplicatesDenied(group);
+            if (groupActionListener != null && canDeny) {
+                groupActionListener.onPossibleDuplicatesDenied(group);
+            }
         });
         holder.acceptBtn.setOnClickListener(v -> {
             if (groupActionListener != null) groupActionListener.onPossibleDuplicatesAccepted(group);
@@ -213,7 +228,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 .setText(context.getString(R.string.possible_duplicate_resident_label,
                         report.getResidentLabel()));
         ((TextView) row.findViewById(R.id.reviewRowMeta))
-                .setText(DuplicateReviewFormatter.submittedLine(report));
+                .setText(DuplicateReviewFormatter.submittedLine(context, report));
         ((TextView) row.findViewById(R.id.reviewRowDescription))
                 .setText(report.getDescription() == null || report.getDescription().trim().isEmpty()
                         ? context.getString(R.string.possible_duplicate_no_description)
@@ -297,6 +312,26 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.typeDate.setText(category + " • " + dateStr);
         String statusText = report.getStatus();
         holder.status.setText("Status: " + (statusText != null ? statusText : "Pending"));
+        if (holder.reportScale != null) {
+            String scale = report.getWasteScale();
+            if (scale == null || scale.trim().isEmpty()) {
+                holder.reportScale.setText(com.example.ecowatchadmin1.data.models.Report.SCALE_SMALL);
+            } else {
+                holder.reportScale.setText(scale);
+            }
+        }
+
+        // Show one scale-appropriate dispatch label: the cleaner for small
+        // jobs, or the saved crew for medium and large jobs.
+        boolean completed = "Completed".equalsIgnoreCase(statusText);
+        boolean hasAssignment = report.hasAssignedPersonnel();
+        boolean teamTask = report.requiresTeam();
+        holder.assignedPersonnel.setVisibility(
+                hasAssignment && !teamTask ? View.VISIBLE : View.GONE);
+        holder.assignedTeam.setVisibility(
+                hasAssignment && teamTask ? View.VISIBLE : View.GONE);
+        holder.adminResponse.setVisibility(completed ? View.VISIBLE : View.GONE);
+        holder.assignedAt.setVisibility(completed ? View.VISIBLE : View.GONE);
 
         String assigned = report.getAssignedPersonnelName();
         if (assigned == null || assigned.trim().isEmpty()) {
@@ -307,12 +342,19 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
         holder.assignedPersonnel.setText(holder.itemView.getContext().getString(
                 R.string.assigned_personnel) + ": " + assigned);
+        String team = report.getAssignedTeamLabel();
+        holder.assignedTeam.setText(holder.itemView.getContext().getString(
+                R.string.assigned_team_label) + ": "
+                + (team == null || team.trim().isEmpty()
+                ? holder.itemView.getContext().getString(R.string.none) : team));
         String response = report.getAdminResponse();
         holder.adminResponse.setText(holder.itemView.getContext().getString(
                 R.string.admin_response_label) + ": "
                 + (response == null || response.trim().isEmpty() ? "None" : response));
-        String assignmentTime = report.getAssignedPersonnelId() == null
-                || report.getAssignedAt() == null
+        // An em dash only when there is no dispatch time at all. An earlier
+        // version also keyed off the single-personnel pointer, which a crew
+        // leaves empty, so completed crew reports showed "—" here.
+        String assignmentTime = report.getAssignedAt() == null
                 || report.getAssignedAt().trim().isEmpty()
                 ? "—" : ReporterAccountUi.formatDate(report.getAssignedAt());
         holder.assignedAt.setText(holder.itemView.getContext().getString(
@@ -435,8 +477,8 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     static class ReportViewHolder extends RecyclerView.ViewHolder {
         ShapeableImageView thumb;
-        TextView title, typeDate, status, reportId;
-        TextView assignedPersonnel, adminResponse, assignedAt, photoCountText;
+        TextView title, typeDate, status, reportId, reportScale;
+        TextView assignedPersonnel, assignedTeam, adminResponse, assignedAt, photoCountText;
         View editBtn, deleteBtn, restoreBtn, photoCountBadge;
         CheckBox checkbox;
 
@@ -447,7 +489,9 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             reportId = itemView.findViewById(R.id.reportIdText);
             typeDate = itemView.findViewById(R.id.reportTypeDate);
             status = itemView.findViewById(R.id.reportStatus);
+            reportScale = itemView.findViewById(R.id.reportScale);
             assignedPersonnel = itemView.findViewById(R.id.reportAssignedPersonnel);
+            assignedTeam = itemView.findViewById(R.id.reportAssignedTeam);
             adminResponse = itemView.findViewById(R.id.reportAdminResponse);
             assignedAt = itemView.findViewById(R.id.reportAssignedAt);
             photoCountBadge = itemView.findViewById(R.id.photoCountBadge);

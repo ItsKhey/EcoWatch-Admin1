@@ -51,8 +51,27 @@ public final class CleaningTeamJsonParser {
         team.setTeamId(readString(teamObject, "teamId", "team_id", "id"));
         team.setTeamName(readString(teamObject, "teamName", "team_name", "name"));
         team.setDescription(readString(teamObject, "description"));
+        team.setLabel(readString(teamObject, "label", "teamLabel", "team_label"));
         team.setMemberCount(readInt(teamObject, "memberCount", "member_count"));
-        team.setMembers(parseMembers(teamObject));
+        team.setLeaderId(readString(teamObject,
+                "leaderId", "leader_id", "leaderPersonnelId", "leader_personnel_id"));
+        team.setLeaderName(readString(teamObject,
+                "leaderName", "leader_name", "leaderFullName", "leader_full_name"));
+
+        // A member may carry its own leader flag; a payload that only names the
+        // leader on the team is resolved here rather than left for every caller.
+        List<CleaningTeam.Member> members = parseMembers(teamObject);
+        if (team.getLeaderId() != null) {
+            String leaderId = team.getLeaderId().trim().toUpperCase(java.util.Locale.US);
+            for (CleaningTeam.Member member : members) {
+                if (member.getPersonnelId() != null
+                        && leaderId.equals(member.getPersonnelId().trim().toUpperCase(
+                        java.util.Locale.US))) {
+                    member.setLeader(true);
+                }
+            }
+        }
+        team.setMembers(members);
         return team;
     }
 
@@ -72,8 +91,11 @@ public final class CleaningTeamJsonParser {
                     "fullName", "full_name", "name"));
             member.setOccupation(readString(memberObject,
                     "occupation", "occupationType", "occupation_type"));
+            member.setAssignedVehicleId(readString(memberObject,
+                    "assignedVehicleId", "assigned_vehicle_id", "vehicleId", "vehicle_id"));
             member.setStatus(readString(memberObject, "status"));
             member.setEnabled(readBoolean(memberObject, "enabled"));
+            member.setLeader(readBoolean(memberObject, "leader", "isLeader", "is_leader"));
             members.add(member);
         }
         return members;

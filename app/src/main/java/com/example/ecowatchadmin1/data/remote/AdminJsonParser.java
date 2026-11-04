@@ -2,6 +2,7 @@ package com.example.ecowatchadmin1.data.remote;
 
 import com.example.ecowatchadmin1.data.models.AdminAccount;
 import com.example.ecowatchadmin1.data.models.Report;
+import com.example.ecowatchadmin1.data.models.ReportTimelineEvent;
 import com.example.ecowatchadmin1.data.models.User;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -380,21 +381,54 @@ public final class AdminJsonParser {
         // Personnel-only channel. Read here so the assignment sheet can prefill
         // the note the admin gave the cleaner instead of silently discarding it.
         report.setPersonnelNote(readString(source, "personnelNote", "personnel_note"));
+        // Server-derived revision marker. Kept apart from personnelNote because
+        // that column also carries ordinary assignment instructions.
+        report.setRevisionRequested(readBoolean(source,
+                "revisionRequested", "revision_requested"));
+        // The cleaning lifecycle for one task. Present only on the personnel
+        // history, which is the one screen that expands a card into a timeline.
+        report.setTimeline(readTimeline(source));
         // The cleaner talking back. Read separately from personnelNote because the
         // two have different authors and different audiences.
-        report.setPersonnelResponse(readString(source,
-                "personnelResponse", "personnel_response", "completionNotes"));
-        report.setCompletedByPersonnelId(readString(source,
-                "completedByPersonnelId", "completed_by_personnel_id",
-                "completedPersonnelId"));
-        report.setCompletedByPersonnelName(readString(source,
-                "completedByPersonnelName", "completed_by_personnel_name",
-                "completedPersonnelName"));
+        JsonObject completedAssignment = findObject(source,
+                "completedAssignment", "completed_assignment", "completion",
+                "latestCompletedAssignment", "latest_completed_assignment");
+        if (completedAssignment == null) {
+            // Some report responses place completion details on the joined
+            // assignment object rather than flattening them onto the report.
+            completedAssignment = findObject(source, "assignment");
+        }
+        JsonObject completedPersonnel = findObject(completedAssignment,
+                "personnel", "completedBy", "completed_by", "completedByPersonnel",
+                "completed_by_personnel", "cleaner", "assignedPersonnel");
+        report.setPersonnelResponse(firstNonBlank(
+                readString(source, "personnelResponse", "personnel_response",
+                        "completionNotes", "completion_notes", "completionNote",
+                        "completion_note"),
+                readString(completedAssignment, "personnelResponse", "personnel_response",
+                        "completionNotes", "completion_notes", "completionNote",
+                        "completion_note")));
+        report.setCompletedByPersonnelId(firstNonBlank(
+                readString(source, "completedByPersonnelId", "completed_by_personnel_id",
+                        "completedPersonnelId"),
+                readString(completedAssignment, "completedByPersonnelId", "completed_by_personnel_id",
+                        "completedPersonnelId", "personnelId", "personnel_id"),
+                readString(completedPersonnel, "personnelId", "personnel_id", "id", "_id")));
+        report.setCompletedByPersonnelName(firstNonBlank(
+                readString(source, "completedByPersonnelName", "completed_by_personnel_name",
+                        "completedPersonnelName"),
+                readString(completedAssignment, "completedByPersonnelName", "completed_by_personnel_name",
+                        "completedPersonnelName", "personnelName", "personnel_name", "fullName", "full_name"),
+                readString(completedPersonnel, "fullName", "full_name", "name"),
+                joinName(readString(completedPersonnel, "firstName", "first_name"),
+                        readString(completedPersonnel, "lastName", "last_name"))));
         report.setCompletedByPersonnelAvatar(readString(source,
                 "completedByPersonnelAvatar", "completed_by_personnel_avatar",
                 "completedPersonnelAvatar"));
-        report.setWorkCompletedAt(readString(source,
-                "workCompletedAt", "work_completed_at", "completedAt"));
+        report.setWorkCompletedAt(firstNonBlank(
+                readString(source, "workCompletedAt", "work_completed_at", "completedAt"),
+                readString(completedAssignment, "workCompletedAt", "work_completed_at",
+                        "completedAt", "completed_at", "finishedAt", "finished_at")));
         report.setCreatedAt(readString(source, "createdAt", "created_at"));
         report.setUpdatedAt(readString(source, "updatedAt", "updated_at"));
         report.setSynced(true);
@@ -466,16 +500,75 @@ public final class AdminJsonParser {
         // chosen by the resident when the report is filed; the crew and the
         // truck are what the administrator sent to match it.
         report.setWasteScale(readString(source, "wasteScale", "waste_scale"));
-        report.setAssignedTeamId(readString(source, "assignedTeamId", "assigned_team_id"));
-        report.setAssignedTeamName(readString(source,
-                "assignedTeamName", "assigned_team_name"));
-        report.setAssignedVehicleId(readString(source,
-                "assignedVehicleId", "assigned_vehicle_id"));
-        report.setAssignedVehiclePlateNumber(readString(source,
-                "assignedVehiclePlateNumber", "assigned_vehicle_plate_number"));
-        report.setAssignedVehicleType(readString(source,
-                "assignedVehicleType", "assigned_vehicle_type"));
+        JsonObject assignment = findObject(source, "assignment");
+        JsonObject assignedTeam = findObject(source, "assignedTeam", "assigned_team", "team");
+        if (assignedTeam == null && assignment != null) {
+            assignedTeam = findObject(assignment, "assignedTeam", "assigned_team", "team");
+        }
+        report.setAssignedTeamId(firstNonBlank(
+                readString(source, "assignedTeamId", "assigned_team_id", "teamId", "team_id"),
+                readString(assignment, "assignedTeamId", "assigned_team_id", "teamId", "team_id"),
+                readString(assignedTeam, "teamId", "team_id", "id", "_id")));
+        report.setAssignedTeamName(firstNonBlank(
+                readString(source, "assignedTeamName", "assigned_team_name", "teamName", "team_name"),
+                readString(assignment, "assignedTeamName", "assigned_team_name", "teamName", "team_name"),
+                readString(assignedTeam, "teamName", "team_name", "name", "title"),
+                readString(source, "assignedTeam", "assigned_team", "team"),
+                readString(assignment, "assignedTeam", "assigned_team", "team")));
+        report.setAssignedCrew(readAssignedCrew(source, assignment));
+        JsonObject assignedVehicle = findObject(source, "assignedVehicle", "assigned_vehicle", "vehicle");
+        if (assignedVehicle == null && assignment != null) {
+            assignedVehicle = findObject(assignment, "assignedVehicle", "assigned_vehicle", "vehicle");
+        }
+        report.setAssignedVehicleId(firstNonBlank(
+                readString(source, "assignedVehicleId", "assigned_vehicle_id", "vehicleId", "vehicle_id"),
+                readString(assignment, "assignedVehicleId", "assigned_vehicle_id", "vehicleId", "vehicle_id"),
+                readString(assignedVehicle, "vehicleId", "vehicle_id", "id", "_id")));
+        report.setAssignedVehiclePlateNumber(firstNonBlank(
+                readString(source, "assignedVehiclePlateNumber", "assigned_vehicle_plate_number", "plateNumber", "plate_number"),
+                readString(assignment, "assignedVehiclePlateNumber", "assigned_vehicle_plate_number", "plateNumber", "plate_number"),
+                readString(assignedVehicle, "plateNumber", "plate_number", "plate")));
+        report.setAssignedVehicleType(firstNonBlank(
+                readString(source, "assignedVehicleType", "assigned_vehicle_type", "vehicleType", "vehicle_type"),
+                readString(assignment, "assignedVehicleType", "assigned_vehicle_type", "vehicleType", "vehicle_type"),
+                readString(assignedVehicle, "vehicleType", "vehicle_type", "type")));
         return report;
+    }
+
+    private static List<ReportTimelineEvent> readTimeline(JsonObject source) {
+        List<ReportTimelineEvent> events = new ArrayList<>();
+        JsonElement element = readElement(source, "timeline", "taskTimeline", "task_timeline");
+        if (element == null || !element.isJsonArray()) return events;
+        for (JsonElement item : element.getAsJsonArray()) {
+            if (item == null || !item.isJsonObject()) continue;
+            JsonObject event = item.getAsJsonObject();
+            ReportTimelineEvent parsed = new ReportTimelineEvent();
+            parsed.setAction(readString(event, "action", "type"));
+            parsed.setDescription(readString(event, "description"));
+            parsed.setAdminId(readString(event, "adminId", "admin_id"));
+            parsed.setTimestamp(readString(event, "timestamp", "createdAt", "created_at"));
+            events.add(parsed);
+        }
+        return events;
+    }
+
+    private static List<Report.AssignedCrewMember> readAssignedCrew(JsonObject source, JsonObject assignment) {
+        JsonElement element = readElement(source, "assignedCrew", "assigned_crew");
+        if (element == null && assignment != null) {
+            element = readElement(assignment, "assignedCrew", "assigned_crew");
+        }
+        List<Report.AssignedCrewMember> crew = new ArrayList<>();
+        if (element == null || !element.isJsonArray()) return crew;
+        for (JsonElement item : element.getAsJsonArray()) {
+            if (item == null || !item.isJsonObject()) continue;
+            JsonObject member = item.getAsJsonObject();
+            Report.AssignedCrewMember parsed = new Report.AssignedCrewMember();
+            parsed.personnelId = readString(member, "personnelId", "personnel_id");
+            parsed.fullName = readString(member, "fullName", "full_name", "name");
+            parsed.leader = readBoolean(member, "leader", "isLeader", "is_leader");
+            crew.add(parsed);
+        }
+        return crew;
     }
 
     private static JsonObject findAdminObject(JsonObject root) {

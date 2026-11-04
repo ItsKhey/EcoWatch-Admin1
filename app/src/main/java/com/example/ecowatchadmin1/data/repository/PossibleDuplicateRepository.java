@@ -172,7 +172,10 @@ public class PossibleDuplicateRepository {
                 groups.add(group);
             }
         }
-        return groups;
+        // The server groups by location; the review queue must also agree on
+        // the waste scale. Regrouping here keeps the Admin app correct against
+        // an older server and makes the split explicit in one testable place.
+        return PossibleDuplicateGrouper.regroup(groups);
     }
 
     private String friendlyNetworkError(Throwable t) {

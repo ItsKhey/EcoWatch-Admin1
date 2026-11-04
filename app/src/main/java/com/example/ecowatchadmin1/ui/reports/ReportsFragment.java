@@ -29,6 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.ecowatchadmin1.R;
 import com.example.ecowatchadmin1.data.models.Report;
+import com.example.ecowatchadmin1.data.repository.PossibleDuplicateGrouper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -462,6 +463,19 @@ public class ReportsFragment extends Fragment {
                 ? new ArrayList<>() : group.getReports();
         if (reports.isEmpty()) return;
 
+        boolean anyDeniable = false;
+        for (Report report : reports) {
+            if (PossibleDuplicateGrouper.canBeDenied(report)) {
+                anyDeniable = true;
+                break;
+            }
+        }
+        if (!anyDeniable) {
+            Toast.makeText(requireContext(), R.string.possible_duplicate_no_actionable,
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
         View content = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_duplicate_choose, null, false);
         final LinearLayout list = content.findViewById(R.id.duplicateChoiceList);
@@ -484,7 +498,7 @@ public class ReportsFragment extends Fragment {
                     .setText(getString(R.string.possible_duplicate_resident_label,
                             report.getResidentLabel()));
             ((TextView) row.findViewById(R.id.duplicateChoiceMeta))
-                    .setText(DuplicateReviewFormatter.submittedLine(report));
+                    .setText(DuplicateReviewFormatter.submittedLine(context, report));
             ((TextView) row.findViewById(R.id.duplicateChoiceDescription))
                     .setText(report.getDescription() == null
                             || report.getDescription().trim().isEmpty()
@@ -506,7 +520,15 @@ public class ReportsFragment extends Fragment {
 
             // The whole row is the tap target; the checkbox reflects it. Makes
             // a selection on a small screen possible without hitting a tick.
-            row.setOnClickListener(v -> checkBox.setChecked(!checkBox.isChecked()));
+            // Completed reports stay visible as the evidence behind the group,
+            // but their status can no longer change, so they are not tickable.
+            boolean deniable = PossibleDuplicateGrouper.canBeDenied(report);
+            checkBox.setEnabled(deniable);
+            row.setEnabled(deniable);
+            row.setAlpha(deniable ? 1f : 0.55f);
+            if (deniable) {
+                row.setOnClickListener(v -> checkBox.setChecked(!checkBox.isChecked()));
+            }
 
             checkBoxes.add(checkBox);
             list.addView(row);
@@ -940,25 +962,25 @@ public class ReportsFragment extends Fragment {
         }
         final Date finalRangeStart = rangeStartDate;
 
-        String q = (query != null) ? query.trim().toLowerCase() : "";
+        String q = (query != null) ? query.trim().toLowerCase(Locale.ROOT) : "";
 
         // 3. Multi-Criteria Filtering
         List<Report> filtered = baseViewReports.stream()
                 .filter(r -> {
                     // Deep Multi-Field Search
                     if (q.isEmpty()) return true;
-                    String title = r.getTitle() != null ? r.getTitle().toLowerCase() : "";
-                    String reportId = r.getReportId() != null ? r.getReportId().toLowerCase() : "";
-                    String mongoId = r.getMongoId() != null ? r.getMongoId().toLowerCase() : "";
-                    String wasteType = r.getWasteType() != null ? r.getWasteType().toLowerCase() : "";
-                    String description = r.getDescription() != null ? r.getDescription().toLowerCase() : "";
-                    String status = r.getStatus() != null ? r.getStatus().toLowerCase() : "";
+                    String title = r.getTitle() != null ? r.getTitle().toLowerCase(Locale.ROOT) : "";
+                    String reportId = r.getReportId() != null ? r.getReportId().toLowerCase(Locale.ROOT) : "";
+                    String mongoId = r.getMongoId() != null ? r.getMongoId().toLowerCase(Locale.ROOT) : "";
+                    String wasteType = r.getWasteType() != null ? r.getWasteType().toLowerCase(Locale.ROOT) : "";
+                    String description = r.getDescription() != null ? r.getDescription().toLowerCase(Locale.ROOT) : "";
+                    String status = r.getStatus() != null ? r.getStatus().toLowerCase(Locale.ROOT) : "";
                     String assigned = r.getAssignedPersonnelName() != null
-                            ? r.getAssignedPersonnelName().toLowerCase() : "";
+                            ? r.getAssignedPersonnelName().toLowerCase(Locale.ROOT) : "";
                     String assignedId = r.getAssignedPersonnelId() != null
-                            ? r.getAssignedPersonnelId().toLowerCase() : "";
+                            ? r.getAssignedPersonnelId().toLowerCase(Locale.ROOT) : "";
                     String response = r.getAdminResponse() != null
-                            ? r.getAdminResponse().toLowerCase() : "";
+                            ? r.getAdminResponse().toLowerCase(Locale.ROOT) : "";
 
                     return title.contains(q) || reportId.contains(q) || mongoId.contains(q) ||
                            wasteType.contains(q) || description.contains(q) || status.contains(q) ||
