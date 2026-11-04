@@ -39,6 +39,7 @@ import com.example.ecowatchadmin1.ui.personnel.PersonnelFragment;
 import com.example.ecowatchadmin1.ui.profile.ProfileFragment;
 import com.example.ecowatchadmin1.ui.profile.SettingsMenuFragment;
 import com.example.ecowatchadmin1.ui.reports.ReportsFragment;
+import com.example.ecowatchadmin1.ui.reportsanalytics.ReportsAnalyticsFragment;
 import com.example.ecowatchadmin1.ui.residents.ReporterAccountsFragment;
 import com.example.ecowatchadmin1.ui.residents.ReporterDetailsFragment;
 import com.example.ecowatchadmin1.utils.LocaleHelper;
@@ -402,6 +403,18 @@ public class DashboardActivity extends AppCompatActivity {
     public void openReporterAccounts() {
         updateNavUI(itemProfile, iconProfile, labelProfile);
         loadFragment(new ReporterAccountsFragment(), "Reporter Accounts");
+    }
+
+    /**
+     * Opens the Reports &amp; Analytics screen. Backs the dashboard's
+     * "Reports &amp; Analytics" quick action and the Settings menu row.
+     *
+     * <p>Like the announcements screen, this is not a bottom-navigation
+     * destination, so the lit tab is left to whatever opened it and is restored
+     * from the fragment underneath when the user comes back.
+     */
+    public void openReportsAnalytics() {
+        loadFragment(new ReportsAnalyticsFragment(), "Reports & Analytics");
     }
 
     /**

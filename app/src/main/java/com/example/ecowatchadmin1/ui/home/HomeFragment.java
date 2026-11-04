@@ -197,6 +197,28 @@ public class HomeFragment extends Fragment {
 
     private void setupQuickActions(@NonNull View view) {
         bindQuickAction(
+                view.findViewById(R.id.quickActionReportsandAnalytics),
+                "📊",
+                getString(R.string.quick_action_reports_analytics),
+                getString(R.string.quick_action_reports_analytics_desc),
+                v -> {
+                    if (getActivity() instanceof DashboardActivity) {
+                        ((DashboardActivity) getActivity()).openReportsAnalytics();
+                    }
+                });
+
+        bindQuickAction(
+                view.findViewById(R.id.quickActionManagePersonnelAccounts),
+                "👷",
+                getString(R.string.quick_action_manage_personnel),
+                getString(R.string.quick_action_manage_personnel_desc),
+                v -> {
+                    if (getActivity() instanceof DashboardActivity) {
+                        ((DashboardActivity) getActivity()).navigateToPersonnel();
+                    }
+                });
+
+        bindQuickAction(
                 view.findViewById(R.id.quickActionAnnouncement),
                 "📢",
                 getString(R.string.quick_action_create_announcement),

@@ -136,6 +136,9 @@ dependencies {
     implementation(libs.ucrop)
     implementation(libs.biometric)
 
+    // Charts on the Reports & Analytics screen.
+    implementation("com.github.PhilJay:MPAndroidChart:3.1.0")
+
     // WorkManager backs the FCM token registration retry (Phase 3A).
     implementation(libs.work.runtime)
 

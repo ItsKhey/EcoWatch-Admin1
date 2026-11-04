@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Selected heatmap day.
+
+    Solid rather than another intensity fill, so a tapped day reads as a
+    selection instead of a six bucket. The darker inner stroke separates it from
+    the pale 1-2 and 3-5 swatches it may sit next to, and keeps it distinct from
+    the hollow "no reports" cell.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/calendar_heatmap_active" />
+    <stroke
+        android:width="2dp"
+        android:color="@color/calendar_heatmap_active_stroke" />
+</shape>

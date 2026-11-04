@@ -66,6 +66,8 @@
     <string name="none">Wala</string>
     <string name="quick_action_view_reports">Tumingin ng Ulat</string>
     <string name="quick_action_view_reports_desc">Suriin at pamahalaan ang mga isinumitang ulat.</string>
+    <string name="quick_action_reports_analytics">Mga Ulat at Analitika</string>
+    <string name="quick_action_reports_analytics_desc">Tumingin ng mga istatistika at uso ng ulat.</string>
     <string name="quick_action_manage_personnel">Pamahalaan ang Tauhan</string>
     <string name="quick_action_manage_personnel_desc">Bantayan ang koponan at mga takdang-arawin.</string>
     <string name="filter">Salain</string>

@@ -532,7 +532,7 @@
                     android:layout_weight="1" />
 
                 <include
-                    android:id="@+id/quickActionMap"
+                    android:id="@+id/quickActionReportsandAnalytics"
                     layout="@layout/item_quick_action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -550,7 +550,7 @@
                 android:orientation="horizontal">
 
                 <include
-                    android:id="@+id/quickActionManageReporterAccounts"
+                    android:id="@+id/quickActionMap"
                     layout="@layout/item_quick_action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -559,6 +559,32 @@
 
                 <include
                     android:id="@+id/quickActionRegisterNewESPAccount"
+                    layout="@layout/item_quick_action"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <!-- Row 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <include
+                    android:id="@+id/quickActionManagePersonnelAccounts"
+                    layout="@layout/item_quick_action"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/quickActionManageReporterAccounts"
                     layout="@layout/item_quick_action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

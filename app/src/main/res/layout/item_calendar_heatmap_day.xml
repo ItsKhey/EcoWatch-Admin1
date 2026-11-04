@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
+    android:padding="2dp">
+
+    <!-- Day Cell Background / Label -->
+    <TextView
+        android:id="@+id/tvDay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_calendar_heatmap_empty"
+        android:gravity="center"
+        android:text="1"
+        android:textColor="@color/green"
+        android:textSize="12sp" />
+
+    <!-- Current Day Indicator Dot -->
+    <View
+        android:id="@+id/viewCurrentDayDot"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="3dp"
+        android:background="@drawable/bg_current_day_dot"
+        android:visibility="gone" />
+
+</RelativeLayout>

@@ -69,4 +69,18 @@
     <color name="duplicate_review_stroke">#06402B</color>
     <color name="duplicate_review_deny">#C62828</color>
     <color name="duplicate_review_marker">#06402B</color>
+
+    <!--
+      Report calendar heatmap buckets for the Reports & Analytics screen. The
+      five steps stay the same in light and dark themes so a day's intensity
+      reads the same regardless of the app theme.
+    -->
+    <color name="calendar_heatmap_very_light">#E8F5E9</color>
+    <color name="calendar_heatmap_light">#C8E6C9</color>
+    <color name="calendar_heatmap_medium">#66BB6A</color>
+    <color name="calendar_heatmap_dark">#2E7D32</color>
+    <color name="calendar_heatmap_empty">#F5F5F5</color>
+    <color name="calendar_heatmap_empty_stroke">#81C784</color>
+    <color name="calendar_heatmap_active">#81C784</color>
+    <color name="calendar_heatmap_active_stroke">#06402B</color>
 </resources>

@@ -98,6 +98,8 @@
     <string name="quick_action_open_map_desc">See active cleanups and their locations.</string>
     <string name="quick_action_view_reports">View Reports</string>
     <string name="quick_action_view_reports_desc">Review and manage submitted reports.</string>
+    <string name="quick_action_reports_analytics">Reports &amp; Analytics</string>
+    <string name="quick_action_reports_analytics_desc">View report statistics and trends.</string>
     <string name="quick_action_manage_personnel">Manage Personnel</string>
     <string name="quick_action_manage_personnel_desc">Monitor cleanup team and assignments.</string>
     <string name="quick_action_manage_reporters">Reporter Accounts</string>

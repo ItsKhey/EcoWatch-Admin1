@@ -24,6 +24,7 @@ import com.example.ecowatchadmin1.data.repository.AuthRepository;
 import com.example.ecowatchadmin1.ui.announcements.AnnouncementListFragment;
 import com.example.ecowatchadmin1.ui.auth.LoginActivity;
 import com.example.ecowatchadmin1.ui.personnel.PersonnelFragment;
+import com.example.ecowatchadmin1.ui.reportsanalytics.ReportsAnalyticsFragment;
 import com.example.ecowatchadmin1.ui.residents.ReporterAccountsFragment;
 import com.example.ecowatchadmin1.utils.LocaleHelper;
 import com.example.ecowatchadmin1.data.remote.ServerConfig;
@@ -64,6 +65,8 @@ public class SettingsMenuFragment extends Fragment {
         setupRow(view.findViewById(R.id.itemAnnouncement), android.R.drawable.ic_menu_info_details,
                 getString(R.string.your_announcements), null);
         setupRow(view.findViewById(R.id.itemNotifications), R.drawable.ic_notification, "Notifications", null);
+        setupRow(view.findViewById(R.id.itemReportsandAnalytics),
+                android.R.drawable.ic_menu_sort_by_size, "Reports & Analytics", null);
         View reporterRow = view.findViewById(R.id.itemManageReporterAccount);
         View personnelRegistrationRow = view.findViewById(R.id.registerPersonnelFab);
         setupRow(reporterRow, R.drawable.ic_profile,
@@ -121,6 +124,8 @@ public class SettingsMenuFragment extends Fragment {
         view.findViewById(R.id.itemAnnouncement).setOnClickListener(v ->
                 navigateTo(new AnnouncementListFragment()));
         view.findViewById(R.id.itemNotifications).setOnClickListener(v -> navigateTo(new NotificationSettingsFragment()));
+        view.findViewById(R.id.itemReportsandAnalytics).setOnClickListener(v ->
+                navigateTo(new ReportsAnalyticsFragment()));
         view.findViewById(R.id.itemManageReporterAccount).setOnClickListener(v ->
                 navigateTo(new ReporterAccountsFragment()));
         view.findViewById(R.id.registerPersonnelFab).setOnClickListener(v ->
