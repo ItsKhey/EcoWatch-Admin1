@@ -305,8 +305,6 @@ public class AdminHistoryAdapter extends RecyclerView.Adapter<AdminHistoryAdapte
         if (hasReportRef) holder.reportRef.setText("Report #" + reportId.trim());
 
         holder.timestamp.setText(AdminHistoryDateFormatter.format(row.getTimestamp()));
-        holder.categoryTag.setText(
-                AdminHistoryClassifier.categorize(history.getAction()).getLabel());
 
         bindRowActions(holder, history);
         bindSelection(holder, row);
@@ -397,7 +395,6 @@ public class AdminHistoryAdapter extends RecyclerView.Adapter<AdminHistoryAdapte
         final TextView subtitle;
         final TextView reportRef;
         final TextView timestamp;
-        final TextView categoryTag;
         final CheckBox selectBox;
         final ImageButton detailsBtn;
         final ImageButton rowActionBtn;
@@ -410,7 +407,6 @@ public class AdminHistoryAdapter extends RecyclerView.Adapter<AdminHistoryAdapte
             subtitle = itemView.findViewById(R.id.adminHistorySubtitle);
             reportRef = itemView.findViewById(R.id.adminHistoryReportRef);
             timestamp = itemView.findViewById(R.id.adminHistoryTimestamp);
-            categoryTag = itemView.findViewById(R.id.adminHistoryCategoryTag);
             selectBox = itemView.findViewById(R.id.adminHistorySelectBox);
             detailsBtn = itemView.findViewById(R.id.adminHistoryDetailsBtn);
             rowActionBtn = itemView.findViewById(R.id.adminHistorySoftDeleteBtn);

@@ -674,24 +674,6 @@
                     android:textStyle="bold" />
 
 
-                <TextView
-                    android:id="@+id/detailPriorityLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/priority"
-                    android:textAllCaps="true"
-                    android:textColor="@color/faint_green_color"
-                    android:textSize="11sp"
-                    android:letterSpacing="0.08"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/detailPrioritySpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp" />
-
                 <!-- How big the waste is. It is what the dispatch is bound by:
                      one cleaner for a small job, a crew for a medium one, a crew
                      and a truck for a large one. Its own id, because the summary

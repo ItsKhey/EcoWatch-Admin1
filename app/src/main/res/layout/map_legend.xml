@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:letterSpacing="0.1"
-                android:text="REPORTS"
+                android:text="STATUS (PIN COLOR)"
                 android:textColor="@color/green"
                 android:textSize="10sp"
                 android:textStyle="bold" />
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:letterSpacing="0.1"
-                android:text="WASTE SCALE"
+                android:text="WASTE SCALE (BADGE SYMBOL)"
                 android:textColor="@color/green"
                 android:textSize="10sp"
                 android:textStyle="bold" />

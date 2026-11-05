@@ -33,10 +33,8 @@ import com.example.ecowatchadmin1.data.models.Report;
 import com.example.ecowatchadmin1.ui.reports.ReportDetailDialog;
 import com.example.ecowatchadmin1.ui.reports.ReportsViewModel;
 import com.example.ecowatchadmin1.utils.ReportSubmittedAtFormatter;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -141,8 +139,6 @@ public class ReportsAnalyticsFragment extends Fragment {
 
     private LineChart lineChartTrends;
     private PieChart pieChartStatus;
-    private BarChart barChartWasteSize;
-    private BarChart barChartWorkload;
 
     private GoogleMap hotspotMap;
     private TextView tvHotspotTotal;
@@ -230,8 +226,6 @@ public class ReportsAnalyticsFragment extends Fragment {
 
         lineChartTrends = view.findViewById(R.id.lineChartTrends);
         pieChartStatus = view.findViewById(R.id.pieChartStatus);
-        barChartWasteSize = view.findViewById(R.id.barChartWasteSize);
-        barChartWorkload = view.findViewById(R.id.barChartWorkload);
 
         tvHotspotTotal = view.findViewById(R.id.tvHotspotTotal);
         tvHotspotReports = view.findViewById(R.id.tvHotspotReports);
@@ -295,19 +289,6 @@ public class ReportsAnalyticsFragment extends Fragment {
                 l.setTextColor(Color.WHITE); // White text for dark mode
             } else {
                 l.setTextColor(Color.parseColor("#06402B")); // Custom color for light mode
-            }
-        }
-
-        if (barChartWasteSize != null || barChartWorkload != null) {
-            Description desc = new Description();
-            desc.setText("");
-            if (barChartWasteSize != null) {
-                barChartWasteSize.setDescription(desc);
-                barChartWasteSize.getLegend().setEnabled(false);
-            }
-            if (barChartWorkload != null) {
-                barChartWorkload.setDescription(desc);
-                barChartWorkload.getLegend().setEnabled(false);
             }
         }
     }
@@ -1088,13 +1069,9 @@ public class ReportsAnalyticsFragment extends Fragment {
 
     private void updateCharts(List<Report> reports) {
         Map<String, Integer> statusCounts = new TreeMap<>();
-        Map<String, Integer> scales = new TreeMap<>();
-        Map<String, Integer> workload = new TreeMap<>();
         TreeMap<Long, Integer> daily = new TreeMap<>();
         for (Report report : reports) {
             increment(statusCounts, firstNonEmpty(report.getStatus(), "Unknown"));
-            increment(scales, firstNonEmpty(report.getWasteScale(), "Unspecified"));
-            increment(workload, firstNonEmpty(report.getAssignedTeamName(), report.getAssignedPersonnelName(), "Unassigned"));
             Date date = ReportSubmittedAtFormatter.parse(report.getCreatedAt());
             if (date != null) {
                 Calendar day = Calendar.getInstance(TimeZone.getTimeZone("Asia/Manila"));
