@@ -66,6 +66,11 @@ public class SecurityPrivacyFragment extends Fragment {
 
         fingerprintRow = view.findViewById(R.id.itemFingerprint);
 
+        // Change Password is not available in the admin app, so keep the row
+        // (and its separator) out of the running screen.
+        view.findViewById(R.id.itemChangePassword).setVisibility(View.GONE);
+        view.findViewById(R.id.changePasswordDivider).setVisibility(View.GONE);
+
         setupRow(view.findViewById(R.id.itemChangePassword), android.R.drawable.ic_menu_edit, "Change Password", null);
         setupRow(view.findViewById(R.id.itemLocationPrivacy), android.R.drawable.ic_menu_mylocation, "Location Privacy", null);
         setupRow(view.findViewById(R.id.itemReportPhotos), android.R.drawable.ic_menu_camera, "Report Photos", null);

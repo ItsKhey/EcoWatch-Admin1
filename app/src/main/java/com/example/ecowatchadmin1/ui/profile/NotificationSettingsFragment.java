@@ -186,16 +186,6 @@ public class NotificationSettingsFragment extends Fragment {
                 "archivedReports");
 
         // System
-        addCategory(view, R.id.itemAnnouncements, R.drawable.logo1,
-                "Announcements",
-                "Receive EcoWatch environmental announcements and important updates.",
-                () -> settings.isAnnouncements(), v -> settings.setAnnouncements(v),
-                "cenroAnnouncements");
-        addCategory(view, R.id.itemMaintenanceAlerts, android.R.drawable.ic_menu_info_details,
-                "Maintenance Alerts",
-                "Receive EcoWatch system maintenance and service notices.",
-                () -> settings.isMaintenanceAlerts(), v -> settings.setMaintenanceAlerts(v),
-                "maintenanceAlerts");
         addCategory(view, R.id.itemSound, android.R.drawable.ic_lock_silent_mode_off,
                 "Sound",
                 "Play a sound for new notifications.",

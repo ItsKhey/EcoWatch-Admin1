@@ -63,7 +63,7 @@
                     android:background="@color/white">
 
                     <include android:id="@+id/itemFingerprint" layout="@layout/item_settings_switch" />
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginHorizontal="16dp"/>
+                    <View android:id="@+id/changePasswordDivider" android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginHorizontal="16dp"/>
                     <include android:id="@+id/itemChangePassword" layout="@layout/item_settings_row" />
 
                 </LinearLayout>

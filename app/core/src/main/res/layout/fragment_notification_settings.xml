@@ -250,26 +250,6 @@
                         android:orientation="vertical">
 
                         <include
-                            android:id="@+id/itemAnnouncements"
-                            layout="@layout/item_settings_switch" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginHorizontal="16dp"
-                            android:background="?attr/colorOutlineVariant" />
-
-                        <include
-                            android:id="@+id/itemMaintenanceAlerts"
-                            layout="@layout/item_settings_switch" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginHorizontal="16dp"
-                            android:background="?attr/colorOutlineVariant" />
-
-                        <include
                             android:id="@+id/itemSound"
                             layout="@layout/item_settings_switch" />
 
