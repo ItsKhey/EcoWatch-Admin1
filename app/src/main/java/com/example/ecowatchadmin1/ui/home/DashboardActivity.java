@@ -678,21 +678,30 @@ public class DashboardActivity extends AppCompatActivity {
      */
     private void showScreen(@NonNull Fragment fragment) {
         androidx.fragment.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        // Bottom-navigation destinations are roots. Any nested personnel,
-        // reporter, or settings screen must not reappear on a later Back press.
-        fragmentManager.popBackStack(
+        // Bottom-navigation destinations are roots. Clear back stack synchronously
+        // so nested screen transitions are fully unwound immediately.
+        fragmentManager.popBackStackImmediate(
                 null,
                 androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
         );
 
         boolean isMap = fragment instanceof AdminMapFragment;
         int targetId = isMap ? R.id.mapContainer : R.id.fragmentContainer;
-        int otherId = isMap ? R.id.fragmentContainer : R.id.mapContainer;
 
-        androidx.fragment.app.FragmentTransaction transaction =
-                fragmentManager.beginTransaction().replace(targetId, fragment);
-        Fragment other = fragmentManager.findFragmentById(otherId);
-        if (other != null) transaction.remove(other);
+        androidx.fragment.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        // Clear any remaining fragments in both containers to prevent screen overlap.
+        Fragment currentMap = fragmentManager.findFragmentById(R.id.mapContainer);
+        if (currentMap != null) {
+            transaction.remove(currentMap);
+        }
+
+        Fragment currentContent = fragmentManager.findFragmentById(R.id.fragmentContainer);
+        if (currentContent != null) {
+            transaction.remove(currentContent);
+        }
+
+        transaction.replace(targetId, fragment);
         transaction.commit();
     }
 }

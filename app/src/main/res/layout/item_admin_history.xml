@@ -131,8 +131,8 @@
 
                 <ImageButton
                     android:id="@+id/adminHistorySoftDeleteBtn"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="29dp"
+                    android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Move this record to trash"
                     android:padding="7dp"
@@ -147,16 +147,6 @@
                     android:padding="7dp"
                     android:src="@drawable/ic_delete_forever" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/adminHistoryCategoryTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Reports"
-                android:textColor="@color/green"
-                android:textSize="9sp"
-                android:alpha="0.6" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -73,8 +73,6 @@ public final class ReportDetailDialog {
         TextView detailCategory = detailView.findViewById(R.id.detailCategory);
         TextView detailDescription = detailView.findViewById(R.id.detailDescription);
         TextView detailLocation = detailView.findViewById(R.id.detailLocation);
-        TextView priorityLabel = detailView.findViewById(R.id.detailPriorityLabel);
-        Spinner prioritySpinner = detailView.findViewById(R.id.detailPrioritySpinner);
         TextView assignedLabel = detailView.findViewById(R.id.detailAssignedPersonnelLabel);
         TextView assignedText = detailView.findViewById(R.id.detailAssignedPersonnel);
         TextView assignmentTimeLabel = detailView.findViewById(R.id.detailAssignmentTimeLabel);
@@ -116,8 +114,8 @@ public final class ReportDetailDialog {
         bindLifecycleStatus(lifecycleStatus, report);
         bindCreatedAt(detailDate, detailTime, report.getCreatedAt());
         bindDispatchDetails(fragment, report, detailView);
-        bindAdministrativeFields(fragment, report, readOnly, detailView, priorityLabel,
-                prioritySpinner, assignedLabel, assignedText, assignmentTimeLabel,
+        bindAdministrativeFields(fragment, report, readOnly, detailView,
+                assignedLabel, assignedText, assignmentTimeLabel,
                 assignmentTime, assignButton, unassignButton, updateStatusResponseButton,
                 approveButton, reviseButton, actionsCard, onChanged, dialogHolder);
         bindResolution(fragment, report, resolutionLabel, resolutionImage, resolutionDate,
@@ -376,8 +374,6 @@ public final class ReportDetailDialog {
             Report report,
             boolean readOnly,
             View detailView,
-            TextView priorityLabel,
-            Spinner prioritySpinner,
             TextView assignedLabel,
             TextView assignedText,
             TextView assignmentTimeLabel,
@@ -391,23 +387,6 @@ public final class ReportDetailDialog {
             @Nullable Runnable onChanged,
             AlertDialog[] dialogHolder) {
         View reviewActionsDivider = detailView.findViewById(R.id.reviewActionsDivider);
-
-        if (priorityLabel != null) {
-            priorityLabel.setVisibility(readOnly ? View.GONE : View.VISIBLE);
-        }
-        if (prioritySpinner != null) {
-            prioritySpinner.setVisibility(readOnly ? View.GONE : View.VISIBLE);
-            String priority = report.getPriority() == null || report.getPriority().trim().isEmpty()
-                    ? "Normal" : report.getPriority();
-            ArrayAdapter<String> priorityAdapter = new ArrayAdapter<>(
-                    fragment.requireContext(),
-                    android.R.layout.simple_spinner_item,
-                    new String[]{priority});
-            priorityAdapter.setDropDownViewResource(
-                    android.R.layout.simple_spinner_dropdown_item);
-            prioritySpinner.setAdapter(priorityAdapter);
-            prioritySpinner.setEnabled(false);
-        }
 
         List<String> personnel = report.getAssignedPersonnelIds();
         String assignedName = report.requiresTeam() ? null : report.getAssignedPersonnelName();

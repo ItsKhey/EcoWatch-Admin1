@@ -970,40 +970,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginVertical="12dp"
-                        android:background="@color/semi_transparent_green" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Personnel workload &amp; completion"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Compare assigned and completed reports"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="12sp" />
-
-                    <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/barChartWorkload"
-                        android:layout_width="match_parent"
-                        android:layout_height="220dp"
-                        android:layout_marginTop="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <!-- Retained for compatibility with existing Fragment code. -->
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/barChartWasteSize"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"

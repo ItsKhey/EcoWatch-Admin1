@@ -109,6 +109,9 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
     private String currentSearchQuery = "";
     private String currentScaleFilter = ""; // "", or Small/Medium/Large-Scale Waste
 
+    /** Cache of generated custom pin descriptors (Status Color + Scale Letter Badge). */
+    private final Map<String, BitmapDescriptor> customPinCache = new HashMap<>();
+
     /**
      * Bottom margin the floating controls started with, so repeated inset
      * applications do not stack the navigation card height on top of itself.
@@ -424,10 +427,10 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
         bindLegendRow(legend, R.id.legendReportDenied, R.color.map_marker_red, "Denied");
         bindLegendRow(legend, R.id.legendReportOther, R.color.map_marker_cyan, "Other status");
 
-        // Waste scale legend
-        bindLegendRow(legend, R.id.legendScaleSmall, R.color.map_marker_green, "Small-Scale Waste");
-        bindLegendRow(legend, R.id.legendScaleMedium, R.color.map_marker_orange, "Medium-Scale Waste");
-        bindLegendRow(legend, R.id.legendScaleLarge, R.color.map_marker_red, "Large-Scale Waste");
+        // Waste scale legend (Badge Symbols)
+        bindLegendBadgeRow(legend, R.id.legendScaleSmall, "S", "Small-Scale Waste");
+        bindLegendBadgeRow(legend, R.id.legendScaleMedium, "M", "Medium-Scale Waste");
+        bindLegendBadgeRow(legend, R.id.legendScaleLarge, "L", "Large-Scale Waste");
 
         bindLegendRow(legend, R.id.legendYourLocation, R.color.map_marker_blue, "Your location");
         bindLegendRow(legend, R.id.legendAssignedReport, R.color.map_marker_violet, "Assigned report");
@@ -451,9 +454,32 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
         if (row == null) return;
 
         ImageView dot = row.findViewById(R.id.legendDot);
+        TextView badge = row.findViewById(R.id.legendBadge);
         if (dot != null) {
+            dot.setVisibility(View.VISIBLE);
             ImageViewCompat.setImageTintList(dot, ColorStateList.valueOf(
                     androidx.core.content.ContextCompat.getColor(requireContext(), colorId)));
+        }
+        if (badge != null) {
+            badge.setVisibility(View.GONE);
+        }
+        TextView text = row.findViewById(R.id.legendLabel);
+        if (text != null) text.setText(label);
+    }
+
+    private void bindLegendBadgeRow(@NonNull View legend, int rowId, @NonNull String badgeLetter,
+                                    @NonNull String label) {
+        View row = legend.findViewById(rowId);
+        if (row == null) return;
+
+        ImageView dot = row.findViewById(R.id.legendDot);
+        TextView badge = row.findViewById(R.id.legendBadge);
+        if (dot != null) {
+            dot.setVisibility(View.GONE);
+        }
+        if (badge != null) {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(badgeLetter);
         }
         TextView text = row.findViewById(R.id.legendLabel);
         if (text != null) text.setText(label);
@@ -623,13 +649,109 @@ public class AdminMapFragment extends Fragment implements OnMapReadyCallback {
             if (timeFilteredOut(firstNonBlank(report.getCreatedAt(), report.getUpdatedAt()))) continue;
             if (!query.isEmpty() && !reportMatchesQuery(report, query)) continue;
 
+            BitmapDescriptor iconDescriptor = getCustomPinBitmapDescriptor(report.getStatus(), report.getWasteScale());
+
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(report.getLatitude(), report.getLongitude()))
                     .title(reportTitle(report))
-                    .snippet("Status: " + safe(report.getStatus()))
-                    .icon(BitmapDescriptorFactory.defaultMarker(getHueForStatus(report.getStatus()))));
+                    .snippet("Status: " + safe(report.getStatus()) + " | Scale: " + safe(report.getWasteScale()))
+                    .icon(iconDescriptor));
             if (marker != null) marker.setTag(report);
         }
+    }
+
+    /* ------------------------------------------------------------------ custom marker pin */
+
+    private BitmapDescriptor getCustomPinBitmapDescriptor(@Nullable String status, @Nullable String wasteScale) {
+        String safeStatus = status == null ? "" : status.trim().toLowerCase(Locale.US);
+        String safeScale = wasteScale == null ? "" : wasteScale.trim().toLowerCase(Locale.US);
+        String cacheKey = safeStatus + "_" + safeScale;
+
+        if (customPinCache.containsKey(cacheKey)) {
+            return customPinCache.get(cacheKey);
+        }
+
+        int pinColorId;
+        switch (safeStatus) {
+            case "pending":
+                pinColorId = R.color.map_marker_yellow;
+                break;
+            case "assigned":
+            case "in progress":
+                pinColorId = R.color.map_marker_orange;
+                break;
+            case "completed":
+            case "resolved":
+                pinColorId = R.color.map_marker_green;
+                break;
+            case "denied":
+            case "rejected":
+                pinColorId = R.color.map_marker_red;
+                break;
+            default:
+                pinColorId = R.color.map_marker_cyan;
+                break;
+        }
+
+        int pinColorInt = androidx.core.content.ContextCompat.getColor(requireContext(), pinColorId);
+
+        String letter = "";
+        if (safeScale.contains("small")) {
+            letter = "S";
+        } else if (safeScale.contains("medium")) {
+            letter = "M";
+        } else if (safeScale.contains("large")) {
+            letter = "L";
+        }
+
+        BitmapDescriptor descriptor = createCustomPinBitmapDescriptor(pinColorInt, letter);
+        customPinCache.put(cacheKey, descriptor);
+        return descriptor;
+    }
+
+    private BitmapDescriptor createCustomPinBitmapDescriptor(int pinColorInt, String letter) {
+        int width = 72;
+        int height = 96;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        Paint pinPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        pinPaint.setStyle(Paint.Style.FILL);
+        pinPaint.setColor(pinColorInt);
+
+        Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStrokeWidth(3f);
+        borderPaint.setColor(Color.parseColor("#44000000"));
+
+        android.graphics.Path path = new android.graphics.Path();
+        path.moveTo(36f, 92f);
+        path.lineTo(10f, 48f);
+        path.arcTo(6f, 3f, 66f, 63f, 150f, 240f, false);
+        path.lineTo(36f, 92f);
+        path.close();
+
+        canvas.drawPath(path, pinPaint);
+        canvas.drawPath(path, borderPaint);
+
+        if (letter != null && !letter.isEmpty()) {
+            Paint badgePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            badgePaint.setStyle(Paint.Style.FILL);
+            badgePaint.setColor(Color.WHITE);
+            canvas.drawCircle(36f, 33f, 18f, badgePaint);
+
+            Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            textPaint.setColor(Color.parseColor("#06402B"));
+            textPaint.setTextSize(22f);
+            textPaint.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+
+            Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
+            float baseline = 33f - (fontMetrics.ascent + fontMetrics.descent) / 2f;
+            canvas.drawText(letter, 36f, baseline, textPaint);
+        }
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     private void addFocusMarker(LatLng location) {
