@@ -396,8 +396,14 @@ public final class ReportDetailDialog {
         }
         boolean hasLiveAssignmentName =
                 assignedName != null && !assignedName.trim().isEmpty();
-        assignedLabel.setVisibility(report.requiresTeam() ? View.GONE : View.VISIBLE);
-        assignedText.setVisibility(report.requiresTeam() ? View.GONE : View.VISIBLE);
+        // A completed report has no active assignment left to show, so the row
+        // is hidden entirely instead of sitting there reading "None". Every
+        // other status keeps it so the admin can see who is on the hook.
+        boolean reportCompleted = report.getStatus() != null
+                && "Completed".equalsIgnoreCase(report.getStatus().trim());
+        boolean showAssignedPersonnel = !report.requiresTeam() && !reportCompleted;
+        assignedLabel.setVisibility(showAssignedPersonnel ? View.VISIBLE : View.GONE);
+        assignedText.setVisibility(showAssignedPersonnel ? View.VISIBLE : View.GONE);
         assignedText.setText(hasLiveAssignmentName
                 ? assignedName.trim() : fragment.getString(R.string.none));
 
