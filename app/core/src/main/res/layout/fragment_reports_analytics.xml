@@ -816,6 +816,45 @@
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="12sp" />
 
+                    <!-- Spot pager: steps the map through the ranked hotspots. -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/btnHotspotPrev"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Previous spot"
+                            android:src="@drawable/ic_back"
+                            app:tint="@color/green" />
+
+                        <TextView
+                            android:id="@+id/tvHotspotSpotLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="1st Spot"
+                            android:textColor="@color/green"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <ImageButton
+                            android:id="@+id/btnHotspotNext"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Next spot"
+                            android:rotation="180"
+                            android:src="@drawable/ic_back"
+                            app:tint="@color/green" />
+                    </LinearLayout>
+
                     <!-- Headline counts above the map. -->
                     <LinearLayout
                         android:layout_width="match_parent"

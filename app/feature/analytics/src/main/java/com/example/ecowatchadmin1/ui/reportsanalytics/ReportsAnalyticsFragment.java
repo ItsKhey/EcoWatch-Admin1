@@ -145,6 +145,10 @@ public class ReportsAnalyticsFragment extends Fragment {
     private TextView tvHotspotReports;
     private TextView tvHotspotEmpty;
     private LinearLayout llHotspotRanking;
+    private ImageButton btnHotspotPrev;
+    private ImageButton btnHotspotNext;
+    private TextView tvHotspotSpotLabel;
+    private int selectedHotspotIndex = 0;
     private final List<Hotspot> hotspots = new ArrayList<>();
     private final List<Marker> hotspotMarkers = new ArrayList<>();
     private boolean hotspotCameraInitialized;
@@ -231,6 +235,16 @@ public class ReportsAnalyticsFragment extends Fragment {
         tvHotspotReports = view.findViewById(R.id.tvHotspotReports);
         tvHotspotEmpty = view.findViewById(R.id.tvHotspotEmpty);
         llHotspotRanking = view.findViewById(R.id.llHotspotRanking);
+        btnHotspotPrev = view.findViewById(R.id.btnHotspotPrev);
+        btnHotspotNext = view.findViewById(R.id.btnHotspotNext);
+        tvHotspotSpotLabel = view.findViewById(R.id.tvHotspotSpotLabel);
+        if (btnHotspotPrev != null) {
+            btnHotspotPrev.setOnClickListener(v -> stepHotspot(-1));
+        }
+        if (btnHotspotNext != null) {
+            btnHotspotNext.setOnClickListener(v -> stepHotspot(1));
+        }
+        bindHotspotSelection();
 
         recyclerDetailedRecords = view.findViewById(R.id.recyclerDetailedRecords);
         tvNoData = view.findViewById(R.id.tvNoData);
@@ -650,8 +664,9 @@ public class ReportsAnalyticsFragment extends Fragment {
         hotspots.addAll(computed);
         applyCachedHotspotNames();
         bindHotspotStats();
-        bindHotspotRanking();
         renderHotspots();
+        bindHotspotSelection();
+        bindHotspotRanking();
         requestMissingHotspotNames();
     }
 
@@ -750,6 +765,65 @@ public class ReportsAnalyticsFragment extends Fragment {
         }
     }
 
+    /**
+     * Keeps the "< 1st Spot >" pager in sync with the ranked hotspots. The
+     * arrows are only useful when there is more than one spot to step through.
+     */
+    private void bindHotspotSelection() {
+        if (hotspots.isEmpty()) {
+            selectedHotspotIndex = 0;
+            if (tvHotspotSpotLabel != null) tvHotspotSpotLabel.setText("No spots");
+            setHotspotNavEnabled(false);
+            return;
+        }
+        if (selectedHotspotIndex >= hotspots.size()) selectedHotspotIndex = 0;
+        if (tvHotspotSpotLabel != null) {
+            tvHotspotSpotLabel.setText(ordinal(selectedHotspotIndex + 1) + " Spot");
+        }
+        setHotspotNavEnabled(hotspots.size() > 1);
+    }
+
+    private void setHotspotNavEnabled(boolean enabled) {
+        if (btnHotspotPrev != null) {
+            btnHotspotPrev.setEnabled(enabled);
+            btnHotspotPrev.setAlpha(enabled ? 1f : 0.4f);
+        }
+        if (btnHotspotNext != null) {
+            btnHotspotNext.setEnabled(enabled);
+            btnHotspotNext.setAlpha(enabled ? 1f : 0.4f);
+        }
+    }
+
+    /** Wraps around so the pager can keep stepping past the last spot. */
+    private void stepHotspot(int step) {
+        if (hotspots.size() <= 1) return;
+        selectedHotspotIndex = (selectedHotspotIndex + step + hotspots.size()) % hotspots.size();
+        bindHotspotSelection();
+        bindHotspotRanking();
+        focusSelectedHotspot();
+    }
+
+    private void focusSelectedHotspot() {
+        if (hotspotMap == null || selectedHotspotIndex >= hotspots.size()) return;
+        Hotspot hotspot = hotspots.get(selectedHotspotIndex);
+        LatLng center = new LatLng(hotspot.getLatitude(), hotspot.getLongitude());
+        hotspotMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 15f));
+        if (selectedHotspotIndex < hotspotMarkers.size()) {
+            hotspotMarkers.get(selectedHotspotIndex).showInfoWindow();
+        }
+    }
+
+    private static String ordinal(int number) {
+        int mod100 = number % 100;
+        if (mod100 >= 11 && mod100 <= 13) return number + "th";
+        switch (number % 10) {
+            case 1: return number + "st";
+            case 2: return number + "nd";
+            case 3: return number + "rd";
+            default: return number + "th";
+        }
+    }
+
     private void bindHotspotRanking() {
         if (llHotspotRanking == null) return;
         llHotspotRanking.removeAllViews();
@@ -769,9 +843,17 @@ public class ReportsAnalyticsFragment extends Fragment {
         for (int i = 0; i < hotspots.size(); i++) {
             Hotspot hotspot = hotspots.get(i);
             View row = inflater.inflate(R.layout.item_hotspot_ranking, llHotspotRanking, false);
+            TextView name = row.findViewById(R.id.tvHotspotName);
             ((TextView) row.findViewById(R.id.tvHotspotRank)).setText((i + 1) + ".");
-            ((TextView) row.findViewById(R.id.tvHotspotName)).setText(hotspot.displayName());
+            name.setText(hotspot.displayName());
             ((TextView) row.findViewById(R.id.tvHotspotCount)).setText(String.valueOf(hotspot.getCount()));
+
+            // Keep the list in step with the "< 1st Spot >" pager: the row the
+            // map is focused on gets its name highlighted.
+            if (i == selectedHotspotIndex) {
+                name.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+            }
+
             // The card already draws a rule below the list, so the last row's
             // own divider would show as a double line.
             row.findViewById(R.id.hotspotRowDivider)
