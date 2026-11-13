@@ -18,93 +18,69 @@
             android:paddingEnd="16dp"
             android:paddingBottom="24dp">
 
-            <TextView
-                android:id="@+id/personnelTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/personnel_title"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/personnelSubtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/personnel_subtitle"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="13sp" />
+                <LinearLayout
+                    android:id="@+id/personnelHeaderContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/btnBurger"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/personnelTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/personnel_title"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/personnelSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/personnel_subtitle"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnBurger"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/menu_description"
+                    android:src="@drawable/ic_menu_burger"
+                    app:tint="?attr/colorPrimary" />
+
+            </RelativeLayout>
 
             <!--
-              Personnel / Vehicles.
-
-              A segmented control rather than a second navigation item: the two
-              lists are read together and share the cards, search bar and filter
-              row below, so switching between them should not cost a screen
-              transition. Everything under it — the counts, the search hint, the
-              filter chips and the list itself — adapts to the selected side.
+              Personnel / Vehicles / Teams now live in the burger menu in the
+              header. The three lists still share the cards, search bar and filter
+              row below, so switching between them does not cost a screen
+              transition; the section is chosen from the menu and everything
+              underneath adapts to it.
             -->
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/managementSelector"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                app:checkedButton="@+id/managementSelectorPersonnel"
-                app:selectionRequired="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/managementSelectorPersonnel"
-                    style="@style/Widget.MyEcoWatch1.SelectorSegment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="@string/selector_personnel"
-                    app:backgroundTint="?attr/colorSurface"
-                    app:icon="@drawable/personnel"
-                    app:iconGravity="top"
-                    app:iconPadding="4dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/managementSelectorVehicles"
-                    style="@style/Widget.MyEcoWatch1.SelectorSegment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/selector_vehicles"
-                    app:backgroundTint="?attr/colorSurface"
-                    app:icon="@drawable/ic_selector_vehicle"
-                    app:iconGravity="top"
-                    app:iconPadding="4dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/managementSelectorTeams"
-                    style="@style/Widget.MyEcoWatch1.SelectorSegment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/selector_teams"
-                    app:backgroundTint="?attr/colorSurface"
-                    app:icon="@drawable/team"
-                    app:iconGravity="top"
-                    app:iconPadding="4dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp"/>
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
             <HorizontalScrollView
                 android:id="@+id/managementCardsScroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:fadeScrollbars="false"
                 android:fillViewport="false"
-                android:scrollbars="none">
+                android:paddingBottom="6dp"
+                android:scrollbarSize="4dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbarThumbHorizontal="@color/scroll_indicator"
+                android:scrollbars="horizontal">
 
                 <LinearLayout
                     android:layout_width="wrap_content"

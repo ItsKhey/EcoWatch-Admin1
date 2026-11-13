@@ -55,7 +55,7 @@ public final class VehicleDetailsFragment extends Fragment {
     private MaterialButton historyLoadMore;
     private TextView type;
     private TextView ratedLoad;
-    private TextView lastService;
+    private TextView lastActivity;
     private TextView created;
     private View collectionCard;
     private TextView collection;
@@ -126,7 +126,7 @@ public final class VehicleDetailsFragment extends Fragment {
         tasksCompleted = details.findViewById(R.id.reporterStatCompleted);
         type = details.findViewById(R.id.vehicleDetailType);
         ratedLoad = details.findViewById(R.id.vehicleDetailRatedLoad);
-        lastService = details.findViewById(R.id.vehicleDetailLastService);
+        lastActivity = details.findViewById(R.id.vehicleDetailLastService);
         created = details.findViewById(R.id.vehicleDetailCreated);
         collectionCard = details.findViewById(R.id.vehicleDetailCollectionCard);
         collection = details.findViewById(R.id.vehicleDetailCollection);
@@ -336,8 +336,8 @@ public final class VehicleDetailsFragment extends Fragment {
         bindAssignedPersonnel(vehicle);
         String load = vehicle.getRatedLoadLabel();
         ratedLoad.setText(load == null ? "—" : load);
-        lastService.setText(formatTimestamp(vehicle.getLastServiceAt(),
-                getString(R.string.vehicle_never_serviced)));
+        lastActivity.setText(formatTimestamp(vehicle.getLastActivityAt(),
+                getString(R.string.vehicle_no_activity)));
         created.setText(formatTimestamp(vehicle.getCreatedAt(), "—"));
 
         String collectionName = vehicle.getCurrentCollection();

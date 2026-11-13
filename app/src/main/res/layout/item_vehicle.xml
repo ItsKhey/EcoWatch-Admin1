@@ -80,6 +80,14 @@
             android:layout_marginBottom="14dp"
             android:background="?attr/colorOutlineVariant" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="@string/vehicle_collection_status"/>
+
         <!-- Current collection: the vehicle's equivalent of "current task" -->
         <TextView
             android:id="@+id/vehicleCurrentCollection"
@@ -89,9 +97,10 @@
             android:maxLines="2"
             android:textColor="?attr/colorOnSurface"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="5dp"/>
 
-        <!-- Last service: the vehicle's equivalent of "last active" -->
+        <!-- Last collection: the vehicle's equivalent of "last active" -->
         <TextView
             android:id="@+id/vehicleLastService"
             android:layout_width="match_parent"
@@ -108,12 +117,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vehicle_status"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/vehicleMaintenanceStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/vehicle_availability"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -121,7 +148,7 @@
                 android:id="@+id/vehicleAvailability"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>

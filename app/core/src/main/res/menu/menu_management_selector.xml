@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      The three sections of the personnel screen. They are checkable as a single
+      group so the menu shows which one is currently open.
+    -->
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/managementSelectorPersonnel"
+            android:icon="@drawable/ic_selector_personnel"
+            android:title="@string/selector_personnel" />
+
+        <item
+            android:id="@+id/managementSelectorVehicles"
+            android:icon="@drawable/ic_selector_vehicle"
+            android:title="@string/selector_vehicles" />
+
+        <item
+            android:id="@+id/managementSelectorTeams"
+            android:icon="@drawable/ic_selector_team"
+            android:title="@string/selector_teams" />
+    </group>
+</menu>

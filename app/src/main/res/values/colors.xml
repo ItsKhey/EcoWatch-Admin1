@@ -3,6 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#06402B</color>
+    <!-- Fleet cards' horizontal scrollbar. A fixed dark green instead of
+         @color/green, which the night palette lightens; this indicator is meant
+         to read dark green in both themes. -->
+    <color name="scroll_indicator">#FF06402B</color>
     <color name="light_green">#A8FFB0</color>
     <color name="semi_transparent_green">#8006402B</color>
     <color name="transparent">#00000000</color>

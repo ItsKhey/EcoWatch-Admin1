@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Cenro EcoWatch Admin</string>
+    <string name="menu_description">Menu</string>
     <string name="nav_home">Home</string>
     <string name="nav_reports">Reports</string>
     <string name="nav_alerts">Alerts</string>
@@ -316,11 +317,11 @@
     <string name="vehicle_collection_report_hint">Required while the vehicle is on a collection</string>
     <string name="vehicle_collection_format">On collection: %1$s</string>
     <string name="vehicle_no_collection">Not on a collection</string>
-    <string name="vehicle_last_service_format">Last service: %1$s</string>
+    <string name="vehicle_last_activity_format">Last Collection: %1$s</string>
+    <string name="vehicle_last_activity_label">Last activity</string>
+    <string name="vehicle_no_activity">No activity yet</string>
     <string name="vehicle_on_collection">On collection</string>
     <string name="vehicle_out_of_service">Out of service</string>
-    <string name="vehicle_service_label">Service</string>
-    <string name="vehicle_never_serviced">Never serviced</string>
     <string name="vehicle_added_label">Added to fleet</string>
     <string name="vehicle_icon_description">Vehicle</string>
     <string name="vehicle_save">Save vehicle</string>
@@ -559,4 +560,10 @@
     <string name="team_history_title">Team Waste Collection History</string>
     <string name="team_history_empty">No completed or revised work recorded for this team yet.</string>
     <string name="team_history_load_more">Load more work</string>
+
+    <string name="personnel_status">Status:</string>
+    <string name="personnel_availability">Availability Status:</string>
+    <string name="vehicle_status">Vehicle Status:</string>
+    <string name="vehicle_availability">Vehicle Availability:</string>
+    <string name="vehicle_collection_status">Collection Status:</string>
 </resources>

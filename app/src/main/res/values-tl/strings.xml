@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Cenro EcoWatch Admin</string>
+    <string name="menu_description">Menu</string>
     <string name="nav_home">Home</string>
     <string name="nav_reports">Mga Ulat</string>
     <string name="nav_alerts">Mga Alerto</string>
@@ -166,6 +167,7 @@
     <!-- Personnel / Vehicles selector. -->
     <string name="selector_personnel">Tauhan</string>
     <string name="selector_vehicles">Mga Sasakyan</string>
+    <string name="selector_teams">Mga Koponan</string>
     <string name="selector_personnel_icon_description">Tauhan</string>
     <string name="selector_vehicles_icon_description">Mga sasakyan</string>
 
@@ -203,11 +205,11 @@
     <string name="vehicle_collection_report_hint">Kailangan habang nasa pagkolekta ang sasakyan</string>
     <string name="vehicle_collection_format">Nasa pagkolekta: %1$s</string>
     <string name="vehicle_no_collection">Hindi nasa pagkolekta</string>
-    <string name="vehicle_last_service_format">Huling pag-aayos: %1$s</string>
+    <string name="vehicle_last_activity_format">Huling koleksyon: %1$s</string>
+    <string name="vehicle_last_activity_label">Huling aktibidad</string>
+    <string name="vehicle_no_activity">Wala pang aktibidad</string>
     <string name="vehicle_on_collection">Nasa pagkolekta</string>
     <string name="vehicle_out_of_service">Hindi paandito</string>
-    <string name="vehicle_service_label">Pag-aayos</string>
-    <string name="vehicle_never_serviced">Hindi pa na-aayos</string>
     <string name="vehicle_added_label">Idinagdag sa fleet</string>
     <string name="vehicle_icon_description">Sasakyan</string>
     <string name="vehicle_save">I-save ang sasakyan</string>
@@ -296,4 +298,9 @@
     <string name="reporter_disable_confirmation">Hindi na makakapag-sign in o makakapag-ulat si %1$s. Iniingatan ang kanyang profile, ulat at kasaysayan sa loob ng 30 araw at permanenteng tatanggalin pagkatapos noon. Maaari mo pa itong buksan sa loob ng 30 araw.</string>
     <string name="reporter_enable_account">I-enable muli ang account</string>
     <string name="reporter_enable_confirmation">Maaari nang mag-sign in muli si %1$s gamit ang kanyang dating password. Iniingatan ang kanyang profile, ulat at kasaysayan.</string>
+
+    <string name="personnel_status">Katayuan:</string>
+    <string name="personnel_availability">Katayuan ng Availability:</string>
+    <string name="vehicle_status">Katayuan ng Sasakyan:</string>
+    <string name="vehicle_availability">Availability ng Sasakyan:</string>
 </resources>

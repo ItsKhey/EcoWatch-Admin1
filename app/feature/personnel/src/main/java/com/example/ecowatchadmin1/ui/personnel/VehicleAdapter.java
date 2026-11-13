@@ -15,13 +15,16 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.example.ecowatchadmin1.R;
 import com.example.ecowatchadmin1.data.models.Personnel;
 import com.example.ecowatchadmin1.data.models.Vehicle;
-import com.example.ecowatchadmin1.utils.AdminAccountDateFormatter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Renders the fleet list.
@@ -137,10 +140,13 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
                 R.string.vehicle_collection_format, collection)
                 : holder.itemView.getContext().getString(R.string.vehicle_no_collection));
 
+        // Last collection, the vehicle's stand-in for "last active". The
+        // activity stamp moves when a truck is dispatched, released after a
+        // completed task, edited or serviced.
         holder.lastService.setText(holder.itemView.getContext().getString(
-                R.string.vehicle_last_service_format,
-                formatVehicleTimestamp(vehicle.getLastServiceAt(),
-                        holder.itemView.getContext().getString(R.string.vehicle_never_serviced))));
+                R.string.vehicle_last_activity_format,
+                formatVehicleTimestamp(vehicle.getLastActivityAt(),
+                        holder.itemView.getContext().getString(R.string.vehicle_no_activity))));
 
         Personnel driver = getDriver(vehicle);
         boolean hasDriver = driver != null;
@@ -228,8 +234,54 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
 
     private static String formatVehicleTimestamp(String raw, String emptyValue) {
         if (raw == null || raw.trim().isEmpty()) return emptyValue;
-        String formatted = AdminAccountDateFormatter.format(raw);
-        return formatted == null ? raw : formatted;
+        String value = raw.trim();
+        Date date = parseDate(value);
+        if (date == null) return value;
+
+        long diff = System.currentTimeMillis() - date.getTime();
+        if (diff < 0) diff = 0;
+
+        long minutes = diff / (60 * 1000);
+        if (minutes < 1) return "Just now";
+        if (minutes < 60) {
+            return minutes + (minutes == 1 ? " Minute Ago" : " Minutes Ago");
+        }
+
+        long hours = diff / (60 * 60 * 1000);
+        if (hours < 24) {
+            return hours + (hours == 1 ? " Hour Ago" : " Hours Ago");
+        }
+
+        long days = diff / (24 * 60 * 60 * 1000);
+        if (days < 100) {
+            return days + (days == 1 ? " day ago" : " days ago");
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy", Locale.US);
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+        return formatter.format(date);
+    }
+
+    private static Date parseDate(String raw) {
+        String[] patterns = new String[]{
+                "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+                "yyyy-MM-dd'T'HH:mm:ssXXX",
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd"
+        };
+        for (String pattern : patterns) {
+            try {
+                SimpleDateFormat parser = new SimpleDateFormat(pattern, Locale.US);
+                parser.setLenient(false);
+                if (pattern.endsWith("'Z'")) parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return parser.parse(raw);
+            } catch (ParseException ignored) {
+                // Try the next pattern.
+            }
+        }
+        return null;
     }
 
     static final class VehicleViewHolder extends RecyclerView.ViewHolder {

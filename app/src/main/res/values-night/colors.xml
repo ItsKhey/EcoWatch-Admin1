@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="green">#81C784</color>
+    <!-- Deliberately the same dark green as the day palette: the fleet cards'
+         scrollbar keeps its colour when the theme switches to dark. -->
+    <color name="scroll_indicator">#FF06402B</color>
     <color name="white">#121212</color>
     <color name="black">#FFFFFF</color>
     <color name="light_green">#1B5E20</color>

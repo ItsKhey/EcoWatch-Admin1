@@ -190,7 +190,7 @@ final class VehicleDialogs {
         TextView status = content.findViewById(R.id.vehicleDetailStatus);
         TextView type = content.findViewById(R.id.vehicleDetailType);
         TextView ratedLoad = content.findViewById(R.id.vehicleDetailRatedLoad);
-        TextView lastService = content.findViewById(R.id.vehicleDetailLastService);
+        TextView lastActivity = content.findViewById(R.id.vehicleDetailLastService);
         TextView created = content.findViewById(R.id.vehicleDetailCreated);
 
         View collectionCard = content.findViewById(R.id.vehicleDetailCollectionCard);
@@ -219,9 +219,9 @@ final class VehicleDialogs {
         String ratedLoadValue = vehicle.getRatedLoadLabel();
         ratedLoad.setText(ratedLoadValue == null ? "—" : ratedLoadValue);
 
-        lastService.setText(vehicle.getLastServiceAt() == null || vehicle.getLastServiceAt().isEmpty()
-                ? context.getString(R.string.vehicle_never_serviced)
-                : vehicle.getLastServiceAt());
+        lastActivity.setText(vehicle.getLastActivityAt() == null || vehicle.getLastActivityAt().isEmpty()
+                ? context.getString(R.string.vehicle_no_activity)
+                : vehicle.getLastActivityAt());
         created.setText(vehicle.getCreatedAt() == null || vehicle.getCreatedAt().isEmpty()
                 ? "—" : vehicle.getCreatedAt());
 

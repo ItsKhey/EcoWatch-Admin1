@@ -13,12 +13,14 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -45,7 +48,6 @@ import com.example.ecowatchadmin1.data.repository.CleaningTeamRepository;
 import com.example.ecowatchadmin1.ui.home.DashboardActivity;
 import com.example.ecowatchadmin1.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -102,7 +104,8 @@ public class PersonnelFragment extends Fragment {
     private TextView titleView;
     private TextView subtitleView;
     private EditText searchEditText;
-    private MaterialButtonToggleGroup selector;
+    private ImageButton managementMenuButton;
+    private PopupMenu managementMenu;
     private MaterialButton addVehicleButton;
     private MaterialButton registerPersonnelButton;
     private MaterialButton createTeamButton;
@@ -116,9 +119,9 @@ public class PersonnelFragment extends Fragment {
     private final List<CleaningTeam> allTeams = new ArrayList<>();
 
     /**
-     * Which half of the selector is showing. Everything below the cards — the
-     * search bar, the chips, the list — reads this rather than keeping two sets
-     * of state that could disagree.
+     * Which section of the management screen is showing. Everything below the
+     * cards — the search bar, the chips, the list — reads this rather than
+     * keeping three sets of state that could disagree.
      */
     private ManagementMode.Kind mode = ManagementMode.Kind.PERSONNEL;
     private ManagementMode activeMode = ManagementMode.PERSONNEL;
@@ -243,7 +246,7 @@ public class PersonnelFragment extends Fragment {
         setupDashboard();
         setupFilters();
         observeViewModel();
-        setupSelector();
+        setupManagementMenu();
         viewModel.loadPersonnel();
         // The fleet is fetched up front rather than on first switch, so flipping
         // to Vehicles shows real rows instead of a spinner the administrator has
@@ -323,7 +326,7 @@ public class PersonnelFragment extends Fragment {
         titleView = view.findViewById(R.id.personnelTitle);
         subtitleView = view.findViewById(R.id.personnelSubtitle);
         searchEditText = view.findViewById(R.id.personnelSearch);
-        selector = view.findViewById(R.id.managementSelector);
+        managementMenuButton = view.findViewById(R.id.btnBurger);
         addVehicleButton = view.findViewById(R.id.btnAddVehicle);
         registerPersonnelButton = view.findViewById(R.id.btnRegisterPersonnel);
         createTeamButton = view.findViewById(R.id.btnCreateTeam);
@@ -416,17 +419,22 @@ public class PersonnelFragment extends Fragment {
     }
 
     /**
-     * Wires the Personnel/Vehicles selector and the four filter chips.
+     * Wires the burger menu that switches between Personnel, Vehicles and Teams,
+     * plus the four filter chips.
      *
-     * <p>The chips are neutral views that the selected side labels and binds, so
-     * there is one row of chips rather than two that could fall out of step.
+     * <p>The three sections live in the menu instead of a row of buttons so the
+     * list keeps that height. The chips are neutral views that the selected
+     * section labels and binds, so there is one row of chips rather than three
+     * that could fall out of step.
      */
-    private void setupSelector() {
-        if (selector.getCheckedButtonId() == View.NO_ID) {
-            selector.check(R.id.managementSelectorPersonnel);
-        }
-        selector.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
+    private void setupManagementMenu() {
+        managementMenu = new PopupMenu(requireContext(), managementMenuButton);
+        managementMenu.getMenuInflater().inflate(R.menu.menu_management_selector,
+                managementMenu.getMenu());
+        // The menu items carry the same icons the old segmented control used.
+        managementMenu.setForceShowIcon(true);
+        managementMenu.setOnMenuItemClickListener(item -> {
+            int checkedId = item.getItemId();
             if (checkedId == R.id.managementSelectorVehicles) {
                 mode = ManagementMode.Kind.VEHICLES;
             } else if (checkedId == R.id.managementSelectorTeams) {
@@ -435,6 +443,15 @@ public class PersonnelFragment extends Fragment {
                 mode = ManagementMode.Kind.PERSONNEL;
             }
             applyMode();
+            return true;
+        });
+
+        managementMenuButton.setOnClickListener(v -> {
+            // Check the item for the section that is showing before the menu
+            // opens, so the menu itself reports the current state.
+            MenuItem selected = managementMenu.getMenu().findItem(menuItemFor(mode));
+            if (selected != null) selected.setChecked(true);
+            managementMenu.show();
         });
 
         filterAll.setOnClickListener(v -> selectFilter(activeMode.filterAllValue));
@@ -455,6 +472,13 @@ public class PersonnelFragment extends Fragment {
                 teamViewModel, new ArrayList<>(allPersonnel), this::refreshTeams));
 
         applyMode();
+    }
+
+    /** The menu item that represents the currently showing section. */
+    private int menuItemFor(ManagementMode.Kind kind) {
+        if (kind == ManagementMode.Kind.VEHICLES) return R.id.managementSelectorVehicles;
+        if (kind == ManagementMode.Kind.TEAMS) return R.id.managementSelectorTeams;
+        return R.id.managementSelectorPersonnel;
     }
 
     /**

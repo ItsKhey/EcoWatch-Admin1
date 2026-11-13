@@ -140,9 +140,13 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
                 R.string.vehicle_collection_format, collection)
                 : holder.itemView.getContext().getString(R.string.vehicle_no_collection));
 
+        // Last collection, the vehicle's stand-in for "last active". The
+        // activity stamp moves when a truck is dispatched, released after a
+        // completed task, edited or serviced.
         holder.lastService.setText(holder.itemView.getContext().getString(
-                R.string.vehicle_last_service_format,
-                formatActivity(vehicle.getLastServiceAt(), false)));
+                R.string.vehicle_last_activity_format,
+                formatActivity(vehicle.getLastActivityAt(),
+                        holder.itemView.getContext().getString(R.string.vehicle_no_activity))));
 
         // Two labels, like the personnel card: the raw stored status and a plain
         // availability word, both coloured by the same state.
@@ -228,30 +232,38 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
         return latitude >= -90d && latitude <= 90d && longitude >= -180d && longitude <= 180d;
     }
 
-    /** "2 days ago" style, matching the personnel card's activity line. */
-    private static String formatActivity(String raw, boolean fallbackToRaw) {
-        if (raw == null || raw.trim().isEmpty()) {
-            return fallbackToRaw ? "" : "Never serviced";
-        }
+    /**
+     * "45 Minutes Ago" / "12 Hours Ago" / "2 days ago" style, matching the
+     * personnel card's activity line. Once the gap reaches three-digit days
+     * (100+), the exact date is more useful than a count, so it switches to
+     * MM/dd/yy.
+     */
+    private static String formatActivity(String raw, String emptyValue) {
+        if (raw == null || raw.trim().isEmpty()) return emptyValue;
         String value = raw.trim();
         Date date = parseDate(value);
         if (date == null) return value;
 
         long diff = System.currentTimeMillis() - date.getTime();
-        if (diff < 60 * 1000) return "Just now";
-        if (diff < 60 * 60 * 1000) {
-            long mins = diff / (60 * 1000);
-            return mins + (mins == 1 ? " min ago" : " mins ago");
+        if (diff < 0) diff = 0;
+
+        long minutes = diff / (60 * 1000);
+        if (minutes < 1) return "Just now";
+        if (minutes < 60) {
+            return minutes + (minutes == 1 ? " Minute Ago" : " Minutes Ago");
         }
-        if (diff < 24 * 60 * 60 * 1000) {
-            long hours = diff / (60 * 60 * 1000);
-            return hours + (hours == 1 ? " hr ago" : " hrs ago");
+
+        long hours = diff / (60 * 60 * 1000);
+        if (hours < 24) {
+            return hours + (hours == 1 ? " Hour Ago" : " Hours Ago");
         }
-        if (diff < 30L * 24 * 60 * 60 * 1000) {
-            long days = diff / (24 * 60 * 60 * 1000);
+
+        long days = diff / (24 * 60 * 60 * 1000);
+        if (days < 100) {
             return days + (days == 1 ? " day ago" : " days ago");
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy", Locale.US);
         formatter.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
         return formatter.format(date);
     }
