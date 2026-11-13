@@ -267,7 +267,7 @@
     <string name="personnel_error_required">This field is required.</string>
     <string name="personnel_result_count">Showing %1$d of %2$d personnel</string>
     <string name="personnel_id_format">ID: %1$s</string>
-    <string name="personnel_last_active_label">Last active</string>
+    <string name="personnel_last_active_label">Last Active</string>
     <string name="personnel_current_task_label">Current Task</string>
     <string name="personnel_last_active_header">Last Active</string>
     <string name="personnel_subtitle_format">%1$s · %2$s</string>
@@ -318,7 +318,7 @@
     <string name="vehicle_collection_format">On collection: %1$s</string>
     <string name="vehicle_no_collection">Not on a collection</string>
     <string name="vehicle_last_activity_format">Last Collection: %1$s</string>
-    <string name="vehicle_last_activity_label">Last activity</string>
+    <string name="vehicle_last_activity_label">Last Collection</string>
     <string name="vehicle_no_activity">No activity yet</string>
     <string name="vehicle_on_collection">On collection</string>
     <string name="vehicle_out_of_service">Out of service</string>
@@ -378,11 +378,11 @@
     </plurals>
     <string name="reporter_status_active">Active</string>
     <string name="reporter_status_disabled">Disabled</string>
-    <string name="reporter_last_active_label">Last active</string>
+    <string name="reporter_last_active_label">Last Active</string>
     <string name="reporter_details_title">Reporter details</string>
     <string name="reporter_profile_information">Profile information</string>
     <string name="reporter_resident_id_label">Resident ID</string>
-    <string name="reporter_date_created_label">Date created</string>
+    <string name="reporter_date_created_label">Date Created</string>
     <string name="reporter_report_history">Report history</string>
     <string name="reporter_no_reports">No reports submitted yet</string>
     <string name="reporter_statistics_title">Report monitoring</string>
@@ -562,7 +562,7 @@
     <string name="team_history_load_more">Load more work</string>
 
     <string name="personnel_status">Status:</string>
-    <string name="personnel_availability">Availability Status:</string>
+    <string name="personnel_availability">Availability:</string>
     <string name="vehicle_status">Vehicle Status:</string>
     <string name="vehicle_availability">Vehicle Availability:</string>
     <string name="vehicle_collection_status">Collection Status:</string>

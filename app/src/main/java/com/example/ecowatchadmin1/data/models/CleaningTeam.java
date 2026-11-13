@@ -49,6 +49,26 @@ public class CleaningTeam implements Serializable {
     private String leaderName;
 
     /**
+     * The last collection this crew completed.
+     *
+     * <p>Null means the crew has not completed a collection yet. The card
+     * deliberately does not fall back to {@link #getUpdatedAt()}, because a
+     * team edit is not a collection. Alternate names are accepted for the same
+     * rolling-deployment reason as the personnel fields.
+     */
+    @SerializedName(value = "lastCollectionAt", alternate = {
+            "last_collection_at", "lastCollection", "last_collection",
+            "lastCompletedAt", "last_completed_at"
+    })
+    private String lastCollectionAt;
+
+    @SerializedName(value = "updatedAt", alternate = {"updated_at"})
+    private String updatedAt;
+
+    @SerializedName(value = "createdAt", alternate = {"created_at"})
+    private String createdAt;
+
+    /**
      * One cleaner on the crew.
      *
      * <p>Carried so the assignment sheet can show who the team actually is,
@@ -123,6 +143,31 @@ public class CleaningTeam implements Serializable {
 
     public String getLeaderName() { return leaderName; }
     public void setLeaderName(String leaderName) { this.leaderName = leaderName; }
+
+    public String getLastCollectionAt() { return lastCollectionAt; }
+    public void setLastCollectionAt(String lastCollectionAt) {
+        this.lastCollectionAt = lastCollectionAt;
+    }
+
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
+    /**
+     * The stamp the card labels "Last Collection".
+     *
+     * <p>Only a completed collection counts. Falling back to {@code updatedAt}
+     * would show a team edit as if the crew had just finished a cleanup, so a
+     * blank value means the team has no completed collection yet.
+     */
+    public String getLastCollection() {
+        if (lastCollectionAt != null && !lastCollectionAt.trim().isEmpty()) {
+            return lastCollectionAt;
+        }
+        return null;
+    }
 
     /** True when somebody answers for this crew. */
     public boolean hasLeader() {

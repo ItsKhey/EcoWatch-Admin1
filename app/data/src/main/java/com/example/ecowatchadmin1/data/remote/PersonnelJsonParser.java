@@ -184,6 +184,9 @@ public final class PersonnelJsonParser {
                 || "IN_PROGRESS".equals(normalizedStatus) || "IN PROGRESS".equals(normalizedStatus)));
 
         person.setLastActive(readString(source, "lastActive", "last_active", "lastSeen", "last_seen"));
+        person.setLastCollectionAt(readString(source,
+                "lastCollectionAt", "last_collection_at", "lastCollection", "last_collection",
+                "lastCompletedAt", "last_completed_at"));
 
         JsonObject assignment = findObject(source,
                 "currentAssignment", "current_assignment", "assignment", "currentTask", "current_task");

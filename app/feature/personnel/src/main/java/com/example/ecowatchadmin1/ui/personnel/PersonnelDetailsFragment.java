@@ -61,6 +61,7 @@ public class PersonnelDetailsFragment extends Fragment {
     private TextView address;
     private TextView dateCreated;
     private TextView lastActive;
+    private TextView lastCollection;
     private TextView contactPhone;
     private TextView contactEmail;
     private TextView contactMessenger;
@@ -203,6 +204,7 @@ public class PersonnelDetailsFragment extends Fragment {
         address = view.findViewById(R.id.reporterDetailsAddress);
         dateCreated = view.findViewById(R.id.reporterDetailsDateCreated);
         lastActive = view.findViewById(R.id.reporterDetailsLastActive);
+        lastCollection = view.findViewById(R.id.personnelLastCollection);
         contactPhoneRow = view.findViewById(R.id.personnelContactPhoneRow);
         contactEmailRow = view.findViewById(R.id.personnelContactEmailRow);
         contactMessengerRow = view.findViewById(R.id.personnelContactMessengerRow);
@@ -277,6 +279,7 @@ public class PersonnelDetailsFragment extends Fragment {
             }
             taskAdapter.setReports(values);
             taskEmpty.setVisibility(values.isEmpty() ? View.VISIBLE : View.GONE);
+            if (current != null) bindLastCollection(current);
         });
         viewModel.getLoading().observe(getViewLifecycleOwner(), loading -> {
             if (swipeRefresh != null) swipeRefresh.setRefreshing(Boolean.TRUE.equals(loading));
@@ -329,6 +332,7 @@ public class PersonnelDetailsFragment extends Fragment {
         address.setText(PersonnelUi.valueOrDash(person.getAddress()));
         dateCreated.setText(PersonnelUi.formatDate(person.getDateCreated()));
         lastActive.setText(PersonnelUi.formatLastActive(person.getLastActive()));
+        bindLastCollection(person);
 
         String personName = person.getFullName();
         contactPhoneValue = bindContactRow(contactPhoneRow, contactPhone,
@@ -363,6 +367,23 @@ public class PersonnelDetailsFragment extends Fragment {
                 if (changed) taskAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    /**
+     * Paints the last finished collection for this person.
+     *
+     * <p>An explicit server stamp wins. Otherwise the newest completed task in
+     * the loaded history is used, which keeps older deployments useful when
+     * they do not send the explicit field. The account's last activity is
+     * deliberately not a fallback: signing in is not a collection.
+     */
+    private void bindLastCollection(Personnel person) {
+        if (lastCollection == null) return;
+        String raw = person == null ? null : person.getLastCollectionAt();
+        if (isBlank(raw) && viewModel != null) {
+            raw = PersonnelUi.latestCollectionTimestamp(viewModel.getReports().getValue());
+        }
+        lastCollection.setText(PersonnelUi.formatCollectionDateTime(raw));
     }
 
     private void bindDescriptionRole(Personnel person) {

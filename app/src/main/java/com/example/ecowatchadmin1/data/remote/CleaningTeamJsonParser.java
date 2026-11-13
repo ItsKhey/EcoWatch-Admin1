@@ -57,6 +57,11 @@ public final class CleaningTeamJsonParser {
                 "leaderId", "leader_id", "leaderPersonnelId", "leader_personnel_id"));
         team.setLeaderName(readString(teamObject,
                 "leaderName", "leader_name", "leaderFullName", "leader_full_name"));
+        team.setLastCollectionAt(readString(teamObject,
+                "lastCollectionAt", "last_collection_at", "lastCollection", "last_collection",
+                "lastCompletedAt", "last_completed_at"));
+        team.setUpdatedAt(readString(teamObject, "updatedAt", "updated_at"));
+        team.setCreatedAt(readString(teamObject, "createdAt", "created_at"));
 
         // A member may carry its own leader flag; a payload that only names the
         // leader on the team is resolved here rather than left for every caller.

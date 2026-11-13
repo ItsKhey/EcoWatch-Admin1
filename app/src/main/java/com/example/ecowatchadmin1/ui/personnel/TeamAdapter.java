@@ -131,6 +131,9 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
         holder.crewCount.setText(holder.itemView.getContext()
                 .getString(R.string.team_crew_count, crewSize));
+        if (holder.lastCollection != null) {
+            holder.lastCollection.setText(PersonnelUi.formatLastCollection(team.getLastCollection()));
+        }
         holder.status.setText(ready ? R.string.team_status_ready : R.string.team_status_needs_attention);
         holder.status.setTextColor(holder.itemView.getContext().getColor(
                 ready ? R.color.personnel_online : R.color.personnel_cleaning));
@@ -196,6 +199,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
         final TextView membersPreview;
         final TextView cleaningStatus;
         final TextView availability;
+        final TextView lastCollection;
         final TextView crewCount;
         final TextView status;
         final View details;
@@ -209,6 +213,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
             membersPreview = itemView.findViewById(R.id.teamMembersPreview);
             cleaningStatus = itemView.findViewById(R.id.teamCleaningStatus);
             availability = itemView.findViewById(R.id.teamAvailability);
+            lastCollection = itemView.findViewById(R.id.teamLastCollection);
             crewCount = itemView.findViewById(R.id.teamCrewCount);
             status = itemView.findViewById(R.id.teamStatus);
             details = itemView.findViewById(R.id.btnTeamDetails);

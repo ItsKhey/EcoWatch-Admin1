@@ -100,6 +100,12 @@
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorOutlineVariant"
+                    android:layout_marginTop="6dp"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -117,8 +123,37 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:visibility="gone" />
+                    android:textSize="14sp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorOutlineVariant"
+                    android:layout_marginTop="6dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Team Last Collection"
+                    android:textColor="?attr/colorPrimary"
+                    android:layout_marginTop="6dp"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.08"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/teamlastCollection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14sp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorOutlineVariant"
+                    android:layout_marginTop="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -140,6 +175,12 @@
                     android:textStyle="bold"
                     android:layout_marginStart="3dp"
                     android:layout_marginEnd="12dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorOutlineVariant"
+                    android:layout_marginTop="6dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -206,6 +247,12 @@
                         android:textColor="?attr/colorPrimary"
                         android:textSize="11dp"/>
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorOutlineVariant"
+                    android:layout_marginTop="6dp"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/teamDetailMembers"

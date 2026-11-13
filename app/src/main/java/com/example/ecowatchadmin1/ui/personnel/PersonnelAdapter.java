@@ -183,6 +183,9 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
         }
 
         holder.lastActive.setText(formatLastActive(person.getLastActive()));
+        if (holder.lastCollection != null) {
+            holder.lastCollection.setText(PersonnelUi.formatLastCollection(person.getLastCollection()));
+        }
 
         bindAssignedVehicle(context, person, holder);
 
@@ -349,6 +352,7 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
         final TextView name;
         final TextView subtitle;
         final TextView lastActive;
+        final TextView lastCollection;
         final TextView currentTask;
         final TextView cleaningStatus;
         final TextView availability;
@@ -366,6 +370,7 @@ public class PersonnelAdapter extends RecyclerView.Adapter<PersonnelAdapter.Pers
             name = itemView.findViewById(R.id.personnelName);
             subtitle = itemView.findViewById(R.id.personnelSubtitle);
             lastActive = itemView.findViewById(R.id.personnelLastActive);
+            lastCollection = itemView.findViewById(R.id.personnelLastService);
             currentTask = itemView.findViewById(R.id.personnelCurrentTask);
             cleaningStatus = itemView.findViewById(R.id.personnelCleaningStatus);
             availability = itemView.findViewById(R.id.personnelAvailability);

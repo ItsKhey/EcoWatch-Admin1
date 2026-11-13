@@ -48,6 +48,7 @@ public final class TeamDetailsFragment extends Fragment {
     private TextView crewCount;
     private TextView status;
     private TextView teamCleaningStatus;
+    private TextView lastCollection;
     private TextView totalAssignedTasks;
     private TextView tasksOnHand;
     private TextView tasksInProgress;
@@ -114,6 +115,7 @@ public final class TeamDetailsFragment extends Fragment {
         crewCount = details.findViewById(R.id.teamDetailCrewCount);
         status = details.findViewById(R.id.teamDetailStatus);
         teamCleaningStatus = details.findViewById(R.id.teamCleaningStatus);
+        lastCollection = details.findViewById(R.id.teamlastCollection);
         totalAssignedTasks = details.findViewById(R.id.totalAssignedReport);
         tasksOnHand = details.findViewById(R.id.reporterStatOnhand);
         tasksInProgress = details.findViewById(R.id.reporterStatInProgress);
@@ -210,6 +212,7 @@ public final class TeamDetailsFragment extends Fragment {
                         historyLoadMore.setVisibility(historyHasMore ? View.VISIBLE : View.GONE);
                         historyLoadMore.setEnabled(true);
                         updateTeamMonitoringStats();
+                        bindLastCollection();
                     }
 
                     @Override
@@ -312,6 +315,7 @@ public final class TeamDetailsFragment extends Fragment {
         status.setTextColor(requireContext().getColor(ready
                 ? R.color.personnel_online : R.color.personnel_cleaning));
         updateCleaningStatus();
+        bindLastCollection();
         memberAdapter.setMembers(team.getMembers(), team.getLeaderId());
         memberAdapter.setPersonnel(personnel);
         noMembers.setVisibility(team.getMembers().isEmpty() ? View.VISIBLE : View.GONE);
@@ -327,6 +331,21 @@ public final class TeamDetailsFragment extends Fragment {
             teamCleaningStatus.setText(R.string.team_status_idle);
             teamCleaningStatus.setTextColor(requireContext().getColor(R.color.personnel_online));
         }
+    }
+
+    /**
+     * Paints the last finished collection for this crew.
+     *
+     * <p>An explicit server stamp wins. Otherwise the newest completed task in
+     * the loaded work log is used, which keeps older deployments useful when
+     * they do not send the explicit field. The team's edit time is deliberately
+     * not a fallback: editing a crew is not a collection.
+     */
+    private void bindLastCollection() {
+        if (lastCollection == null) return;
+        String raw = team == null ? null : team.getLastCollectionAt();
+        if (isBlank(raw)) raw = PersonnelUi.latestCollectionTimestamp(teamHistory);
+        lastCollection.setText(PersonnelUi.formatCollectionDateTime(raw));
     }
 
     private boolean isTeamCleaning(CleaningTeam team) {

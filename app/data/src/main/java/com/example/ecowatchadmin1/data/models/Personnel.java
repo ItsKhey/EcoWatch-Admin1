@@ -91,6 +91,19 @@ public class Personnel implements Serializable {
     @SerializedName(value = "updatedAt", alternate = {"updated_at"})
     private String updatedAt;
 
+    /**
+     * The last collection this person completed.
+     *
+     * <p>Read from the server when it exposes the timestamp, and kept under
+     * alternate names so a deployment that spells it differently still fills
+     * the card. {@link #getLastCollection()} supplies the display fallback.
+     */
+    @SerializedName(value = "lastCollectionAt", alternate = {
+            "last_collection_at", "lastCollection", "last_collection",
+            "lastCompletedAt", "last_completed_at"
+    })
+    private String lastCollectionAt;
+
     public Personnel() {
         // Gson and the response mapper use this constructor.
     }
@@ -371,5 +384,28 @@ public class Personnel implements Serializable {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getLastCollectionAt() {
+        return lastCollectionAt;
+    }
+
+    public void setLastCollectionAt(String lastCollectionAt) {
+        this.lastCollectionAt = lastCollectionAt;
+    }
+
+    /**
+     * The stamp the card labels "Last Collection".
+     *
+     * <p>Only a completed collection counts. Returning {@code lastActive} here
+     * would make a sign-in look like a cleanup, which is exactly the
+     * inaccuracy this column used to show. A blank value means the person has
+     * not finished a collection and the card says so.
+     */
+    public String getLastCollection() {
+        if (lastCollectionAt != null && !lastCollectionAt.trim().isEmpty()) {
+            return lastCollectionAt;
+        }
+        return null;
     }
 }

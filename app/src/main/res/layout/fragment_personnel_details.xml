@@ -286,7 +286,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/reporter_date_created_label"
+                                android:text="Date Created"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="12sp" />
 
@@ -314,12 +314,40 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/reporter_last_active_label"
+                                android:text="Last Active"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/reporterDetailsLastActive"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="?attr/colorOutlineVariant" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Last Collection"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/personnelLastCollection"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="3dp"
@@ -385,7 +413,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/contact_phone_label"
+                                    android:text="Phone Number"
                                     android:textColor="?attr/colorOnSurfaceVariant"
                                     android:textSize="12sp" />
 
@@ -433,7 +461,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/contact_email_label"
+                                    android:text="Email Address"
                                     android:textColor="?attr/colorOnSurfaceVariant"
                                     android:textSize="12sp" />
 
@@ -628,7 +656,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="3dp"
-                                android:text="@string/reporter_in_progress"
+                                android:text="In Progress"
                                 android:gravity="center"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="11sp" />
@@ -766,7 +794,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="22dp"
-                    android:text="@string/personnel_details_assigned_tasks"
+                    android:text="Assigned Tasks"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -812,7 +840,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="22dp"
-                    android:text="@string/personnel_details_actions"
+                    android:text="Account Actions"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -823,7 +851,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/personnel_details_edit"
+                    android:text="Edit Details"
                     android:textAllCaps="false"
                     android:textColor="?attr/colorPrimary"
                     app:cornerRadius="20dp"
@@ -835,7 +863,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/personnel_details_reset_password"
+                    android:text="Reset Password"
                     android:textAllCaps="false"
                     android:textColor="?attr/colorPrimary"
                     app:cornerRadius="20dp"
@@ -847,7 +875,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@string/personnel_details_disable"
+                    android:text="Disable Account"
                     android:textAllCaps="false"
                     android:textColor="#D32F2F"
                     app:strokeColor="#D32F2F"
