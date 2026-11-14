@@ -18,7 +18,7 @@ import com.example.ecowatchadmin1.data.models.BiometricSetting;
 import com.example.ecowatchadmin1.data.models.NotificationSetting;
 import com.example.ecowatchadmin1.data.models.WorkforceGroup;
 
-@Database(entities = {User.class, Report.class, History.class, Notification.class, BiometricSetting.class, NotificationSetting.class, WorkforceGroup.class}, version = 34, exportSchema = false)
+@Database(entities = {User.class, Report.class, History.class, Notification.class, BiometricSetting.class, NotificationSetting.class, WorkforceGroup.class}, version = 35, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 

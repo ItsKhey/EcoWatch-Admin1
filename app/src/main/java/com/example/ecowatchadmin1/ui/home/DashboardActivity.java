@@ -32,7 +32,6 @@ import com.example.ecowatchadmin1.data.models.User;
 import com.example.ecowatchadmin1.data.remote.ServerConfig;
 import com.example.ecowatchadmin1.data.repository.AuthRepository;
 import com.example.ecowatchadmin1.ui.alerts.NotificationsFragment;
-import com.example.ecowatchadmin1.ui.announcements.AnnouncementListFragment;
 import com.example.ecowatchadmin1.ui.auth.LoginActivity;
 import com.example.ecowatchadmin1.ui.personnel.PersonnelDetailsFragment;
 import com.example.ecowatchadmin1.ui.personnel.PersonnelFragment;
@@ -357,14 +356,6 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     /**
-     * Opens the full list of announcements this administrator has published.
-     * Backs the "View all" action on the dashboard's Your Announcements card.
-     */
-    public void navigateToAnnouncements() {
-        loadFragment(new AnnouncementListFragment(), "Announcements");
-    }
-
-    /**
      * Opens the reports tab filtered by the given status.
      * Backs the dashboard card click actions.
      */
@@ -389,6 +380,20 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     /**
+     * Opens the personnel management screen with the Vehicles section selected.
+     *
+     * <p>Backs the dashboard's waste collection vehicle cards. Reusing the
+     * Personnel tab keeps one management screen, but landing on the vehicle list
+     * is what the card the administrator tapped was counting. The initial
+     * section is a one-shot argument, consumed once the fragment reads it, so
+     * opening Personnel normally afterwards still shows the personnel list.
+     */
+    public void openVehicles() {
+        updateNavUI(itemPersonnel, iconPersonnel, labelPersonnel);
+        loadFragment(PersonnelFragment.newInstanceForVehicles(), "Personnel");
+    }
+
+    /**
      * Opens the reporter accounts list.
      *
      * <p>Backs the dashboard's "Reporter Accounts" quick action. Previously this
@@ -409,7 +414,7 @@ public class DashboardActivity extends AppCompatActivity {
      * Opens the Reports &amp; Analytics screen. Backs the dashboard's
      * "Reports &amp; Analytics" quick action and the Settings menu row.
      *
-     * <p>Like the announcements screen, this is not a bottom-navigation
+     * <p>Like the History screen, this is not a bottom-navigation
      * destination, so the lit tab is left to whatever opened it and is restored
      * from the fragment underneath when the user comes back.
      */

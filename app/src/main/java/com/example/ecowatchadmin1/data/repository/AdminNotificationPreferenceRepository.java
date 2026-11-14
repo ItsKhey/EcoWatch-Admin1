@@ -106,7 +106,6 @@ public class AdminNotificationPreferenceRepository {
             settings.setReportStatusUpdates(remote.isReportStatusUpdates());
             settings.setReportCompleted(remote.isReportCompleted());
             settings.setReportDenied(remote.isReportDenied());
-            settings.setCenroAnnouncements(remote.isCenroAnnouncements());
             settings.setSecurityAlerts(remote.isSecurityAlerts());
             settings.setHighPriorityReports(remote.isHighPriorityReports());
             settings.setPersonnelAccepted(remote.isPersonnelAccepted());

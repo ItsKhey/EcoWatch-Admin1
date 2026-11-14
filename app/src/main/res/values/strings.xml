@@ -105,8 +105,6 @@
     <string name="dashboard_title">Dashboard</string>
     <string name="dashboard_subtitle">Review reports and keep cleanups moving.</string>
     <string name="dashboard_section_quick_actions">QUICK ACTIONS</string>
-    <string name="quick_action_create_announcement">Create Announcement</string>
-    <string name="quick_action_create_announcement_desc">Broadcast a CENRO notice to residents.</string>
     <string name="quick_action_open_map">Open Admin Map</string>
     <string name="quick_action_open_map_desc">See active cleanups and their locations.</string>
     <string name="quick_action_view_reports">View Reports</string>
@@ -161,22 +159,6 @@
     <string name="review_row_category_scale">Waste type: %1$s • %2$s</string>
     <string name="review_row_submitted_label">Submitted: %1$s</string>
 
-    <!-- Create announcement -->
-    <string name="create_announcement_title">Create Announcement</string>
-    <string name="create_announcement_subtitle">Broadcast an environmental notice to your residents.</string>
-    <string name="announcement_field_title">Announcement Title</string>
-    <string name="announcement_field_message">Announcement Message</string>
-    <string name="audience_all_residents">All Residents</string>
-    <string name="audience_specific_barangay">Specific Barangay</string>
-    <string name="audience_selected_residents">Selected Residents</string>
-    <string name="audience_upcoming_note">Barangay and resident selection are coming soon.</string>
-    <string name="priority_normal">Normal</string>
-    <string name="priority_important">Important</string>
-    <string name="send_announcement">Send Announcement</string>
-    <string name="sending_announcement">Sending…</string>
-    <string name="announcement_sent">Announcement published.</string>
-    <string name="announcement_title_required">Announcement title is required.</string>
-    <string name="announcement_message_required">Announcement message is required.</string>
     <string name="staff">Staff</string>
     <string name="nav_personnel">Personnel</string>
     <string name="personnel_title">Personnel Management</string>
@@ -434,32 +416,6 @@
     <string name="reporter_delete_button">Delete permanently</string>
     <string name="reporter_deleted_confirmation">%1$s and all of their data were deleted permanently.</string>
     <string name="reporter_delete_no_username">%1$s has no username on record, so there is nothing to type to confirm this. Delete the account from the server instead, where the operation can be audited.</string>
-
-    <!-- Published announcements (dashboard preview and full list) -->
-    <string name="your_announcements">Your Announcements</string>
-    <string name="announcements">Announcements</string>
-    <string name="announcement_none_yet">You haven\'t published any announcements yet.</string>
-    <string name="announcement_untitled">Untitled announcement</string>
-    <string name="announcement_no_body">No further details were provided.</string>
-    <string name="announcement_view_all">View All →</string>
-    <string name="announcement_open_list">Open your announcements</string>
-    <string name="announcement_delete">Delete</string>
-    <string name="announcement_delete_confirm_title">Delete announcement</string>
-    <string name="announcement_delete_confirm_message">This permanently deletes “%1$s”. Residents will stop seeing it and it cannot be recovered.</string>
-    <string name="announcement_deleted">Announcement deleted.</string>
-    <string name="announcement_load_more">Load more</string>
-    <string name="announcement_end_of_list">That is every announcement you have published.</string>
-
-    <!-- Announcement lifetime chosen at publish time -->
-    <string name="expiry_label">EXPIRY</string>
-    <string name="expiry_1_day">1 day</string>
-    <string name="expiry_3_days">3 days</string>
-    <string name="expiry_7_days">7 days</string>
-    <string name="expiry_14_days">14 days</string>
-    <string name="expiry_30_days">30 days</string>
-    <string name="expiry_never">Never expires</string>
-    <string name="expiry_note">After the chosen window the announcement stops appearing for residents and is permanently deleted. It cannot be recovered.</string>
-    <string name="expiry_note_never">This announcement will stay published for residents and will never be deleted automatically. There is no manual removal for announcements yet.</string>
 
     <!-- Contact information rows, shared by the reporter and personnel details screens. -->
     <string name="contact_information_title">Contact information</string>

@@ -116,25 +116,6 @@ public interface AdminApiService {
     @POST("admin/reports/bulk-delete")
     Call<JsonElement> bulkDelete(@Body java.util.Map<String, java.util.List<String>> body);
 
-    /* CENRO announcements (admin-only publishing). */
-    @POST("announcements")
-    Call<JsonElement> createAnnouncement(@Body AnnouncementCreateRequest request);
-
-    @GET("announcements")
-    Call<JsonElement> getAnnouncements(@Query("limit") int limit,
-                                       @Query("offset") int offset);
-
-    /**
-     * Permanently removes an announcement.
-     *
-     * <p>The way to take down something published with the "never expires"
-     * window, which the automatic sweep will never collect. There is no trash, so
-     * this cannot be undone.
-     */
-    @DELETE("announcements/{announcementId}")
-    Call<JsonElement> deleteAnnouncement(
-            @Path("announcementId") String announcementId);
-
     /**
      * Administrator notification choices.
      *

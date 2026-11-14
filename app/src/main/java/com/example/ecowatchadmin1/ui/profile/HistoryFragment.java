@@ -46,8 +46,8 @@ import java.util.Map;
 /**
  * The Admin's audit trail: what was decided, on which report, by whom, and when.
  *
- * <p>Five tabs over one cached list — Reports, Assignments, Cleaning,
- * Announcements and Account — plus a trash view for logs the admin has moved
+ * <p>Four tabs over one cached list — Reports, Assignments, Cleaning and
+ * Account — plus a trash view for logs the admin has moved
  * aside. Every tab is a filter on the same rows, so switching tabs never
  * refetches and the list is already populated when the screen opens offline.
  *
@@ -66,7 +66,7 @@ public class HistoryFragment extends Fragment
     private ReportRepository repository;
     private SessionManager sessionManager;
 
-    private TextView tabAll, tabReports, tabAssignments, tabCleaning, tabAnnouncements,
+    private TextView tabAll, tabReports, tabAssignments, tabCleaning,
             tabAccount, tabTrash;
     private TextView historyTitle, btnSelectAll, emptyText, filterSummaryText;
     private EditText etSearch;
@@ -126,7 +126,6 @@ public class HistoryFragment extends Fragment
         tabReports = view.findViewById(R.id.tabReport);
         tabAssignments = view.findViewById(R.id.tabAssignments);
         tabCleaning = view.findViewById(R.id.tabCleaning);
-        tabAnnouncements = view.findViewById(R.id.tabAnnouncements);
         tabAccount = view.findViewById(R.id.tabESPAccounts);
         tabTrash = view.findViewById(R.id.tabTrash);
 
@@ -286,7 +285,6 @@ public class HistoryFragment extends Fragment
         tabReports.setOnClickListener(v -> selectTab(AdminHistoryCategory.REPORTS, false));
         tabAssignments.setOnClickListener(v -> selectTab(AdminHistoryCategory.ASSIGNMENTS, false));
         tabCleaning.setOnClickListener(v -> selectTab(AdminHistoryCategory.CLEANING, false));
-        tabAnnouncements.setOnClickListener(v -> selectTab(AdminHistoryCategory.ANNOUNCEMENTS, false));
         tabAccount.setOnClickListener(v -> selectTab(AdminHistoryCategory.ACCOUNT, false));
         tabTrash.setOnClickListener(v -> selectTab(AdminHistoryCategory.ALL, true));
     }
@@ -299,7 +297,6 @@ public class HistoryFragment extends Fragment
         updatePill(tabReports, !trash && category == AdminHistoryCategory.REPORTS);
         updatePill(tabAssignments, !trash && category == AdminHistoryCategory.ASSIGNMENTS);
         updatePill(tabCleaning, !trash && category == AdminHistoryCategory.CLEANING);
-        updatePill(tabAnnouncements, !trash && category == AdminHistoryCategory.ANNOUNCEMENTS);
         updatePill(tabAccount, !trash && category == AdminHistoryCategory.ACCOUNT);
         updatePill(tabTrash, trash);
 
@@ -685,7 +682,6 @@ public class HistoryFragment extends Fragment
         tabReports.setText(labelWithCount(AdminHistoryCategory.REPORTS, counts));
         tabAssignments.setText(labelWithCount(AdminHistoryCategory.ASSIGNMENTS, counts));
         tabCleaning.setText(labelWithCount(AdminHistoryCategory.CLEANING, counts));
-        tabAnnouncements.setText(labelWithCount(AdminHistoryCategory.ANNOUNCEMENTS, counts));
         tabAccount.setText(labelWithCount(AdminHistoryCategory.ACCOUNT, counts));
         tabTrash.setText("Trash (" + trashHistory.size() + ")");
     }

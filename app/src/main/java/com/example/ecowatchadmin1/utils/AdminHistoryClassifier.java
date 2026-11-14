@@ -66,13 +66,6 @@ public final class AdminHistoryClassifier {
             return AdminHistoryCategory.CLEANING;
         }
 
-        // --- Announcements ---
-        if (contains(a, "ANNOUNCEMENT") || contains(a, "ANNOUNCED")
-                || contains(a, "PUBLISH") || a.equals("PUBLISHED")
-                || contains(a, "BROADCAST")) {
-            return AdminHistoryCategory.ANNOUNCEMENTS;
-        }
-
         // --- Report-scoped, checked before Account because "ACCOUNT" appears in
         // report actions too (a change of the account a report belongs to) ---
         if (contains(a, "REPORT")) {
@@ -156,7 +149,6 @@ public final class AdminHistoryClassifier {
         if (contains(a, "EVIDENCE")) return "📷";
         if (contains(a, "COMPLETED") || contains(a, "CLEANED")) return "✓";
         if (contains(a, "ASSIGN") || contains(a, "UNASSIGN")) return "👤";
-        if (contains(a, "ANNOUNCEMENT") || contains(a, "PUBLISH")) return "📢";
         if (contains(a, "ACCOUNT") || contains(a, "ACTIVATED")
                 || contains(a, "DEACTIVATED") || contains(a, "PASSWORD")) return "🔑";
         if (contains(a, "PERMANENTLY_DELETED") || contains(a, "DELETED")) return "🗑";

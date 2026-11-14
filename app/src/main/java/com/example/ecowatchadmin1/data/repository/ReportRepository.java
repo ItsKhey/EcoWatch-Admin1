@@ -565,7 +565,7 @@ public class ReportRepository {
      * rows by history id alone. The resident route this replaced added
      * {@code AND resident_id = <caller>}, which an admin token never satisfies,
      * because admin decisions are recorded against the resident who owns the
-     * report and announcement rows belong to no resident at all.
+     * report, while account rows belong to no resident at all.
      */
     public void softDeleteAdminHistory(List<History> rows, HistoryActionCallback callback) {
         runAdminHistoryMutation(

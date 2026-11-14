@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <com.example.ecowatchadmin1.ui.widget.AxisAwareSwipeRefreshLayout
         android:id="@+id/personnelSwipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -437,6 +437,6 @@
                     android:visibility="gone" />            </FrameLayout>
 
         </LinearLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </com.example.ecowatchadmin1.ui.widget.AxisAwareSwipeRefreshLayout>
 
 </FrameLayout>

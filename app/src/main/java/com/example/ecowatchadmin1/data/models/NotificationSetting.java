@@ -13,7 +13,6 @@ public class NotificationSetting {
     private boolean reportStatusUpdates = true;
     private boolean reportCompleted = true;
     private boolean reportDenied = true;
-    private boolean cenroAnnouncements = true;
     private boolean securityAlerts = true;
     private boolean soundEnabled = true;
     private String soundUri = ""; // Path to custom sound
@@ -83,13 +82,6 @@ public class NotificationSetting {
 
     public boolean isArchivedReports() { return archivedReports; }
     public void setArchivedReports(boolean archivedReports) { this.archivedReports = archivedReports; }
-
-    /** "Announcements" — reuses the legacy CENRO announcements column. */
-    public boolean isAnnouncements() { return isCenroAnnouncements(); }
-    public void setAnnouncements(boolean announcements) { setCenroAnnouncements(announcements); }
-
-    public boolean isCenroAnnouncements() { return cenroAnnouncements; }
-    public void setCenroAnnouncements(boolean cenroAnnouncements) { this.cenroAnnouncements = cenroAnnouncements; }
 
     public boolean isMaintenanceAlerts() { return maintenanceAlerts; }
     public void setMaintenanceAlerts(boolean maintenanceAlerts) { this.maintenanceAlerts = maintenanceAlerts; }

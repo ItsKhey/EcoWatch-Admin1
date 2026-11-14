@@ -1,11 +1,11 @@
 package com.example.ecowatchadmin1.utils;
 
 /**
- * The five tabs the Admin History screen filters by.
+ * The tabs the Admin History screen filters by.
  *
- * <p>Each tab is a bucket of administrative decisions, not a data source: an
- * announcement edit and an account deactivation are both admin actions, but they
- * answer different questions when someone is auditing what happened.
+ * <p>Each tab is a bucket of administrative decisions, not a data source: a
+ * report status change and an account deactivation are both admin actions, but
+ * they answer different questions when someone is auditing what happened.
  */
 public enum AdminHistoryCategory {
 
@@ -31,9 +31,6 @@ public enum AdminHistoryCategory {
      * after evidence submitted, marked incomplete/failed, verified.
      */
     CLEANING("Cleaning"),
-
-    /** Created, edited, published, unpublished and deleted announcements. */
-    ANNOUNCEMENTS("Announcements"),
 
     /** ESP account created, activated, deactivated, restored, updated, deleted. */
     ACCOUNT("Account");

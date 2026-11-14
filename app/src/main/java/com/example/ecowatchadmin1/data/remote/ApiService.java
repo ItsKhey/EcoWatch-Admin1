@@ -204,7 +204,7 @@ public interface ApiService {
     );
 
     /* Administrator-side audit-trail management. Scoped by history id rather than
-       by resident, because an announcement or account record has no resident.
+       by resident, because an account record has no resident.
 
        The payload is {"ids":[...]} keyed on the server's history_id, so the value
        type is a list even when a single record is being acted on. It was declared

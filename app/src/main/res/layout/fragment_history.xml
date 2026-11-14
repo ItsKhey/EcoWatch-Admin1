@@ -213,20 +213,6 @@
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/tabAnnouncements"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:minWidth="90dp"
-                android:gravity="center"
-                android:paddingHorizontal="12dp"
-                android:text="Announcements (0)"
-                android:textColor="@color/green"
-                android:textStyle="bold"
-                android:clickable="true"
-                android:focusable="true"
-                android:textSize="12sp" />
-
-            <TextView
                 android:id="@+id/tabESPAccounts"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

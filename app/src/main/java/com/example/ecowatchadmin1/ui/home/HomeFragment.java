@@ -1,6 +1,5 @@
 package com.example.ecowatchadmin1.ui.home;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,23 +14,24 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.ecowatchadmin1.R;
-import com.example.ecowatchadmin1.data.models.Announcement;
+import com.example.ecowatchadmin1.data.models.Personnel;
 import com.example.ecowatchadmin1.data.models.Report;
-import com.example.ecowatchadmin1.data.repository.AnnouncementRepository;
+import com.example.ecowatchadmin1.data.models.Vehicle;
 import com.example.ecowatchadmin1.data.repository.AuthRepository;
 import com.example.ecowatchadmin1.data.repository.PersonnelRepository;
 import com.example.ecowatchadmin1.data.repository.PossibleDuplicateRepository;
+import com.example.ecowatchadmin1.data.repository.VehicleRepository;
 import com.example.ecowatchadmin1.data.models.PossibleDuplicateGroup;
-import com.example.ecowatchadmin1.ui.announcements.AnnouncementRowBinder;
-import com.example.ecowatchadmin1.ui.announcements.CreateAnnouncementActivity;
 import com.example.ecowatchadmin1.ui.reports.ReportDetailDialog;
 import com.example.ecowatchadmin1.ui.reports.ReportsViewModel;
 import com.example.ecowatchadmin1.utils.DateTimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
@@ -39,7 +39,6 @@ public class HomeFragment extends Fragment {
     private static final int MAX_PENDING_PREVIEW = 5;
     private static final int MAX_ONGOING_PREVIEW = 5;
     private static final int MAX_UNDER_REVIEW_PREVIEW = 5;
-    private static final int MAX_ANNOUNCEMENT_PREVIEW = 3;
     private static final String PENDING_ROW_ICON = "📝";
     private static final String PENDING_ROW_TITLE = "Report Submitted";
     private static final String UNDER_REVIEW_ROW_ICON = "🔍";
@@ -50,18 +49,20 @@ public class HomeFragment extends Fragment {
     private AuthRepository authRepository;
     private PossibleDuplicateRepository possibleDuplicateRepository;
     private PersonnelRepository personnelRepository;
+    private VehicleRepository vehicleRepository;
     private LinearLayout ongoingCleaningList;
     private LinearLayout pendingReportsList;
     private LinearLayout underReviewList;
     private TextView pendingEmptyText, ongoingCleaningEmptyText, underReviewEmptyText;
-    private LinearLayout announcementList;
-    private TextView announcementEmptyText;
-    private AnnouncementRepository announcementRepository;
 
     // Report statistics (counted per report)
     private TextView pendingReportsCount, inProgressReportsCount, completedTodayCount;
     private TextView completedReportsCount, totalReportsCount;
     private TextView deniedReportsCount, busyPersonnelsCount, totalPersonnelsCount;
+    private TextView availablePersonnelsCount;
+    // Waste collection fleet cards, counted from the vehicles endpoint.
+    private TextView totalVehiclesCount, availableVehiclesCount, assignedVehiclesCount;
+    private TextView underMaintenanceCount, lacksDriverCount;
     // Rollup cards; counts come from the report feed or the duplicate review.
     private TextView resolvedPercentageCount, possibleDuplicatesCount;
 
@@ -71,6 +72,14 @@ public class HomeFragment extends Fragment {
      * even when the underlying data never changes.
      */
     private List<Report> latestReports;
+
+    /**
+     * Last fleet and roster handed to us by the repositories. Both lists are
+     * kept because the "Lacks Driver" card pairs a truck with its driver, and
+     * the two requests finish in either order.
+     */
+    private List<Vehicle> latestVehicles;
+    private List<Personnel> latestPersonnel;
 
     // Real-time refresh handler
     private final android.os.Handler statsRefreshHandler = new android.os.Handler(android.os.Looper.getMainLooper());
@@ -82,6 +91,7 @@ public class HomeFragment extends Fragment {
                 updateReportStatistics(latestReports);
                 loadPossibleDuplicateCount();
                 loadPersonnelCount();
+                loadVehicleCounts();
             }
             statsRefreshHandler.postDelayed(this, 10000); // Refresh every 10 seconds
         }
@@ -99,8 +109,6 @@ public class HomeFragment extends Fragment {
         pendingEmptyText = view.findViewById(R.id.pendingEmptyText);
         underReviewList = view.findViewById(R.id.underReviewList);
         underReviewEmptyText = view.findViewById(R.id.underReviewEmptyText);
-        announcementList = view.findViewById(R.id.announcementList);
-        announcementEmptyText = view.findViewById(R.id.announcementEmptyText);
 
         // Report statistics views
         pendingReportsCount = view.findViewById(R.id.pendingReportsCount);
@@ -111,6 +119,14 @@ public class HomeFragment extends Fragment {
         deniedReportsCount = view.findViewById(R.id.deniedReportsCount);
         busyPersonnelsCount = view.findViewById(R.id.busyPersonnelsCount);
         totalPersonnelsCount = view.findViewById(R.id.totalPersonnelsCount);
+        availablePersonnelsCount = view.findViewById(R.id.availablePersonnelsCount);
+
+        // Waste collection fleet statistics views
+        totalVehiclesCount = view.findViewById(R.id.totalVehiclesCount);
+        availableVehiclesCount = view.findViewById(R.id.availableVehiclesCount);
+        assignedVehiclesCount = view.findViewById(R.id.assignedVehiclesCount);
+        underMaintenanceCount = view.findViewById(R.id.underMaintenanceCount);
+        lacksDriverCount = view.findViewById(R.id.lacksDriverCount);
 
         // Rollup views
         resolvedPercentageCount = view.findViewById(R.id.resolvedPercentageCount);
@@ -125,9 +141,16 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.cardDeniedReports).setOnClickListener(v -> navigateToReportsWithFilter("Denied"));
         view.findViewById(R.id.cardBusyPersonnels).setOnClickListener(v -> navigateToPersonnel());
         view.findViewById(R.id.cardTotalPersonnels).setOnClickListener(v -> navigateToPersonnel());
+        view.findViewById(R.id.cardAvailablePersonnels).setOnClickListener(v -> navigateToPersonnel());
         view.findViewById(R.id.cardResolvedPercentage).setOnClickListener(v -> navigateToReportsWithFilter("Completed"));
         // Possible Duplicates card: the reports tabs decide what gets reviewed.
         view.findViewById(R.id.cardPossibleDuplicates).setOnClickListener(v -> navigateToReportsWithFilter(null));
+        // Fleet cards open the Vehicles section of the management screen.
+        view.findViewById(R.id.cardTotalVehicles).setOnClickListener(v -> navigateToVehicles());
+        view.findViewById(R.id.cardAvailableVehicles).setOnClickListener(v -> navigateToVehicles());
+        view.findViewById(R.id.cardAssignedVehicles).setOnClickListener(v -> navigateToVehicles());
+        view.findViewById(R.id.cardUnderMaintenanceVehicles).setOnClickListener(v -> navigateToVehicles());
+        view.findViewById(R.id.cardLacksDriverVehicles).setOnClickListener(v -> navigateToVehicles());
 
         setupQuickActions(view);
 
@@ -155,32 +178,23 @@ public class HomeFragment extends Fragment {
         authRepository = new AuthRepository(requireActivity().getApplication());
         possibleDuplicateRepository = new PossibleDuplicateRepository(requireActivity().getApplication());
         personnelRepository = new PersonnelRepository(requireActivity().getApplication());
-        announcementRepository =
-                new AnnouncementRepository(requireActivity().getApplication());
+        vehicleRepository = new VehicleRepository(requireActivity().getApplication());
 
         reportsViewModel.getAllReports().observe(getViewLifecycleOwner(), this::updateUI);
-
-        View btnReadMore = view.findViewById(R.id.btnReadMore);
-        if (btnReadMore != null) {
-            btnReadMore.setOnClickListener(v -> {
-                if (getActivity() instanceof DashboardActivity) {
-                    ((DashboardActivity) getActivity()).navigateToAnnouncements();
-                }
-            });
-        }
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             reportsViewModel.refreshReports();
             authRepository.fetchMe(null);
-            loadAnnouncements();
             loadPossibleDuplicateCount();
+            loadPersonnelCount();
+            loadVehicleCounts();
             swipeRefreshLayout.postDelayed(() -> swipeRefreshLayout.setRefreshing(false), 3000);
         });
 
         reportsViewModel.refreshReports();
-        loadAnnouncements();
         loadPossibleDuplicateCount();
         loadPersonnelCount();
+        loadVehicleCounts();
 
         // Start real-time refresh
         statsRefreshHandler.removeCallbacks(statsRefreshRunnable);
@@ -216,16 +230,6 @@ public class HomeFragment extends Fragment {
                     if (getActivity() instanceof DashboardActivity) {
                         ((DashboardActivity) getActivity()).navigateToPersonnel();
                     }
-                });
-
-        bindQuickAction(
-                view.findViewById(R.id.quickActionAnnouncement),
-                "📢",
-                getString(R.string.quick_action_create_announcement),
-                getString(R.string.quick_action_create_announcement_desc),
-                v -> {
-                    if (!isAdded()) return;
-                    startActivity(new Intent(requireContext(), CreateAnnouncementActivity.class));
                 });
 
         bindQuickAction(
@@ -420,45 +424,58 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void navigateToVehicles() {
+        if (getActivity() instanceof DashboardActivity) {
+            ((DashboardActivity) getActivity()).openVehicles();
+        }
+    }
+
     private void updateUI(List<Report> reports) {
         latestReports = reports;
         updatePendingAssignment(reports);
         updateOngoingCleaning(reports);
         updateUnderReview(reports);
         updateReportStatistics(reports);
-        updatePersonnelCounts(reports);
         updateResolvedPercentage();
         if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
     }
 
-    private void updatePersonnelCounts(List<Report> reports) {
-        int busy = 0;
-        if (reports != null) {
-            for (Report report : reports) {
-                if (report != null && report.hasAssignment()) {
-                    busy++;
-                }
-            }
-        }
-        if (busyPersonnelsCount != null) {
-            busyPersonnelsCount.setText(String.valueOf(busy));
-        }
-        // totalPersonnelsCount is set by loadPersonnelCount() from the server
-    }
-
     /**
-     * Loads the total personnel count from the server.
+     * Loads the ESP cards from the personnel endpoint.
+     *
+     * <p>"Available" is the rest of the active accounts: a cleaner on a report
+     * counts as assigned, everyone else is available. Keeping all three numbers
+     * in one callback means the cards cannot disagree with each other.
      */
     private void loadPersonnelCount() {
         if (personnelRepository == null) return;
         personnelRepository.getPersonnel(new PersonnelRepository.PersonnelListCallback() {
             @Override
-            public void onSuccess(List<com.example.ecowatchadmin1.data.models.Personnel> personnel) {
+            public void onSuccess(List<Personnel> personnel) {
                 if (getView() == null) return;
+                latestPersonnel = personnel;
                 int total = personnel == null ? 0 : personnel.size();
+                int assigned = 0;
+                if (personnel != null) {
+                    for (Personnel person : personnel) {
+                        if (person != null && person.isCleaning()) assigned++;
+                    }
+                }
+                int available = Math.max(0, total - assigned);
+
                 if (totalPersonnelsCount != null) {
                     totalPersonnelsCount.setText(String.valueOf(total));
                 }
+                if (busyPersonnelsCount != null) {
+                    busyPersonnelsCount.setText(String.valueOf(assigned));
+                }
+                if (availablePersonnelsCount != null) {
+                    availablePersonnelsCount.setText(String.valueOf(available));
+                }
+
+                // The "Lacks Driver" card needs the roster as well as the fleet,
+                // so repaint the fleet cards now that this half has arrived.
+                renderFleetCounts();
             }
 
             @Override
@@ -468,50 +485,104 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void loadAnnouncements() {
-        if (announcementRepository == null) return;
+    /**
+     * Loads the waste collection fleet cards.
+     *
+     * <p>Counted from the fleet list rather than the server's summary object so
+     * total is always the same set of trucks the Vehicles screen lists. A truck
+     * in maintenance is included in the total but is neither available nor
+     * assigned, matching the fleet screen's own cards.
+     */
+    private void loadVehicleCounts() {
+        if (vehicleRepository == null) return;
+        vehicleRepository.getFleet(new VehicleRepository.FleetCallback() {
+            @Override
+            public void onSuccess(VehicleRepository.FleetSnapshot snapshot) {
+                if (getView() == null) return;
+                latestVehicles = snapshot == null ? null : snapshot.getVehicles();
+                renderFleetCounts();
+            }
 
-        announcementRepository.getAnnouncements(
-                new AnnouncementRepository.AnnouncementListCallback() {
-                    @Override
-                    public void onSuccess(List<Announcement> announcements) {
-                        if (getView() == null) return;
-                        renderAnnouncements(announcements);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        if (getView() == null) return;
-                        Log.w(TAG, "Your Announcements card could not load: " + error);
-                        renderAnnouncements(null);
-                    }
-                });
+            @Override
+            public void onError(String error) {
+                Log.w(TAG, "Vehicle fleet could not load: " + error);
+            }
+        });
     }
 
-    private void renderAnnouncements(List<Announcement> announcements) {
-        if (announcementList == null) return;
-        announcementList.removeAllViews();
+    /**
+     * Paints the fleet cards from the two lists the dashboard holds.
+     *
+     * <p>Each truck is counted once: a truck under maintenance is in the total
+     * but neither available nor assigned. "Lacks Driver" counts the trucks no
+     * enabled driver account is assigned to, which is the same pairing the
+     * Vehicles screen uses for its badge, so the number matches the rows an
+     * administrator sees after tapping through.
+     */
+    private void renderFleetCounts() {
+        List<Vehicle> vehicles = latestVehicles;
+        if (vehicles != null) {
+            int total = 0;
+            int available = 0;
+            int assigned = 0;
+            int maintenance = 0;
+            for (Vehicle vehicle : vehicles) {
+                if (vehicle == null) continue;
+                total++;
+                if (vehicle.isAssigned()) assigned++;
+                else if (vehicle.isAvailable()) available++;
+                else if (vehicle.isInMaintenance()) maintenance++;
+            }
 
-        int total = announcements == null ? 0 : announcements.size();
-        if (announcementEmptyText != null) {
-            announcementEmptyText.setVisibility(total == 0 ? View.VISIBLE : View.GONE);
+            if (totalVehiclesCount != null) {
+                totalVehiclesCount.setText(String.valueOf(total));
+            }
+            if (availableVehiclesCount != null) {
+                availableVehiclesCount.setText(String.valueOf(available));
+            }
+            if (assignedVehiclesCount != null) {
+                assignedVehiclesCount.setText(String.valueOf(assigned));
+            }
+            if (underMaintenanceCount != null) {
+                underMaintenanceCount.setText(String.valueOf(maintenance));
+            }
         }
-        if (total == 0) return;
 
-        int count = Math.min(total, MAX_ANNOUNCEMENT_PREVIEW);
-        for (int i = 0; i < count; i++) {
-            Announcement announcement = announcements.get(i);
-            if (announcement == null) continue;
-
-            View row = getLayoutInflater().inflate(
-                    R.layout.item_announcement, announcementList, false);
-            AnnouncementRowBinder.bind(row, announcement);
-
-            View deleteView = row.findViewById(R.id.announcementDelete);
-            if (deleteView != null) deleteView.setVisibility(View.GONE);
-
-            announcementList.addView(row);
+        // Both halves are needed to pair a truck with a driver. Until they have
+        // both arrived the card keeps its previous number rather than claiming
+        // every truck is driverless.
+        if (vehicles != null && latestPersonnel != null && lacksDriverCount != null) {
+            lacksDriverCount.setText(String.valueOf(
+                    countVehiclesWithoutDriver(vehicles, latestPersonnel)));
         }
+    }
+
+    /**
+     * Counts trucks with no enabled driver assigned to them.
+     *
+     * <p>Mirrors {@code VehicleAdapter.setDrivers}: only an enabled driver with
+     * a vehicle on the account holds that truck, and the match ignores case
+     * because the two endpoints do not guarantee the same spelling.
+     */
+    private int countVehiclesWithoutDriver(@NonNull List<Vehicle> vehicles,
+                                           @NonNull List<Personnel> personnel) {
+        Set<String> drivenVehicleIds = new HashSet<>();
+        for (Personnel person : personnel) {
+            if (person == null || !person.isEnabled()) continue;
+            if (!person.isDriver() || !person.hasAssignedVehicle()) continue;
+            String vehicleId = person.getAssignedVehicleId();
+            if (vehicleId == null || vehicleId.trim().isEmpty()) continue;
+            drivenVehicleIds.add(vehicleId.trim().toUpperCase(Locale.ROOT));
+        }
+
+        int withoutDriver = 0;
+        for (Vehicle vehicle : vehicles) {
+            if (vehicle == null) continue;
+            String vehicleId = vehicle.getVehicleId();
+            String key = vehicleId == null ? "" : vehicleId.trim().toUpperCase(Locale.ROOT);
+            if (!drivenVehicleIds.contains(key)) withoutDriver++;
+        }
+        return withoutDriver;
     }
 
     private void updatePendingAssignment(List<Report> reports) {

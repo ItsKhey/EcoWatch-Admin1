@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.ecowatchadmin1.ui.widget.AxisAwareSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeRefreshLayout"
     android:layout_width="match_parent"
@@ -36,473 +36,801 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="13sp" />
 
-            <!-- STATISTICS SUBLABEL -->
+            <!-- 2. Statistics Cards - split into Reports, ESP sections and Vehicles sections-->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="STATISTICS"
+                android:letterSpacing="0.1"
+                android:text="SUMMARY CARDS"
                 android:textColor="@color/green"
-                android:textStyle="bold"
                 android:textSize="14sp"
-                android:letterSpacing="0.1" />
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"/>
+            <!-- REPORT STATISTICS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:letterSpacing="0.1"
+                android:text="REPORTS"
+                android:textColor="@color/green"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-            <!-- 2. Statistics Cards - every card below counts individual reports -->
-            <!-- Row 1: Two large cards (Pending, In Progress) -->
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:fadeScrollbars="false"
+                android:paddingBottom="6dp"
+                android:scrollbarSize="4dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbarThumbHorizontal="@color/scroll_indicator"
+                android:scrollbars="horizontal">
 
-                <!-- Pending Reports -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardPendingReports"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Total Reports -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTotalReports"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Pending"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="12sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/pendingReportsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="28sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Reports"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                <!-- In Progress Reports -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardInProgressReports"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                            <TextView
+                                android:id="@+id/totalReportsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Pending Reports -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPendingReports"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="In Progress"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="12sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/inProgressReportsCount"
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pending"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/pendingReportsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- In Progress Reports -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardInProgressReports"
+                        android:layout_width="136dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="28sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-            <!-- Row 2: Four smaller cards (Today, Completed, Reports, Denied) -->
-            <LinearLayout
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="In Progress"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/inProgressReportsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+
+
+                    <!-- Reports Completed Today -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardCompletedToday"
+                        android:layout_width="136dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Completed Today"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/completedTodayCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Completed Reports (all time) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardCompletedReports"
+                        android:layout_width="136dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Overall Completed Reports"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:gravity="center"/>
+
+                            <TextView
+                                android:id="@+id/completedReportsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Denied Reports -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardDeniedReports"
+                        android:layout_width="136dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Denied"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/deniedReportsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Possible Duplicate Reports count -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPossibleDuplicates"
+                        android:layout_width="136dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Clones"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/possibleDuplicatesCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Resolved Percentage -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardResolvedPercentage"
+                        android:layout_width="136dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Resolved"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/resolvedPercentageCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0%"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- ESP / PERSONNEL STATISTICS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:letterSpacing="0.1"
+                android:text="ESP (PERSONNEL)"
+                android:textColor="@color/green"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:fadeScrollbars="false"
+                android:paddingBottom="6dp"
+                android:scrollbarSize="4dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbarThumbHorizontal="@color/scroll_indicator"
+                android:scrollbars="horizontal">
 
-                <!-- Reports Completed Today -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardCompletedToday"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Total Personnels -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTotalPersonnels"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Today"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/completedTodayCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total ESP"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                <!-- Completed Reports (all time) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardCompletedReports"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                            <TextView
+                                android:id="@+id/totalPersonnelsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Available Personnels -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardAvailablePersonnels"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Done"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/completedReportsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Available"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                <!-- Total Reports -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardTotalReports"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                            <TextView
+                                android:id="@+id/availablePersonnelsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Busy Personnels -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardBusyPersonnels"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Reports"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/totalReportsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Assigned"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                <!-- Denied Reports -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardDeniedReports"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                            <TextView
+                                android:id="@+id/busyPersonnelsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </HorizontalScrollView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+            <!-- Vehicle STATISTICS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:letterSpacing="0.1"
+                android:text="WASTE COLLECTION VEHICLES"
+                android:textColor="@color/green"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Denied"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
-
-                        <TextView
-                            android:id="@+id/deniedReportsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
-
-            <!-- Row 3: Four smaller cards (Busy, Personnel, Resolved, Possible Duplicates) -->
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:fadeScrollbars="false"
+                android:paddingBottom="6dp"
+                android:scrollbarSize="4dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbarThumbHorizontal="@color/scroll_indicator"
+                android:scrollbars="horizontal">
 
-                <!-- Total Personnels -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardTotalPersonnels"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Total Vehicles-->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTotalVehicles"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="ESP"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/totalPersonnelsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Vehicles"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                <!-- Busy Personnels -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardBusyPersonnels"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                            <TextView
+                                android:id="@+id/totalVehiclesCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Available Vehicles -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardAvailableVehicles"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Busy"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/busyPersonnelsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Available"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
+                            <TextView
+                                android:id="@+id/availableVehiclesCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-
-                <!-- Resolved Percentage -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardResolvedPercentage"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Under Maintenance Vehicles -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardUnderMaintenanceVehicles"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Resolved"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/resolvedPercentageCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0%"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Under Maintenance"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
-                <!-- Possible Duplicate Reports count -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardPossibleDuplicates"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#06402B"
-                    app:strokeWidth="1dp">
+                            <TextView
+                                android:id="@+id/underMaintenanceCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Vehicles Without A Driver -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardLacksDriverVehicles"
+                        android:layout_width="136dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="12dp"
-                        android:background="@color/white">
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Clones"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="11sp" />
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/possibleDuplicatesCount"
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Lacks Driver"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/lacksDriverCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Assigned Vehicles -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardAssignedVehicles"
+                        android:layout_width="136dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#06402B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="0"
-                            android:textColor="@color/green"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Assigned"
+                                android:textColor="@color/green"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/assignedVehiclesCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0"
+                                android:textColor="@color/green"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <!-- Quick Actions -->
             <TextView
@@ -524,7 +852,7 @@
                 android:orientation="horizontal">
 
                 <include
-                    android:id="@+id/quickActionAnnouncement"
+                    android:id="@+id/quickActionReportsandAnalytics"
                     layout="@layout/item_quick_action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -532,7 +860,7 @@
                     android:layout_weight="1" />
 
                 <include
-                    android:id="@+id/quickActionReportsandAnalytics"
+                    android:id="@+id/quickActionMap"
                     layout="@layout/item_quick_action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -550,7 +878,7 @@
                 android:orientation="horizontal">
 
                 <include
-                    android:id="@+id/quickActionMap"
+                    android:id="@+id/quickActionRegisterNewESPAccount"
                     layout="@layout/item_quick_action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -558,7 +886,7 @@
                     android:layout_weight="1" />
 
                 <include
-                    android:id="@+id/quickActionRegisterNewESPAccount"
+                    android:id="@+id/quickActionManagePersonnelAccounts"
                     layout="@layout/item_quick_action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -576,20 +904,10 @@
                 android:orientation="horizontal">
 
                 <include
-                    android:id="@+id/quickActionManagePersonnelAccounts"
-                    layout="@layout/item_quick_action"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1" />
-
-                <include
                     android:id="@+id/quickActionManageReporterAccounts"
                     layout="@layout/item_quick_action"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -647,64 +965,6 @@
                         android:text="View All →"
                         android:textColor="@color/green"
                         android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 4. Announcements Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/your_announcements"
-                android:textAllCaps="true"
-                android:textColor="@color/green"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:letterSpacing="0.1" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:strokeColor="#06402B"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@color/white">
-
-                    <LinearLayout
-                        android:id="@+id/announcementList"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-
-                    <TextView
-                        android:id="@+id/announcementEmptyText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:alpha="0.8"
-                        android:text="@string/announcement_none_yet"
-                        android:textColor="@color/green"
-                        android:textSize="14sp"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/btnReadMore"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:layout_gravity="end"
-                        android:text="@string/announcement_view_all"
-                        android:textColor="@color/green"
-                        android:textStyle="bold"
-                        android:clickable="true"
-                        android:focusable="true" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -824,4 +1084,4 @@
 
         </LinearLayout>
     </ScrollView>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</com.example.ecowatchadmin1.ui.widget.AxisAwareSwipeRefreshLayout>

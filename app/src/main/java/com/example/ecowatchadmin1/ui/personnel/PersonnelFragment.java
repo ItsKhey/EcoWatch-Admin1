@@ -71,6 +71,7 @@ import java.util.TimeZone;
 /** Personnel dashboard and account-management UI. */
 public class PersonnelFragment extends Fragment {
     private static final String ARG_OPEN_REGISTRATION = "open_registration";
+    private static final String ARG_OPEN_VEHICLES = "open_vehicles";
     private static final String STATE_REGISTRATION_FORM = "registration_form";
     private static final String STATE_PHOTO_URI = "photoUri";
     private static final String STATE_CAMERA_URI = "cameraUri";
@@ -221,6 +222,20 @@ public class PersonnelFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Opens the management screen already showing the Vehicles section.
+     *
+     * <p>Used by the dashboard's fleet cards. The argument is consumed on
+     * arrival, so switching back to Personnel later does not reopen Vehicles.
+     */
+    public static PersonnelFragment newInstanceForVehicles() {
+        PersonnelFragment fragment = new PersonnelFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_OPEN_VEHICLES, true);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -234,6 +249,13 @@ public class PersonnelFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Bundle arguments = getArguments();
+        if (arguments != null && arguments.getBoolean(ARG_OPEN_VEHICLES, false)) {
+            mode = ManagementMode.Kind.VEHICLES;
+            arguments.remove(ARG_OPEN_VEHICLES);
+        }
+
         bindViews(view);
         setupManagementCardsScroll();
 

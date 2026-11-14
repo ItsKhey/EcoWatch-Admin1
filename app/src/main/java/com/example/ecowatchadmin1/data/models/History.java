@@ -26,7 +26,7 @@ public class History implements Serializable {
     /**
      * The resident the record concerns.
      *
-     * <p>Null on an announcement or account record, which belongs to no resident.
+     * <p>Null on an account record, which belongs to no resident.
      */
     @SerializedName("resident_id")
     private String residentId;
@@ -67,7 +67,7 @@ public class History implements Serializable {
      */
     private String category;
 
-    /** 'ANNOUNCEMENT' or 'PERSONNEL', for records with no report to join to. */
+    /** 'PERSONNEL', for records with no report to join to. */
     @SerializedName("subject_type")
     private String subjectType;
 

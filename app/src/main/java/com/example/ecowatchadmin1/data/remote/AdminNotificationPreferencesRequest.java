@@ -25,9 +25,6 @@ public class AdminNotificationPreferencesRequest {
     @SerializedName("reportDenied")
     private Boolean reportDenied;
 
-    @SerializedName("cenroAnnouncements")
-    private Boolean cenroAnnouncements;
-
     @SerializedName("securityAlerts")
     private Boolean securityAlerts;
 
@@ -81,7 +78,6 @@ public class AdminNotificationPreferencesRequest {
             case "reportStatusUpdates": request.reportStatusUpdates = enabled; break;
             case "reportCompleted": request.reportCompleted = enabled; break;
             case "reportDenied": request.reportDenied = enabled; break;
-            case "cenroAnnouncements": request.cenroAnnouncements = enabled; break;
             case "securityAlerts": request.securityAlerts = enabled; break;
             case "highPriorityReports": request.highPriorityReports = enabled; break;
             case "personnelAccepted": request.personnelAccepted = enabled; break;

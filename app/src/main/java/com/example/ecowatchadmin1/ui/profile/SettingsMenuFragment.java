@@ -21,7 +21,6 @@ import com.bumptech.glide.Glide;
 import com.example.ecowatchadmin1.R;
 import com.example.ecowatchadmin1.data.models.User;
 import com.example.ecowatchadmin1.data.repository.AuthRepository;
-import com.example.ecowatchadmin1.ui.announcements.AnnouncementListFragment;
 import com.example.ecowatchadmin1.ui.auth.LoginActivity;
 import com.example.ecowatchadmin1.ui.personnel.PersonnelFragment;
 import com.example.ecowatchadmin1.ui.reportsanalytics.ReportsAnalyticsFragment;
@@ -62,8 +61,6 @@ public class SettingsMenuFragment extends Fragment {
         setupRow(view.findViewById(R.id.itemManageProfile), android.R.drawable.ic_menu_edit, "Manage Profile", null);
         setupRow(view.findViewById(R.id.itemActivityHistory), android.R.drawable.ic_menu_recent_history, "History", null);
         setupRow(view.findViewById(R.id.itemSecurity), android.R.drawable.ic_lock_idle_lock, "Security & Privacy", null);
-        setupRow(view.findViewById(R.id.itemAnnouncement), android.R.drawable.ic_menu_info_details,
-                getString(R.string.your_announcements), null);
         setupRow(view.findViewById(R.id.itemNotifications), R.drawable.ic_notification, "Notifications", null);
         setupRow(view.findViewById(R.id.itemReportsandAnalytics),
                 android.R.drawable.ic_menu_sort_by_size, "Reports & Analytics", null);
@@ -121,8 +118,6 @@ public class SettingsMenuFragment extends Fragment {
         view.findViewById(R.id.itemManageProfile).setOnClickListener(v -> navigateTo(new ProfileFragment()));
         view.findViewById(R.id.itemActivityHistory).setOnClickListener(v -> navigateTo(new HistoryFragment()));
         view.findViewById(R.id.itemSecurity).setOnClickListener(v -> navigateTo(new SecurityPrivacyFragment()));
-        view.findViewById(R.id.itemAnnouncement).setOnClickListener(v ->
-                navigateTo(new AnnouncementListFragment()));
         view.findViewById(R.id.itemNotifications).setOnClickListener(v -> navigateTo(new NotificationSettingsFragment()));
         view.findViewById(R.id.itemReportsandAnalytics).setOnClickListener(v ->
                 navigateTo(new ReportsAnalyticsFragment()));
